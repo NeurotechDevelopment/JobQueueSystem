@@ -33,6 +33,12 @@ Looking for ideas on jobs.
  - Generate PDF (from what?)
  - Send email
  - Compute pi to a given digit
+ 
+## JobRepositoryService
+The only one interacting with MongoDB. Will contain endpoints for storing and reading job information.
+
+## Queueing
+RabbitMQ will be used for communications. Most likely a docker image https://hub.docker.com/_/rabbitmq/
 
 ## Logging
 Perhaps another microservice. Where will it log?
