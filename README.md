@@ -20,6 +20,10 @@ JobResult: JobId, Result
 It will push such requests to the queue.
 JobId guid is to be assigned by a caller.
 
+## JobReceiverService
+Subscribed to queue for incoming job requests. Creates new entry in database
+with JobId, Status = 'Received', Payload, ReceivedAt = UTC Now.
+
 ## JobScheduler Service
 To be decided what stack will be used.
 Presumably it will read Job type and with MediatR resolve the appropriate handler.
