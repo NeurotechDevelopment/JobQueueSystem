@@ -48,3 +48,5 @@ Downloading MongoDB. Done.
 Launched MongoDB Compass. Created JobQueueSystem database and looking on what all this means. Apparently schema isn't created without data.
 JobDocument added to Share project together with MongoDB.Driver NuGet.
 Will need client API I guess for interacting with MongoDB. Separate service?
+
+Appears I will factor in MasTrasit for rabbit.
