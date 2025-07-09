@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" version="27.2.0">
   <diagram name="Page-1" id="-DMl2tfdDHfLlsX9Dcrr">
-    <mxGraphModel dx="1722" dy="954" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+    <mxGraphModel dx="2066" dy="1145" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -178,8 +178,8 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="RtY8KxWvm_swbRJZeZPb-70" value="Write job result upon completion.&lt;div&gt;Set final status.&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="485" y="940" width="145" height="50" as="geometry" />
+        <mxCell id="RtY8KxWvm_swbRJZeZPb-70" value="Write job result upon completion.&lt;div&gt;Set final status.&lt;/div&gt;&lt;div&gt;(Combine with flow 11?)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="485" y="940" width="145" height="80" as="geometry" />
         </mxCell>
         <mxCell id="RtY8KxWvm_swbRJZeZPb-71" value="Set job status to InProgress" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="660" y="763" width="130" height="40" as="geometry" />
