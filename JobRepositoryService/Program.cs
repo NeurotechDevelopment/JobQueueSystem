@@ -17,6 +17,7 @@ namespace JobRepositoryService
             builder.Services.AddAutoMapper( p => p.AddMaps(Assembly.GetExecutingAssembly()));
             builder.Services.Configure<ApplicationSettings>(
                 builder.Configuration.GetSection(nameof(ApplicationSettings)));
+            builder.Services.AddScoped<IJobRepository, MongoJobRepository>();
 
             var app = builder.Build();
 
@@ -27,10 +28,9 @@ namespace JobRepositoryService
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+           // app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
