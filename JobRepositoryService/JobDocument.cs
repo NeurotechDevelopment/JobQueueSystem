@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Contracts
+namespace JobRepositoryService
 {
     /// <summary>
     /// MongoDB representation of job metadata
@@ -15,9 +15,9 @@ namespace Contracts
 
         public string Status { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
-        public DateTime FinishedAt { get; set; }
+        public DateTime? FinishedAt { get; set; }
 
         public BsonDocument Payload { get; set; }
 

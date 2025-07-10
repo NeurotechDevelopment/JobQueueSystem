@@ -15,7 +15,7 @@ namespace JobProducerService.Controllers
         }
 
         [HttpPost(Name = "PostJob")]
-        public IActionResult Post(JobRequest<object> jobRequest)
+        public IActionResult Post(JobRequest jobRequest)
         {
             return null;
         }

@@ -1,9 +1,9 @@
 ﻿namespace Contracts
 {
-    public class JobResult<T>
+    public class JobResult
     {
         public Guid JobId { get; set; }
 
-        public T Result { get; set; }
+        public string Result { get; set; }
     }
 }
