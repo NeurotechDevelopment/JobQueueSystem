@@ -36,6 +36,10 @@ Looking for ideas on jobs.
  
 ## JobRepositoryService
 The only one interacting with MongoDB. Will contain endpoints for storing and reading job information.
+### TODO: Repository service should contain domain logic (so not a pure repository anymore).
+- I want to not allow setting status, if Final or Error status had been already set.
+- I don't want allowing writing status in same case.
+
 
 ## Queueing
 RabbitMQ will be used for communications. Most likely a docker image https://hub.docker.com/_/rabbitmq/
@@ -52,4 +56,4 @@ Will need client API I guess for interacting with MongoDB. Separate service?
 Appears I will factor in MasTrasit for rabbit.
 
 # Tasks
-- Create Repository service with MongoDB interaction.
+- Create Repository service with MongoDB interaction. 

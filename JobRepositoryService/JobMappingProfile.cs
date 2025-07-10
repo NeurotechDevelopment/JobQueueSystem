@@ -9,7 +9,7 @@ namespace JobRepositoryService
         public JobMappingProfile()
         {
             CreateMap<JobDocument, Job>();
-                
+
             CreateMap<Job, JobDocument>();
 
             CreateMap<JobRequest, JobDocument>()

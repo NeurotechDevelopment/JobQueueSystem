@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace JobRepositoryService
@@ -25,7 +26,6 @@ namespace JobRepositoryService
                 var items = db.GetCollection<JobDocument>(Job)
                     .Find(_ => true);
 
-
                 return items.ToList<JobDocument>().Select(x => this.mapper.Map<Job>(x));
             }
         }
@@ -37,6 +37,10 @@ namespace JobRepositoryService
                 var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
                 var items = db.GetCollection<JobDocument>(Job);
                 var jobDocument = this.mapper.Map<JobDocument>(request);
+                
+                jobDocument.Status = JobStatus.NotStarted;
+                jobDocument.ReceivedAt = DateTime.UtcNow;
+                
                 items.InsertOne(jobDocument);
             }
         }
@@ -55,7 +59,7 @@ namespace JobRepositoryService
             }
         }
 
-        public long SetStatus(Guid jobId, string status)
+        public long SetStatus(Guid jobId, JobStatus status)
         {
             using (var mongoClient = new MongoClient(this.optionSettings.Value.ConnectionString))
             {
@@ -68,6 +72,26 @@ namespace JobRepositoryService
                 var update = Builders<JobDocument>.Update
                     .Set(j => j.Status, status)
                     .Set(j => j.LastStatusChanged, DateTime.UtcNow);
+
+                return items.UpdateOne(filter, update).ModifiedCount;
+            }
+        }
+
+        public long SetResult(Guid jobId, string result)
+        {
+            using (var mongoClient = new MongoClient(this.optionSettings.Value.ConnectionString))
+            {
+                var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
+                var items = db.GetCollection<JobDocument>(Job);
+
+                var filter = Builders<JobDocument>.Filter
+                    .Eq(j => j.JobId, jobId);
+
+                var update = Builders<JobDocument>.Update
+                    .Set(j => j.Result, BsonDocument.Parse(result))
+                    .Set(j => j.Status, JobStatus.Finished)
+                    .Set(j => j.LastStatusChanged, DateTime.UtcNow)
+                    .Set(j => j.FinishedAt, DateTime.UtcNow);
 
                 return items.UpdateOne(filter, update).ModifiedCount;
             }

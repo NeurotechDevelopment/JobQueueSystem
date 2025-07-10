@@ -10,6 +10,8 @@ namespace JobRepositoryService
 
         public long DeleteJob(Guid  jobId);
 
-        public long SetStatus(Guid jobId, string status);
+        public long SetStatus(Guid jobId, JobStatus status);
+
+        public long SetResult(Guid jobId, string result);
     }
 }

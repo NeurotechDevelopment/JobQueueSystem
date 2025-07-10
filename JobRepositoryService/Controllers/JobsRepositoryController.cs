@@ -16,29 +16,35 @@ namespace JobRepositoryService.Controllers
             this.repository = repository;
         }
 
-        [HttpGet(Name = nameof(GetJobs))]
+        [HttpGet]
         public IEnumerable<Job> GetJobs()
         {
             return this.repository.GetList();
         }
 
-        [HttpPost(Name = nameof(CreateJobRequest))]
+        [HttpPost]
         public IActionResult CreateJobRequest(JobRequest jobRequest)
         {
             this.repository.AddJobRequest(jobRequest);
             return Ok();
         }
 
-        [HttpDelete(Name = nameof(DeleteJob))]
+        [HttpDelete("{jobId}")]
         public ActionResult<long> DeleteJob(Guid jobId)
         {
             return this.repository.DeleteJob(jobId);
         }
 
-        [HttpPut(Name = nameof(SetStatus))]
-        public ActionResult<long> SetStatus(Guid jobId, string status)
+        [HttpPut("{jobId}/SetStatus/{status}")]
+        public ActionResult<long> SetStatus(Guid jobId, JobStatus status)
         {
             return this.repository.SetStatus(jobId, status);
+        }
+
+        [HttpPut("{jobId}/SetResult")]
+        public ActionResult<long> SetResult(Guid jobId, string result)
+        {
+            return this.repository.SetResult(jobId, result);
         }
     }
 }
