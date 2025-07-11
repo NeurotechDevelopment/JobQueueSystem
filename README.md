@@ -28,11 +28,25 @@ with JobId, Status = 'Received', Payload, ReceivedAt = UTC Now.
 To be decided what stack will be used.
 Presumably it will read Job type and with MediatR resolve the appropriate handler.
 Perhaps each handler will be a separate microservice.
+JobScheduler sets status for the job to something indicating it was considered, so that it isn't read again 
+after pushing job request to a queue.
+
 Handler deserializes payload and performs the job it knows how to perform.
 Looking for ideas on jobs.
  - Generate PDF (from what?)
  - Send email
  - Compute pi to a given digit
+ 
+## JobHandlers
+These are bound to specific Job type. Inherit common abstract class, each will be hosted as dotnet BackgroundService.
+(Can also host as Windows Services.) Each handler listens to its own queue.
+
+If hosted in dockers
+ docker build -t jobhandler.pdf ./PdfJobHandler
+ docker run -d --name pdf-job jobhandler.pdf
+ 
+In dev can be ran from command line as
+ dotnet PdfJobHandler.dll
  
 ## JobRepositoryService
 The only one interacting with MongoDB. Will contain endpoints for storing and reading job information.
@@ -56,4 +70,6 @@ Will need client API I guess for interacting with MongoDB. Separate service?
 Appears I will factor in MasTrasit for rabbit.
 
 # Tasks
-- Create Repository service with MongoDB interaction. 
+- Create Repository service with MongoDB interaction. Good enough.
+- Fetch Rabbit docker 
+- Implement JobProducerService with MasTransit pushing JobRequest to the Rabbit.
