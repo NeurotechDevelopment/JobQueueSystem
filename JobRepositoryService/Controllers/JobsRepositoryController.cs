@@ -42,7 +42,7 @@ namespace JobRepositoryService.Controllers
         }
 
         [HttpPut("{jobId}/SetResult")]
-        public ActionResult<long> SetResult(Guid jobId, string result)
+        public ActionResult<long> SetResult(Guid jobId, [FromBody] string result)
         {
             return this.repository.SetResult(jobId, result);
         }
