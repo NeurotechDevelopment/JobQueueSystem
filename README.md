@@ -58,6 +58,8 @@ The only one interacting with MongoDB. Will contain endpoints for storing and re
 ## Queueing
 RabbitMQ will be used for communications. Most likely a docker image https://hub.docker.com/_/rabbitmq/
 
+docker run -d --hostname my-rabbit --name some-rabbit  -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
 ## Logging
 Perhaps another microservice. Where will it log?
 

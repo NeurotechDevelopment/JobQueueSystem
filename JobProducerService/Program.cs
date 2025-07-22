@@ -1,3 +1,6 @@
+using JobProducerService.Configuration;
+using MassTransit;
+
 namespace JobProducerService
 {
     public class Program
@@ -13,8 +16,23 @@ namespace JobProducerService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var app = builder.Build();
+            var appSettingsSection = builder.Configuration.GetSection(nameof(ApplicationSettings));
+            var appSettings = appSettingsSection.Get<ApplicationSettings>();
+            builder.Services.Configure<ApplicationSettings>(appSettingsSection);
+            builder.Services.AddMassTransit(busConfigurator =>
+            {
+                busConfigurator.UsingRabbitMq((context, rabbitBusFactoryConfigurator) =>
+                {
+                    rabbitBusFactoryConfigurator.Host(host: appSettings.RabbitConfig.Host, h =>
+                    {
+                        h.Username(appSettings.RabbitConfig.User);
+                        h.Password(appSettings.RabbitConfig.Password);
+                    });
+                });
+            });
 
+            var app = builder.Build();
+            
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -25,7 +43,6 @@ namespace JobProducerService
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
