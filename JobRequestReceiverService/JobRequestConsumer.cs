@@ -4,7 +4,7 @@ using Shared;
 
 namespace JobRequestReceiverService
 {
-    internal class JobRequestConsumer : IConsumer<JobRequest>
+    public class JobRequestConsumer : IConsumer<JobRequest>
     {
         private readonly ILogger<JobRequestConsumer> logger;
         private readonly JobRepositoryClient client;

@@ -1,6 +1,7 @@
 using Contracts;
 using JobProducerService.Configuration;
 using MassTransit;
+using MassTransit.Transports;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -24,7 +25,8 @@ namespace JobProducerService.Controllers
         [HttpPost(Name = "PostJob")]
         public async Task<ActionResult> Post(JobRequest jobRequest)
         {
-            var uri = $"{this.appSettings.Value.RabbitConfig.Host}/{this.appSettings.Value.RabbitConfig.QueueName}";
+            
+            var uri = $"queue:{this.appSettings.Value.RabbitConfig.QueueName}";
             var endpoint = await sendEndpointProvider.GetSendEndpoint(new Uri(uri));
             await endpoint.Send(jobRequest);
 
