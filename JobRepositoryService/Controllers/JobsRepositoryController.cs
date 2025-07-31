@@ -1,5 +1,6 @@
 using Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace JobRepositoryService.Controllers
 {
@@ -16,10 +17,19 @@ namespace JobRepositoryService.Controllers
             this.repository = repository;
         }
 
+        [EnableQuery]
+        [HttpGet]
+        [Route("query-jobs")]
+        public IQueryable<Job> GetQueryableJobs()
+        {
+            return this.repository.GetQueryableJobDocuments();
+        }
+
+
         [HttpGet]
         public IEnumerable<Job> GetJobs()
         {
-            return this.repository.GetList();
+            return this.repository.GetJobs();
         }
 
         [HttpPost]

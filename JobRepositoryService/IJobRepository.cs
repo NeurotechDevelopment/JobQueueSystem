@@ -4,7 +4,9 @@ namespace JobRepositoryService
 {
     public interface IJobRepository
     {
-        public IEnumerable<Job> GetList();
+        public IQueryable<Job> GetQueryableJobDocuments();
+
+        public IEnumerable<Job> GetJobs();
 
         public void AddJobRequest(JobRequest request);
 

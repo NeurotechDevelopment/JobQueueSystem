@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.OData;
 
 namespace JobRepositoryService
 {
@@ -15,6 +16,10 @@ namespace JobRepositoryService
             {
                 // Add ability for swagger to render enum as string rather than integers.
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+            builder.Services.AddControllers().AddOData(opt =>
+            {
+                opt.Select().Filter().OrderBy().Expand().SetMaxTop(100).Count();
             });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
