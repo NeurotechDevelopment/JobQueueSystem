@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Contracts;
+﻿using Contracts;
 using Microsoft.Extensions.Options;
 using Shared;
 

@@ -17,15 +17,6 @@ namespace JobRepositoryService.Controllers
             this.repository = repository;
         }
 
-        [EnableQuery]
-        [HttpGet]
-        [Route("query-jobs")]
-        public IQueryable<Job> GetQueryableJobs()
-        {
-            return this.repository.GetQueryableJobDocuments();
-        }
-
-
         [HttpGet]
         public IEnumerable<Job> GetJobs()
         {

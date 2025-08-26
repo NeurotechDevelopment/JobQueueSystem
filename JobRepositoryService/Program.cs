@@ -1,6 +1,10 @@
+using Contracts;
+using JobRepositoryService.Controllers;
+using Microsoft.AspNetCore.OData;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.OData;
 
 namespace JobRepositoryService
 {
@@ -19,7 +23,8 @@ namespace JobRepositoryService
             });
             builder.Services.AddControllers().AddOData(opt =>
             {
-                opt.Select().Filter().OrderBy().Expand().SetMaxTop(100).Count();
+                opt.AddRouteComponents(JobsRepositoryOdataController.JobsOdataRoutePrefix, GetEdmModel())
+                    .Select().Filter().OrderBy().Expand().SetMaxTop(100).Count();
             });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -46,6 +51,13 @@ namespace JobRepositoryService
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static IEdmModel GetEdmModel()
+        {
+            var builder = new ODataConventionModelBuilder();
+            builder.EntitySet<Job>(JobsRepositoryOdataController.JobsEntityName);
+            return builder.GetEdmModel();
         }
     }
 }
