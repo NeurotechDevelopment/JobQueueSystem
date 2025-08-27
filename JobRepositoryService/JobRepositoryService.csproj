@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="9.3.2" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="9.4.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
     <PackageReference Include="MongoDB.Driver" Version="3.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
