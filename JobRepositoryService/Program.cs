@@ -1,5 +1,4 @@
 using Contracts;
-using JobRepositoryService.Controllers;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
@@ -23,7 +22,7 @@ namespace JobRepositoryService
             });
             builder.Services.AddControllers().AddOData(opt =>
             {
-                opt.AddRouteComponents(JobsRepositoryOdataController.JobsOdataRoutePrefix, GetEdmModel())
+                opt.AddRouteComponents(ServicesConstants.OdataRoutePrefix, GetEdmModel())
                     .Select().Filter().OrderBy().Expand().SetMaxTop(100).Count();
             });
 
@@ -56,7 +55,7 @@ namespace JobRepositoryService
         private static IEdmModel GetEdmModel()
         {
             var builder = new ODataConventionModelBuilder();
-            builder.EntitySet<Job>(JobsRepositoryOdataController.JobsEntityName);
+            builder.EntitySet<Job>(ServicesConstants.JobsEntity);
             return builder.GetEdmModel();
         }
     }

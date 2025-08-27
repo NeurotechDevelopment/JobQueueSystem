@@ -4,12 +4,10 @@ using Microsoft.AspNetCore.OData.Query;
 
 namespace JobRepositoryService.Controllers
 {
-    [Route(JobsOdataRoutePrefix + "/" + JobsEntityName)]
+    [Route(ServicesConstants.OdataRoutePrefix + "/" + ServicesConstants.JobsEntity)]
     [ApiController]
     public class JobsRepositoryOdataController : ControllerBase
     {
-        internal const string JobsOdataRoutePrefix = "odata";
-        internal const string JobsEntityName = "Jobs";
         private readonly ILogger<JobsRepositoryController> logger;
         private readonly IJobRepository repository;
 

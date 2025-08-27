@@ -1,6 +1,5 @@
 using Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Query;
 
 namespace JobRepositoryService.Controllers
 {
