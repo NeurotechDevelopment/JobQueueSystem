@@ -1,12 +1,13 @@
 ﻿using Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace JobRepositoryService.Controllers
 {
     [Route(ServicesConstants.OdataRoutePrefix + "/" + ServicesConstants.JobsEntity)]
     [ApiController]
-    public class JobsRepositoryOdataController : ControllerBase
+    public class JobsRepositoryOdataController : ODataController
     {
         private readonly ILogger<JobsRepositoryController> logger;
         private readonly IJobRepository repository;
@@ -18,7 +19,8 @@ namespace JobRepositoryService.Controllers
         }
 
         [EnableQuery]
-        [HttpGet]
+        [HttpGet("$count")] // For /$count support
+        [HttpGet] // For regular queries support
         public IQueryable<Job> GetQueryableJobs()
         {
             return this.repository.GetQueryableJobDocuments();

@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Microsoft.Extensions.Options;
 using Shared;
+using Shared.Queries;
 
 namespace JobRepoClientTester
 {
@@ -30,7 +31,9 @@ namespace JobRepoClientTester
             DumpJobs(client);
 
             client.SetResult(jobId, "\"{'Some': 'Result'}\"");
-            var jobs = client.QueryJobs(x => x.JobId == jobId && x.Status == JobStatus.Finished);
+            var j = client.QueryJobs();
+            var jobs = client.QueryJobs(JobOdataQueryBuilder.Create()
+                                                      .Where(x => x.JobId == jobId && x.Status == JobStatus.Finished));
             
             Console.WriteLine("Fetching current job with odata");
             DumpJobs(jobs);
@@ -40,9 +43,27 @@ namespace JobRepoClientTester
             DumpJobs(client);
 
             Console.WriteLine("Testing Odata");
-            jobs = client.QueryJobs(x =>
-                (x.JobId == jobId || x.LastStatusChanged <= DateTime.UtcNow) &&
-                (x.Type == "Petya" || x.Type != "Petya"));
+
+            jobs = client.QueryJobs(JobOdataQueryBuilder.Create()
+                .Where(x => x.Status == JobStatus.Finished)
+                .OrderBy(x => x.Type)
+                .OrderBy(x => x.FinishedAt));
+
+            jobs = client.QueryJobs(JobOdataQueryBuilder.Create()
+                                    .Where(x => x.Status == JobStatus.Finished)
+                                    .Top(3));
+            
+;
+
+            var count = client.CountJobs(JobOdataQueryBuilder.Create()
+                                            .Where(x => x.Status == JobStatus.Finished)
+                                            .Top(3));
+
+            jobs = client.QueryJobs(JobOdataQueryBuilder.Create()
+                .Where(x => x.Status == JobStatus.Finished)
+                .Skip(7));
+
+
             DumpJobs(jobs);
 
             Console.WriteLine("Press Enter to exit.");

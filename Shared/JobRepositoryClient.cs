@@ -18,16 +18,48 @@ namespace Shared
             this.jobServiceUrl = config.Value.BaseUrl;
         }
 
-        public IEnumerable<Job> QueryJobs(Expression<Func<Job, bool>> expression)
+        #region ODATA
+
+        public IEnumerable<Job> QueryJobs(JobOdataQueryBuilder queryBuilder = null)
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                var odataFilter = JobOdataQuery.Where(expression);
+                var odataFilterParams = queryBuilder?.ToRequestParams();
                 var request = new RestRequest($"{ServicesConstants.OdataRoutePrefix}/{ServicesConstants.JobsEntity}");
-                request.AddParameter("$filter", odataFilter, true);
-                return client.Get<IEnumerable<Job>>(request);
+
+                if (odataFilterParams != null)
+                {
+                    foreach (var odataRequestParam in odataFilterParams)
+                    {
+                        request.AddParameter(odataRequestParam.Key, odataRequestParam.Value);
+                    }
+                }
+
+                var response = client.Get<ODataJobResponse>(request);
+                return response.Value;
             }
         }
+
+        public int CountJobs(JobOdataQueryBuilder queryBuilder)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                var odataFilterParams = queryBuilder.ToRequestParams();
+                var request = new RestRequest($"{ServicesConstants.OdataRoutePrefix}/{ServicesConstants.JobsEntity}/$count");
+
+                foreach (var odataRequestParam in odataFilterParams)
+                {
+                    request.AddParameter(odataRequestParam.Key, odataRequestParam.Value);
+                }
+
+                var response = client.Get(request);
+                return int.Parse(response.Content);
+            }
+        }
+
+        #endregion
+
+        #region REST API
 
         public IEnumerable<Job> GetJobs()
         {
@@ -75,5 +107,7 @@ namespace Shared
                 return client.Put<long>(request);
             }
         }
+
+        #endregion
     }
 }
