@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobRepoClientTester", "JobR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobRequestReceiverService", "JobRequestReceiverService\JobRequestReceiverService.csproj", "{4CA9AC55-0928-4881-A13A-F9C17D3F962C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobDispatcherService", "JobDispatcherService\JobDispatcherService.csproj", "{AF223705-2B5D-4DDF-8E87-604B8A7DDFB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{4CA9AC55-0928-4881-A13A-F9C17D3F962C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CA9AC55-0928-4881-A13A-F9C17D3F962C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CA9AC55-0928-4881-A13A-F9C17D3F962C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF223705-2B5D-4DDF-8E87-604B8A7DDFB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF223705-2B5D-4DDF-8E87-604B8A7DDFB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF223705-2B5D-4DDF-8E87-604B8A7DDFB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF223705-2B5D-4DDF-8E87-604B8A7DDFB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
