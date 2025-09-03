@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Microsoft.Extensions.Options;
 using Shared;
+using Shared.Configuration;
 using Shared.Queries;
 
 namespace JobRepoClientTester

@@ -1,8 +1,8 @@
-﻿using System.Linq.Expressions;
-using Contracts;
+﻿using Contracts;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RestSharp;
+using Shared.Configuration;
 using Shared.Queries;
 
 namespace Shared

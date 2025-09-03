@@ -1,4 +1,4 @@
-﻿namespace JobProducerService.Configuration
+﻿namespace Shared.Configuration
 {
     public class RabbitConfig
     {

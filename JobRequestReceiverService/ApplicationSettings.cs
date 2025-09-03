@@ -1,5 +1,4 @@
-﻿using JobProducerService.Configuration;
-using Shared;
+﻿using Shared.Configuration;
 
 namespace JobRequestReceiverService
 {

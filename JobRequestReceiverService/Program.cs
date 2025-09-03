@@ -2,6 +2,7 @@ using Contracts;
 using MassTransit;
 using MassTransit.Transports.Fabric;
 using Shared;
+using Shared.Configuration;
 
 namespace JobRequestReceiverService
 {

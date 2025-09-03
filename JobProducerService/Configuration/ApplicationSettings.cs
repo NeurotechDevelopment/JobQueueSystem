@@ -1,4 +1,6 @@
-﻿namespace JobProducerService.Configuration
+﻿using Shared.Configuration;
+
+namespace JobProducerService.Configuration
 {
     public class ApplicationSettings
     {

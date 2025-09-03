@@ -1,4 +1,4 @@
-﻿using Shared;
+﻿using Shared.Configuration;
 
 namespace JobDispatcherService
 {
