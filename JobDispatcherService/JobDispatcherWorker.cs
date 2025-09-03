@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Options;
+using Contracts;
 using Shared;
 using Shared.Queries;
 
@@ -20,6 +20,15 @@ namespace JobDispatcherService
             while (!stoppingToken.IsCancellationRequested)
             {
                 logger.LogTrace("JobDispatcherWorker running at: {time}", DateTimeOffset.Now);
+
+                var newJobs = this.client.QueryJobs(JobOdataQueryBuilder.Create()
+                    .Where(x => x.Status == JobStatus.NotStarted)
+                    .OrderBy(x => x.ReceivedAt))
+                    .ToArray();
+
+                logger.LogTrace($"Found {newJobs.Length} not started jobs.");
+
+                
 
                 await Task.Delay(1000, stoppingToken);
             }

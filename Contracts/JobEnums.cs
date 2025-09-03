@@ -1,10 +1,9 @@
-﻿using System.Runtime.Serialization;
-
-namespace Contracts
+﻿namespace Contracts
 {
     public enum JobStatus
     {
         NotStarted,
+        Enqueued,
         InProgress,
         Failed,
         Finished
