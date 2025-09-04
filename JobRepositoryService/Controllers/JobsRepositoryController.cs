@@ -1,5 +1,6 @@
 using Contracts;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace JobRepositoryService.Controllers
 {
@@ -9,11 +10,19 @@ namespace JobRepositoryService.Controllers
     {
         private readonly ILogger<JobsRepositoryController> logger;
         private readonly IJobRepository repository;
+        private readonly JobTypesService jobTypeService;
 
-        public JobsRepositoryController(ILogger<JobsRepositoryController> logger, IJobRepository repository)
+        public JobsRepositoryController(ILogger<JobsRepositoryController> logger, IJobRepository repository, JobTypesService jobTypeService)
         {
             this.logger = logger;
             this.repository = repository;
+            this.jobTypeService = jobTypeService;
+        }
+
+        [HttpGet("job-types")]
+        public IEnumerable<KeyValuePair<string, string>> GetJobTypes()
+        {
+            return jobTypeService.GetJobTypes();
         }
 
         [HttpGet]

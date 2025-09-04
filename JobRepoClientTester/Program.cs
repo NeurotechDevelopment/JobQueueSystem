@@ -20,7 +20,7 @@ namespace JobRepoClientTester
             client.AddJobRequest(new JobRequest
             {
                 JobId = jobId,
-                Type = "Console application",
+                Type = JobType.Dummy,
                 Payload = "{ 'Console': 'app' }"
             });
 

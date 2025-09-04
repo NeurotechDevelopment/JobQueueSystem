@@ -33,6 +33,7 @@ namespace JobRepositoryService
             builder.Services.Configure<ApplicationSettings>(
                 builder.Configuration.GetSection(nameof(ApplicationSettings)));
             builder.Services.AddScoped<IJobRepository, MongoJobRepository>();
+            builder.Services.AddSingleton<JobTypesService>();
 
             var app = builder.Build();
 
