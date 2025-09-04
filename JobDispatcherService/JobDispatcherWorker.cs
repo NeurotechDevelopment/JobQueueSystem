@@ -6,13 +6,16 @@ namespace JobDispatcherService
 {
     public class JobDispatcherWorker : BackgroundService
     {
+        private const int PollInterval = 1000; // ms
         private readonly ILogger<JobDispatcherWorker> logger;
         private readonly JobRepositoryClient client;
+        private readonly IJobDispatcher jobDispatcher;
 
-        public JobDispatcherWorker(ILogger<JobDispatcherWorker> logger, JobRepositoryClient client)
+        public JobDispatcherWorker(ILogger<JobDispatcherWorker> logger, JobRepositoryClient client, IJobDispatcher jobDispatcher)
         {
             this.logger = logger;
             this.client = client;
+            this.jobDispatcher = jobDispatcher;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -28,9 +31,24 @@ namespace JobDispatcherService
 
                 logger.LogTrace($"Found {newJobs.Length} not started jobs.");
 
-                
+                await Parallel.ForEachAsync(newJobs, stoppingToken, async (job, ct) =>
+                {
+                    try
+                    {
+                        await this.jobDispatcher.DispatchAsync(job, ct);
 
-                await Task.Delay(1000, stoppingToken);
+                        // Mark job as enqueued. We don't want to pick it up again.
+                        logger.LogTrace($"Changing job {job.JobId} to status {JobStatus.Enqueued}");
+                        this.client.SetStatus(job.JobId, JobStatus.Enqueued);
+                        logger.LogTrace($"Changed job {job.JobId} to status {JobStatus.Enqueued}");
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e, $"Error while dispatching job {job.JobId}");
+                    }
+                });
+
+                await Task.Delay(PollInterval, stoppingToken);
             }
         }
     }

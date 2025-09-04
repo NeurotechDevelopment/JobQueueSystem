@@ -1,7 +1,6 @@
 using Contracts;
 using JobProducerService.Configuration;
 using MassTransit;
-using MassTransit.Transports;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 

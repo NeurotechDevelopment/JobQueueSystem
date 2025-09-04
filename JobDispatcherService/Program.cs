@@ -1,3 +1,4 @@
+using MassTransit;
 using Shared;
 using Shared.Configuration;
 
@@ -15,6 +16,23 @@ namespace JobDispatcherService
             
             builder.Services.AddHostedService<JobDispatcherWorker>();
             builder.Services.AddSingleton<JobRepositoryClient>();
+            builder.Services.AddSingleton<IJobDispatcher, JobDispatcher>();
+
+            builder.Services.AddMassTransit(opt =>
+            {
+                opt.UsingRabbitMq((ctx, cfg) =>
+                {
+                    var rabbitConfigSection = builder.Configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(RabbitConfig)}");
+                    var rabbitConfig = rabbitConfigSection.Get<RabbitConfig>();
+                    cfg.Host(rabbitConfig.Host, h =>
+                    {
+                        h.Username(rabbitConfig.User);
+                        h.Password(rabbitConfig.Password);
+                    });
+
+                    cfg.ConfigureEndpoints(ctx);
+                });
+            });
 
             var host = builder.Build();
             host.Run();
