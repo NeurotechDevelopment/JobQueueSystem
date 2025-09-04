@@ -22,6 +22,20 @@ namespace JobRepositoryService.Controllers
             return this.repository.GetJobs();
         }
 
+        [HttpGet("{jobId}")]
+        public Job GetJob(Guid jobId)
+        {
+            return this.repository
+                .GetQueryableJobDocuments()
+                .SingleOrDefault(x => x.JobId == jobId);
+        }
+
+        [HttpGet("payload/{jobId}")]
+        public string GetJobPayload(Guid jobId)
+        {
+            return this.repository.GetJobPayload(jobId);
+        }
+
         [HttpPost]
         public IActionResult CreateJobRequest(JobRequest jobRequest)
         {

@@ -61,6 +61,22 @@ namespace Shared
 
         #region REST API
 
+        public Job GetJob(Guid jobId)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                return client.Get<Job>($"{ServicesConstants.JobsRepository}/{jobId}");
+            }
+        }
+
+        public string GetJobPayload(Guid jobId)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                return client.Get<string>($"{ServicesConstants.JobsRepository}/payload/{jobId}");
+            }
+        }
+
         public IEnumerable<Job> GetJobs()
         {
             using (var client = new RestClient(jobServiceUrl))

@@ -20,6 +20,14 @@ namespace JobRepositoryService
             this.mongoClient = new MongoClient(this.optionSettings.Value.ConnectionString);
         }
 
+        public string GetJobPayload(Guid jobId)
+        {
+            var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
+            var item = db.GetCollection<JobDocument>(Job)
+                .Find(x => x.JobId == jobId);
+            
+            return item.SingleOrDefault()?.Payload.ToJson();
+        }
 
         public IEnumerable<Job> GetJobs()
         {

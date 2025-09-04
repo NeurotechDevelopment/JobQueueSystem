@@ -27,6 +27,9 @@ namespace JobRepoClientTester
             Console.WriteLine($"Added new job with id {jobId}");
             DumpJobs(client);
 
+            var job = client.GetJob(jobId);
+            var payload = client.GetJobPayload(jobId);
+
             client.SetStatus(jobId, JobStatus.Finished);
             Console.WriteLine($"Set it to status finished");
             DumpJobs(client);
