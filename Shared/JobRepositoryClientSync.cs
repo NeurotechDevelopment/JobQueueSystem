@@ -7,7 +7,7 @@ using Shared.Queries;
 
 namespace Shared
 {
-    public class JobRepositoryClient
+    public partial class JobRepositoryClient
     {
         private readonly ILogger<JobRepositoryClient> logger;
         private readonly string jobServiceUrl;
@@ -60,6 +60,8 @@ namespace Shared
         #endregion
 
         #region REST API
+
+        #region Sync versions
 
         public IEnumerable<JobTypeDescriptor> GetJobTypes()
         {
@@ -132,6 +134,8 @@ namespace Shared
                 return client.Put<long>(request);
             }
         }
+
+        #endregion
 
         #endregion
     }
