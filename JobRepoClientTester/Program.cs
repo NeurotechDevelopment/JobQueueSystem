@@ -29,6 +29,14 @@ namespace JobRepoClientTester
 
             var job = client.GetJob(jobId);
             var payload = client.GetJobPayload(jobId);
+            Console.WriteLine($"Payload of jobId {jobId} is {payload}");
+
+            var jobTypes = client.GetJobTypes();
+            Console.WriteLine("Allowed job types are:");
+            foreach (var jobType in jobTypes)
+            {
+                Console.WriteLine($"{jobType.Key}: {jobType.Description}");
+            }
 
             client.SetStatus(jobId, JobStatus.Finished);
             Console.WriteLine($"Set it to status finished");

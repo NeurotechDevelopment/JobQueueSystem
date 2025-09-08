@@ -61,6 +61,15 @@ namespace Shared
 
         #region REST API
 
+        public IEnumerable<JobTypeDescriptor> GetJobTypes()
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                var r = client.Get(new RestRequest($"{ServicesConstants.JobsRepository}/{ServicesConstants.JobTypesUrlSegment}"));
+                return client.Get<IEnumerable<JobTypeDescriptor>>($"{ServicesConstants.JobsRepository}/{ServicesConstants.JobTypesUrlSegment}");
+            }
+        }
+
         public Job GetJob(Guid jobId)
         {
             using (var client = new RestClient(jobServiceUrl))

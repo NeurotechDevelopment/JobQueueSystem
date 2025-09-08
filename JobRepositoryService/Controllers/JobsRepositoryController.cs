@@ -1,6 +1,6 @@
 using Contracts;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using AutoMapper;
 
 namespace JobRepositoryService.Controllers
 {
@@ -11,18 +11,20 @@ namespace JobRepositoryService.Controllers
         private readonly ILogger<JobsRepositoryController> logger;
         private readonly IJobRepository repository;
         private readonly JobTypesService jobTypeService;
+        private readonly IMapper mapper;
 
-        public JobsRepositoryController(ILogger<JobsRepositoryController> logger, IJobRepository repository, JobTypesService jobTypeService)
+        public JobsRepositoryController(ILogger<JobsRepositoryController> logger, IJobRepository repository, JobTypesService jobTypeService, IMapper mapper)
         {
             this.logger = logger;
             this.repository = repository;
             this.jobTypeService = jobTypeService;
+            this.mapper = mapper;
         }
 
-        [HttpGet("job-types")]
-        public IEnumerable<KeyValuePair<string, string>> GetJobTypes()
+        [HttpGet(ServicesConstants.JobTypesUrlSegment)]
+        public IEnumerable<JobTypeDescriptor> GetJobTypes()
         {
-            return jobTypeService.GetJobTypes();
+            return this.mapper.Map<IEnumerable<JobTypeDescriptor>>(jobTypeService.GetJobTypes());
         }
 
         [HttpGet]

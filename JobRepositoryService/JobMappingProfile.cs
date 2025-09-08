@@ -8,6 +8,9 @@ namespace JobRepositoryService
     {
         public JobMappingProfile()
         {
+            CreateMap<KeyValuePair<JobType, string>, JobTypeDescriptor>()
+                .ForMember(d => d.Key, s => s.MapFrom(opt => opt.Key))
+                .ForMember(d => d.Description, s => s.MapFrom(opt => opt.Value));
             CreateMap<JobDocument, Job>();
 
             CreateMap<Job, JobDocument>();

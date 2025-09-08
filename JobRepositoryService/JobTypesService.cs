@@ -6,14 +6,14 @@ namespace JobRepositoryService
 {
     public class JobTypesService
     {
-        private static Lazy<IEnumerable<KeyValuePair<string, string>>> JobTypes =
-            new Lazy<IEnumerable<KeyValuePair<string, string>>>(() =>
+        private static Lazy<IEnumerable<KeyValuePair<JobType, string>>> JobTypes =
+            new(() =>
             {
                 var jobTypes = Enum.GetValues<JobType>();
-                return jobTypes.Select(x => new KeyValuePair<string, string>(x.ToString(), GetDescription(x)));
+                return jobTypes.Select(x => new KeyValuePair<JobType, string>(x, GetDescription(x)));
             });
 
-        public IEnumerable<KeyValuePair<string, string>> GetJobTypes()
+        public IEnumerable<KeyValuePair<JobType, string>> GetJobTypes()
         {
             return JobTypes.Value;
         }

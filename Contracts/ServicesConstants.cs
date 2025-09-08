@@ -7,5 +7,7 @@
         public const string OdataRoutePrefix = "Odata";
 
         public const string JobsRepository = "JobsRepository";
+
+        public const string JobTypesUrlSegment = "job-types";
     }
 }
