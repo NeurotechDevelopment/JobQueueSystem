@@ -20,20 +20,20 @@ namespace JobRepositoryService
             this.mongoClient = new MongoClient(this.optionSettings.Value.ConnectionString);
         }
 
-        public string GetJobPayload(Guid jobId)
+        public async Task<string> GetJobPayloadAsync(Guid jobId)
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
-            var item = db.GetCollection<JobDocument>(Job)
-                .Find(x => x.JobId == jobId);
+            var item = await db.GetCollection<JobDocument>(Job)
+                .FindAsync(x => x.JobId == jobId);
             
             return item.SingleOrDefault()?.Payload.ToJson();
         }
 
-        public IEnumerable<Job> GetJobs()
+        public async Task<IEnumerable<Job>> GetJobsAsync()
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
-            var items = db.GetCollection<JobDocument>(Job)
-                .Find(_ => true);
+            var items = await db.GetCollection<JobDocument>(Job)
+                .FindAsync(_ => true);
             return items.ToList().Select(mapper.Map<Job>);
         }
 
@@ -54,7 +54,7 @@ namespace JobRepositoryService
                 });
         }
 
-        public void AddJobRequest(JobRequest request)
+        public async Task AddJobRequestAsync(JobRequest request)
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
             var items = db.GetCollection<JobDocument>(Job);
@@ -63,10 +63,10 @@ namespace JobRepositoryService
             jobDocument.Status = JobStatus.NotStarted;
             jobDocument.ReceivedAt = DateTime.UtcNow;
 
-            items.InsertOne(jobDocument);
+            await items.InsertOneAsync(jobDocument);
         }
 
-        public long DeleteJob(Guid jobId)
+        public async Task<long> DeleteJobAsync(Guid jobId)
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
             var items = db.GetCollection<JobDocument>(Job);
@@ -74,10 +74,11 @@ namespace JobRepositoryService
                 .Eq(doc => doc.JobId, jobId);
 
             // Deletes the first document that matches the filter
-            return items.DeleteOne(filter).DeletedCount;
+            var deleteResult = await items.DeleteOneAsync(filter);
+            return deleteResult.DeletedCount;
         }
 
-        public long SetStatus(Guid jobId, JobStatus status)
+        public async Task<long> SetStatusAsync(Guid jobId, JobStatus status)
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
             var items = db.GetCollection<JobDocument>(Job);
@@ -88,11 +89,11 @@ namespace JobRepositoryService
             var update = Builders<JobDocument>.Update
                 .Set(j => j.Status, status)
                 .Set(j => j.LastStatusChanged, DateTime.UtcNow);
-
-            return items.UpdateOne(filter, update).ModifiedCount;
+            var updateResult = await items.UpdateOneAsync(filter, update);
+            return updateResult.ModifiedCount;
         }
 
-        public long SetResult(Guid jobId, string result)
+        public async Task<long> SetResultAsync(Guid jobId, string result)
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
             var items = db.GetCollection<JobDocument>(Job);
@@ -106,7 +107,8 @@ namespace JobRepositoryService
                 .Set(j => j.LastStatusChanged, DateTime.UtcNow)
                 .Set(j => j.FinishedAt, DateTime.UtcNow);
 
-            return items.UpdateOne(filter, update).ModifiedCount;
+            var updateResult = await items.UpdateOneAsync(filter, update);
+            return updateResult.ModifiedCount;
         }
 
         public void Dispose()

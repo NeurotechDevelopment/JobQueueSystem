@@ -4,18 +4,18 @@ namespace JobRepositoryService
 {
     public interface IJobRepository
     {
-        public string GetJobPayload(Guid jobId);
+        public Task<string> GetJobPayloadAsync(Guid jobId);
 
         public IQueryable<Job> GetQueryableJobDocuments();
 
-        public IEnumerable<Job> GetJobs();
+        public Task<IEnumerable<Job>> GetJobsAsync();
 
-        public void AddJobRequest(JobRequest request);
+        public Task AddJobRequestAsync(JobRequest request);
 
-        public long DeleteJob(Guid  jobId);
+        public Task<long> DeleteJobAsync(Guid  jobId);
 
-        public long SetStatus(Guid jobId, JobStatus status);
+        public Task<long> SetStatusAsync(Guid jobId, JobStatus status);
 
-        public long SetResult(Guid jobId, string result);
+        public Task<long> SetResultAsync(Guid jobId, string result);
     }
 }

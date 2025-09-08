@@ -28,9 +28,9 @@ namespace JobRepositoryService.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Job> GetJobs()
+        public async Task<IEnumerable<Job>> GetJobs()
         {
-            return this.repository.GetJobs();
+            return await this.repository.GetJobsAsync();
         }
 
         [HttpGet("{jobId}")]
@@ -42,34 +42,34 @@ namespace JobRepositoryService.Controllers
         }
 
         [HttpGet("payload/{jobId}")]
-        public string GetJobPayload(Guid jobId)
+        public async Task<string> GetJobPayload(Guid jobId)
         {
-            return this.repository.GetJobPayload(jobId);
+            return await this.repository.GetJobPayloadAsync(jobId);
         }
 
         [HttpPost]
-        public IActionResult CreateJobRequest(JobRequest jobRequest)
+        public async Task<IActionResult> CreateJobRequest(JobRequest jobRequest)
         {
-            this.repository.AddJobRequest(jobRequest);
+            await this.repository.AddJobRequestAsync(jobRequest);
             return Ok();
         }
 
         [HttpDelete("{jobId}")]
-        public ActionResult<long> DeleteJob(Guid jobId)
+        public async Task<ActionResult<long>> DeleteJob(Guid jobId)
         {
-            return this.repository.DeleteJob(jobId);
+            return await this.repository.DeleteJobAsync(jobId);
         }
 
         [HttpPut("{jobId}/SetStatus/{status}")]
-        public ActionResult<long> SetStatus(Guid jobId, JobStatus status)
+        public async Task<ActionResult<long>> SetStatus(Guid jobId, JobStatus status)
         {
-            return this.repository.SetStatus(jobId, status);
+            return await this.repository.SetStatusAsync(jobId, status);
         }
 
         [HttpPut("{jobId}/SetResult")]
-        public ActionResult<long> SetResult(Guid jobId, [FromBody] string result)
+        public async Task<ActionResult<long>> SetResult(Guid jobId, [FromBody] string result)
         {
-            return this.repository.SetResult(jobId, result);
+            return await this.repository.SetResultAsync(jobId, result);
         }
     }
 }
