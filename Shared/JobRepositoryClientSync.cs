@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using System.Text.Json;
+using Contracts;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RestSharp;
@@ -67,7 +68,6 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                var r = client.Get(new RestRequest($"{ServicesConstants.JobsRepository}/{ServicesConstants.JobTypesUrlSegment}"));
                 return client.Get<IEnumerable<JobTypeDescriptor>>($"{ServicesConstants.JobsRepository}/{ServicesConstants.JobTypesUrlSegment}");
             }
         }
@@ -125,12 +125,12 @@ namespace Shared
             }
         }
 
-        public long SetResult(Guid jobId, string result)
+        public long SetResult(Guid jobId, JobPayload result)
         {
             using (var client = new RestClient(jobServiceUrl))
             {
                 var request = new RestRequest($"{ServicesConstants.JobsRepository}/{jobId}/SetResult", Method.Put);
-                request.AddStringBody(result, ContentType.Json);
+                request.AddStringBody(JsonSerializer.Serialize(request), ContentType.Json);
                 return client.Put<long>(request);
             }
         }

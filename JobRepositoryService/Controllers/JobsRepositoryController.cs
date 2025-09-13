@@ -67,7 +67,7 @@ namespace JobRepositoryService.Controllers
         }
 
         [HttpPut("{jobId}/SetResult")]
-        public async Task<ActionResult<long>> SetResult(Guid jobId, [FromBody] string result)
+        public async Task<ActionResult<long>> SetResult(Guid jobId, [FromBody] JobPayload result)
         {
             return await this.repository.SetResultAsync(jobId, result);
         }

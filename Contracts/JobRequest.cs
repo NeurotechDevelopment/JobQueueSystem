@@ -6,6 +6,6 @@
 
         public JobType Type { get; set; }
 
-        public string Payload { get; set; }
+        public JobPayload Payload { get; set; }
     }
 }

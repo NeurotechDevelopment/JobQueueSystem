@@ -21,7 +21,7 @@ namespace JobRepoClientTester
             {
                 JobId = jobId,
                 Type = JobType.Dummy,
-                Payload = "{ 'Console': 'app' }"
+                Payload = new JobPayload { Data = "Console app test payload" }
             });
 
             Console.WriteLine($"Added new job with id {jobId}");
@@ -35,14 +35,15 @@ namespace JobRepoClientTester
             Console.WriteLine("Allowed job types are:");
             foreach (var jobType in jobTypes)
             {
-                Console.WriteLine($"{jobType.Key}: {jobType.Description}");
+                Console.WriteLine($"{jobType.JobType}: {jobType.Description}");
             }
 
+            client.SetResult(jobId, new JobPayload { Data = "Some result"});
             client.SetStatus(jobId, JobStatus.Finished);
-            Console.WriteLine($"Set it to status finished");
+            Console.WriteLine("Set it to status finished");
             DumpJobs(client);
 
-            client.SetResult(jobId, "\"{'Some': 'Result'}\"");
+            client.SetResult(jobId, new JobPayload { Data = "Some result 2" });
             var j = client.QueryJobs();
             var jobs = client.QueryJobs(JobOdataQueryBuilder.Create()
                                                       .Where(x => x.JobId == jobId && x.Status == JobStatus.Finished));

@@ -16,6 +16,6 @@ namespace JobRepositoryService
 
         public Task<long> SetStatusAsync(Guid jobId, JobStatus status);
 
-        public Task<long> SetResultAsync(Guid jobId, string result);
+        public Task<long> SetResultAsync(Guid jobId, JobPayload result);
     }
 }

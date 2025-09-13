@@ -2,7 +2,9 @@
 using Contracts;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using System.Text.Json;
 
 namespace JobRepositoryService
 {
@@ -93,16 +95,16 @@ namespace JobRepositoryService
             return updateResult.ModifiedCount;
         }
 
-        public async Task<long> SetResultAsync(Guid jobId, string result)
+        public async Task<long> SetResultAsync(Guid jobId, JobPayload result)
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
             var items = db.GetCollection<JobDocument>(Job);
 
             var filter = Builders<JobDocument>.Filter
                 .Eq(j => j.JobId, jobId);
-
+            
             var update = Builders<JobDocument>.Update
-                .Set(j => j.Result, BsonDocument.Parse(result))
+                .Set(j => j.Result, result)
                 .Set(j => j.Status, JobStatus.Finished)
                 .Set(j => j.LastStatusChanged, DateTime.UtcNow)
                 .Set(j => j.FinishedAt, DateTime.UtcNow);

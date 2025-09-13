@@ -13,8 +13,8 @@ namespace JobRepositoryService
         [BsonGuidRepresentation(GuidRepresentation.Standard)]
         public Guid JobId { get; set; }
 
-        public BsonDocument Payload { get; set; }
+        public JobPayload? Payload { get; set; }
 
-        public BsonDocument Result { get; set; }
+        public JobPayload? Result { get; set; }
     }
 }

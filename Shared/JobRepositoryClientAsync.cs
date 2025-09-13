@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using System.Text.Json;
+using Contracts;
 using RestSharp;
 
 namespace Shared
@@ -68,12 +69,12 @@ namespace Shared
             }
         }
 
-        public async Task<long> SetResultAsync(Guid jobId, string result)
+        public async Task<long> SetResultAsync(Guid jobId, JobPayload result)
         {
             using (var client = new RestClient(jobServiceUrl))
             {
                 var request = new RestRequest($"{ServicesConstants.JobsRepository}/{jobId}/SetResult", Method.Put);
-                request.AddStringBody(result, ContentType.Json);
+                request.AddStringBody(JsonSerializer.Serialize(result), ContentType.Json);
                 return await client.PutAsync<long>(request);
             }
         }
