@@ -16,9 +16,9 @@ namespace JobHandlers.Handlers
         {
             if (payload.Data == "GenerateError")
             {
-                throw new InvalidOperationException("This is a dummy error generated on purpose.");
+                throw new InvalidOperationException($"This is a dummy error generated on purpose for job {jobId}.");
             }
-            return Task.FromResult($"Dummy service response. You sent payload {payload}");
+            return Task.FromResult($"Dummy service response for job {jobId}. You sent payload {payload.Data}");
         }
     }
 }
