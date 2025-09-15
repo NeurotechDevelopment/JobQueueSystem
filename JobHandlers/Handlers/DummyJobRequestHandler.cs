@@ -6,7 +6,7 @@ namespace JobHandlers.Handlers
     [JobTypeHandler(JobType.Dummy)]
     public sealed class DummyJobRequestHandler : JobHandler
     {
-        public DummyJobRequestHandler(ILogger<DummyJobRequestHandler> logger, JobRepositoryClient client) : base(logger, client)
+        public DummyJobRequestHandler(ILogger<DummyJobRequestHandler> logger, IJobRepositoryClient client) : base(logger, client)
         {
         }
 

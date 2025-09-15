@@ -25,7 +25,7 @@ namespace JobRequestReceiverService
                     services.AddLogging();
 
                     // Register client to communicate with JobRepository service.
-                    services.AddSingleton<JobRepositoryClient, JobRepositoryClient>();
+                    services.AddSingleton<IJobRepositoryClient, JobRepositoryClient>();
 
                     services.AddMassTransit(x =>
                     {

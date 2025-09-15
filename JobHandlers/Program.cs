@@ -15,7 +15,7 @@ namespace JobHandlers
             
             builder.Services.Configure<JobRepositoryClientConfig>(
                 builder.Configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(JobRepositoryClientConfig)}"));
-            builder.Services.AddSingleton<JobRepositoryClient>();
+            builder.Services.AddSingleton<IJobRepositoryClient, JobRepositoryClient>();
             
             var handlerTypes = ResolveJobHandlers();
 
@@ -31,7 +31,7 @@ namespace JobHandlers
                     // Fetch job types from repository service.
                     var logger = ctx.GetRequiredService<ILogger<Program>>();
                     
-                    var repoClient = ctx.GetRequiredService<JobRepositoryClient>();
+                    var repoClient = ctx.GetRequiredService<IJobRepositoryClient>();
                     var allowedJobTypes = repoClient.GetJobTypes();
                     
                     // Find all registered JobHandlers by the above opt.AddConsumers(assembly)

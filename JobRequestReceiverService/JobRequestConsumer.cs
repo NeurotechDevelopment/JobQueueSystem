@@ -7,10 +7,10 @@ namespace JobRequestReceiverService
     public class JobRequestConsumer : IConsumer<JobRequest>
     {
         private readonly ILogger<JobRequestConsumer> logger;
-        private readonly JobRepositoryClient client;
+        private readonly IJobRepositoryClient client;
 
         public JobRequestConsumer(ILogger<JobRequestConsumer> logger, 
-            JobRepositoryClient client)
+            IJobRepositoryClient client)
         {
             this.logger = logger;
             this.client = client;

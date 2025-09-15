@@ -8,7 +8,7 @@ using Shared.Queries;
 
 namespace Shared
 {
-    public partial class JobRepositoryClient
+    public partial class JobRepositoryClient : IJobRepositoryClient
     {
         private readonly ILogger<JobRepositoryClient> logger;
         private readonly string jobServiceUrl;
@@ -21,7 +21,7 @@ namespace Shared
 
         #region ODATA
 
-        public IEnumerable<Job> QueryJobs(JobOdataQueryBuilder queryBuilder = null)
+        public IEnumerable<Job> QueryJobs(JobOdataQueryBuilder? queryBuilder = null)
         {
             using (var client = new RestClient(jobServiceUrl))
             {
@@ -41,11 +41,11 @@ namespace Shared
             }
         }
 
-        public int CountJobs(JobOdataQueryBuilder queryBuilder)
+        public int CountJobs(JobOdataQueryBuilder? queryBuilder = null)
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                var odataFilterParams = queryBuilder.ToRequestParams();
+                var odataFilterParams = queryBuilder?.ToRequestParams();
                 var request = new RestRequest($"{ServicesConstants.OdataRoutePrefix}/{ServicesConstants.JobsEntity}/$count");
 
                 foreach (var odataRequestParam in odataFilterParams)

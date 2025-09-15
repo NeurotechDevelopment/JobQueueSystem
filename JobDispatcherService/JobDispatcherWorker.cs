@@ -8,10 +8,10 @@ namespace JobDispatcherService
     {
         private const int PollInterval = 1000; // ms
         private readonly ILogger<JobDispatcherWorker> logger;
-        private readonly JobRepositoryClient client;
+        private readonly IJobRepositoryClient client;
         private readonly IJobDispatcher jobDispatcher;
 
-        public JobDispatcherWorker(ILogger<JobDispatcherWorker> logger, JobRepositoryClient client, IJobDispatcher jobDispatcher)
+        public JobDispatcherWorker(ILogger<JobDispatcherWorker> logger, IJobRepositoryClient client, IJobDispatcher jobDispatcher)
         {
             this.logger = logger;
             this.client = client;

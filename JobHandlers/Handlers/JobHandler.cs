@@ -7,9 +7,9 @@ namespace JobHandlers.Handlers
     public abstract class JobHandler : IConsumer<JobRequest>
     {
         protected readonly ILogger<JobHandler> logger;
-        protected readonly JobRepositoryClient client;
+        protected readonly IJobRepositoryClient client;
 
-        protected JobHandler(ILogger<JobHandler> logger, JobRepositoryClient client)
+        protected JobHandler(ILogger<JobHandler> logger, IJobRepositoryClient client)
         {
             this.logger = logger;
             this.client = client;

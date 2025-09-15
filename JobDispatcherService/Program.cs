@@ -15,7 +15,7 @@ namespace JobDispatcherService
                 builder.Configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(JobRepositoryClientConfig)}"));
             
             builder.Services.AddHostedService<JobDispatcherWorker>();
-            builder.Services.AddSingleton<JobRepositoryClient>();
+            builder.Services.AddSingleton<IJobRepositoryClient, JobRepositoryClient>();
             builder.Services.AddSingleton<IJobDispatcher, JobDispatcher>();
 
             builder.Services.AddMassTransit(opt =>
