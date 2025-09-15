@@ -22,13 +22,13 @@ namespace JobRepositoryService
             this.mongoClient = new MongoClient(this.optionSettings.Value.ConnectionString);
         }
 
-        public async Task<string> GetJobPayloadAsync(Guid jobId)
+        public async Task<JobPayload> GetJobPayloadAsync(Guid jobId)
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
             var item = await db.GetCollection<JobDocument>(Job)
                 .FindAsync(x => x.JobId == jobId);
             
-            return item.SingleOrDefault()?.Payload.ToJson();
+            return item.SingleOrDefault()?.Payload;
         }
 
         public async Task<IEnumerable<Job>> GetJobsAsync()

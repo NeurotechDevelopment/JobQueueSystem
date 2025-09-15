@@ -4,7 +4,7 @@ namespace JobRepositoryService
 {
     public interface IJobRepository
     {
-        public Task<string> GetJobPayloadAsync(Guid jobId);
+        public Task<JobPayload> GetJobPayloadAsync(Guid jobId);
 
         public IQueryable<Job> GetQueryableJobDocuments();
 

@@ -24,11 +24,11 @@ namespace Shared
             }
         }
 
-        public async Task<string> GetJobPayloadAsync(Guid jobId)
+        public async Task<JobPayload> GetJobPayloadAsync(Guid jobId)
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                return await client.GetAsync<string>($"{ServicesConstants.JobsRepository}/payload/{jobId}");
+                return await client.GetAsync<JobPayload>($"{ServicesConstants.JobsRepository}/payload/{jobId}");
             }
         }
 

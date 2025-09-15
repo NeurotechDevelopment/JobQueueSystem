@@ -42,7 +42,7 @@ namespace JobRepositoryService.Controllers
         }
 
         [HttpGet("payload/{jobId}")]
-        public async Task<string> GetJobPayload(Guid jobId)
+        public async Task<JobPayload> GetJobPayload(Guid jobId)
         {
             return await this.repository.GetJobPayloadAsync(jobId);
         }

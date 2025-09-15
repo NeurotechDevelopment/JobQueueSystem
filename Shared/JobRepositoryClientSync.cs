@@ -80,11 +80,11 @@ namespace Shared
             }
         }
 
-        public string GetJobPayload(Guid jobId)
+        public JobPayload GetJobPayload(Guid jobId)
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                return client.Get<string>($"{ServicesConstants.JobsRepository}/payload/{jobId}");
+                return client.Get<JobPayload>($"{ServicesConstants.JobsRepository}/payload/{jobId}");
             }
         }
 
