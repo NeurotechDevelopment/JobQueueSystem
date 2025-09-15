@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobRequestReceiverService",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobDispatcherService", "JobDispatcherService\JobDispatcherService.csproj", "{AF223705-2B5D-4DDF-8E87-604B8A7DDFB4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobHandlers", "JobHandlers\JobHandlers.csproj", "{C581D2F1-366C-4137-ABC4-D949777DFC75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{AF223705-2B5D-4DDF-8E87-604B8A7DDFB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF223705-2B5D-4DDF-8E87-604B8A7DDFB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF223705-2B5D-4DDF-8E87-604B8A7DDFB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C581D2F1-366C-4137-ABC4-D949777DFC75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C581D2F1-366C-4137-ABC4-D949777DFC75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C581D2F1-366C-4137-ABC4-D949777DFC75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C581D2F1-366C-4137-ABC4-D949777DFC75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
