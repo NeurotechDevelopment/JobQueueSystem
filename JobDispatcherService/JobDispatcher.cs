@@ -18,7 +18,7 @@ namespace JobDispatcherService
         {
             using var scope = this.scopeFactory.CreateScope();
             var sendEndpointProvider = scope.ServiceProvider.GetService<ISendEndpointProvider>();
-            var workerQueue = new Uri($"queue:{job.Type}");
+            var workerQueue = new Uri($"queue:{job.Type}-queue");
             var sendEndpoint = await sendEndpointProvider.GetSendEndpoint(workerQueue);
             logger.LogTrace($"Sending job {job.JobId} to {workerQueue}");
             await sendEndpoint.Send(new JobRequest { JobId = job.JobId }, ct);
