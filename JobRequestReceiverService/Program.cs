@@ -1,6 +1,5 @@
 using Contracts;
 using MassTransit;
-using MassTransit.Transports.Fabric;
 using Shared;
 using Shared.Configuration;
 
@@ -41,12 +40,6 @@ namespace JobRequestReceiverService
                             
                             cfg.ReceiveEndpoint($"{appSettings.RabbitConfig.QueueName}", e =>
                             {
-                                e.ConfigureConsumeTopology = false;
-                                e.ExchangeType = ExchangeType.Direct.ToString().ToLowerInvariant();
-                                e.Bind<JobRequest>(b =>
-                                {
-                                    b.ExchangeType = ExchangeType.Direct.ToString().ToLowerInvariant();
-                                });
                                 e.ConfigureConsumer<JobRequestConsumer>(ctx);
                             });
                         });
