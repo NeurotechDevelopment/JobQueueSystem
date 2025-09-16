@@ -55,6 +55,10 @@ namespace JobHandlers
                 });
             });
 
+            // Register Syncfusion license
+            var licenseKey = builder.Configuration.GetValue<string>("SYNCFUSION_LICENSE_KEY");
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(licenseKey);
+
             var host = builder.Build();
             host.Run();
         }
