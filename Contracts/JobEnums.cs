@@ -17,6 +17,9 @@ namespace Contracts
         Dummy,
 
         [Description("Converts MS Word document to PDF document.")]
-        ConvertWordToPdf
+        ConvertWordToPdf,
+
+        [Description("Converts Html document to PDF document.")]
+        ConvertHtmlToPdf
     }
 }
