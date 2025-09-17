@@ -1,4 +1,4 @@
-# JobQueueSystem
+﻿# JobQueueSystem
 Exercise to brush up on microservices, distributed architecture.
 Gain familiarity working with MongoDB, RabbitMQ, MediatR.
 Exercise good patterns.
@@ -75,3 +75,88 @@ Appears I will factor in MasTrasit for rabbit.
 - Create Repository service with MongoDB interaction. Good enough.
 - Fetch Rabbit docker 
 - Implement JobProducerService with MasTransit pushing JobRequest to the Rabbit.
+
+# Ideas for Jobs
+📄 DocIO (Word)
+
+Create new Word documents from scratch.
+
+Open and edit existing .doc / .docx.
+
+Mail merge (populate Word templates with data).
+
+Convert Word → PDF, HTML, RTF, TXT, EPUB.
+
+Add bookmarks, tables, images, watermarks.
+
+Protect documents with password & restrictions.
+
+📊 XlsIO (Excel)
+
+Create/edit Excel files (.xls, .xlsx).
+
+Read/write formulas, pivot tables, charts.
+
+Import/export data from DataSet, CSV, collections.
+
+Apply styles, conditional formatting.
+
+Convert Excel → PDF, CSV, HTML, Images.
+
+Encrypt & protect worksheets/workbooks.
+
+📑 PDF
+
+Generate new PDF files.
+
+Convert from Word/Excel/HTML → PDF.
+
+Merge and split PDFs.
+
+Add annotations, bookmarks, tables, images.
+
+Apply digital signatures & certificates.
+
+Compress PDFs (optimize size).
+
+Protect with password & permissions.
+
+🖼 Presentation (PowerPoint)
+
+Create/edit PowerPoint (.pptx).
+
+Add slides, images, charts, tables.
+
+Convert PowerPoint → PDF or images.
+
+Clone, merge, and split slide decks.
+
+Apply themes, transitions, animations (basic).
+
+📷 PDF-to-Image / Document-to-Image
+
+Convert pages/slides/sheets → PNG/JPEG/TIFF.
+
+Generate thumbnails & previews.
+
+🔗 Other Utilities
+
+HTML → PDF (with CSS/JavaScript support).
+
+XML/JSON → Word/Excel/HTML via templates.
+
+Barcode & QR code generation.
+
+OCR (optional add-on).
+
+⚡ In short:
+
+Word/Excel/PDF/PowerPoint full CRUD.
+
+Conversions between all of them.
+
+Protection, signatures, compression.
+
+Data binding (mail merge, DataSet import).
+
+Images & preview rendering.
