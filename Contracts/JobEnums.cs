@@ -20,6 +20,9 @@ namespace Contracts
         ConvertWordToPdf,
 
         [Description("Converts Html document to PDF document.")]
-        ConvertHtmlToPdf
+        ConvertHtmlToPdf,
+
+        [Description("Converts Excel document to PDF document.")]
+        ConvertExcelToPdf
     }
 }
