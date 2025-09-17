@@ -16,13 +16,16 @@ namespace Contracts
         [Description("Used for testing purposes.")]
         Dummy,
 
-        [Description("Converts MS Word document to PDF document.")]
+        [Description("Convert MS Word document to PDF document.")]
         ConvertWordToPdf,
 
-        [Description("Converts Html document to PDF document.")]
+        [Description("Convert Html document to PDF document.")]
         ConvertHtmlToPdf,
 
-        [Description("Converts Excel document to PDF document.")]
-        ConvertExcelToPdf
+        [Description("Convert Excel document to PDF document.")]
+        ConvertExcelToPdf,
+
+        [Description("Convert scanned PDF to a searchable PDF document.")]
+        ConvertScanToSearchablePdf
     }
 }
