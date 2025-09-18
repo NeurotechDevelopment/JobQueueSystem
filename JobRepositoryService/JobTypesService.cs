@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Contracts;
 
@@ -20,7 +20,7 @@ namespace JobRepositoryService
 
         private static string GetDescription(JobType jobType)
         {
-            return jobType.GetType().GetMember(jobType.ToString()).First().GetCustomAttribute<DescriptionAttribute>()
+            return jobType.GetType().GetMember(jobType.ToString()).First().GetCustomAttribute<DisplayAttribute>()
                 .Description;
         }
     }

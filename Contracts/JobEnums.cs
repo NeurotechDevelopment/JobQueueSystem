@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Contracts
 {
@@ -13,19 +13,19 @@ namespace Contracts
 
     public enum JobType
     {
-        [Description("Used for testing purposes.")]
+        [Display(Name = nameof(Dummy), Description = "Used for testing purposes.")]
         Dummy,
 
-        [Description("Convert MS Word document to PDF document.")]
+        [Display(Name = nameof(ConvertWordToPdf), Description = "Convert MS Word document to PDF document.")]
         ConvertWordToPdf,
 
-        [Description("Convert Html document to PDF document.")]
+        [Display(Name = nameof(ConvertHtmlToPdf), Description = "Convert Html document to PDF document.")]
         ConvertHtmlToPdf,
 
-        [Description("Convert Excel document to PDF document.")]
+        [Display(Name = nameof(ConvertExcelToPdf), Description = "Convert Excel document to PDF document.")]
         ConvertExcelToPdf,
 
-        [Description("Convert scanned PDF to a searchable PDF document.")]
+        [Display(Name = nameof(ConvertScanToSearchablePdf), Description = "Convert scanned PDF to a searchable PDF document.")]
         ConvertScanToSearchablePdf
     }
 }
