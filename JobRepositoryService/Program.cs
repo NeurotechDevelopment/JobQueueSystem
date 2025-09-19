@@ -32,7 +32,8 @@ namespace JobRepositoryService
             builder.Services.AddAutoMapper( p => p.AddMaps(Assembly.GetExecutingAssembly()));
             builder.Services.Configure<ApplicationSettings>(
                 builder.Configuration.GetSection(nameof(ApplicationSettings)));
-            builder.Services.AddScoped<IJobRepository, MongoJobRepository>();
+            builder.Services.AddSingleton<IJobRepository, MongoJobRepository>();
+            builder.Services.AddSingleton<IBlobStorage, GridFsBlobStorage>();
             builder.Services.AddSingleton<JobTypesService>();
 
             var app = builder.Build();
