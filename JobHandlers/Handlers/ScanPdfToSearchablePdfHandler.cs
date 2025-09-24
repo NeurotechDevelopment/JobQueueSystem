@@ -1,7 +1,9 @@
-﻿using Contracts;
+﻿using System.Text.Json;
+using Contracts;
 using Shared;
 using Syncfusion.Pdf.Parsing;
 using Syncfusion.OCRProcessor;
+using Contracts.Payloads.Requests;
 
 namespace JobHandlers.Handlers
 {
@@ -16,6 +18,7 @@ namespace JobHandlers.Handlers
 
         protected override Task<string> PerformWorkAsync(Guid jobId, JobPayload payload)
         {
+            // TODO: move this to the base var specificPayload = JsonSerializer.Deserialize<ConvertScanToSearchablePdfPayload>(payload.Data);
             // Initialize the OCR processor
             using (OCRProcessor processor = new OCRProcessor())
             {
@@ -25,7 +28,7 @@ namespace JobHandlers.Handlers
                     using (PdfLoadedDocument pdfLoadedDocument = new PdfLoadedDocument(stream))
                     {
                         // Set OCR language to process
-                        processor.Settings.Language = Languages.English;
+                        processor.Settings.Language = Languages.English; // specificPayload.Language;
 
                         // Process OCR by providing the PDF document
                         processor.PerformOCR(pdfLoadedDocument);
