@@ -7,7 +7,7 @@ namespace JobRepositoryService
     /// <summary>
     /// MongoDB representation of job metadata
     /// </summary>
-    public class JobDocument : JobBase
+    public record JobDocument : JobBase
     {
         [BsonId]
         [BsonGuidRepresentation(GuidRepresentation.Standard)]

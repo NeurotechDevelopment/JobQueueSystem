@@ -1,5 +1,7 @@
 using JobProducerService.Configuration;
 using MassTransit;
+using Shared;
+using Shared.Configuration;
 using System.Text.Json.Serialization;
 
 namespace JobProducerService
@@ -9,6 +11,7 @@ namespace JobProducerService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddLogging();
 
             // Add services to the container.
 
@@ -25,6 +28,13 @@ namespace JobProducerService
             var appSettingsSection = builder.Configuration.GetSection(nameof(ApplicationSettings));
             var appSettings = appSettingsSection.Get<ApplicationSettings>();
             builder.Services.Configure<ApplicationSettings>(appSettingsSection);
+
+            // Explicitly bind this subsection for the JobRepositoryClient
+            var jobReposClientSection = appSettingsSection.GetSection(nameof(JobRepositoryClientConfig));
+            builder.Services.Configure<JobRepositoryClientConfig>(jobReposClientSection);
+            // Register client to communicate with JobRepository service.
+            builder.Services.AddSingleton<IJobRepositoryClient, JobRepositoryClient>();
+            
             builder.Services.AddMassTransit(busConfigurator =>
             {
                 busConfigurator.UsingRabbitMq((context, rabbitBusFactoryConfigurator) =>

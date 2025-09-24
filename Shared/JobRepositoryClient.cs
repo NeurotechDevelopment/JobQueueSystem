@@ -5,6 +5,9 @@ using Shared.Configuration;
 
 namespace Shared
 {
+    /// <summary>
+    /// Convenient client to communicate with JobRepository service.
+    /// </summary>
     public partial class JobRepositoryClient : IJobRepositoryClient
     {
         private const string JobApiResource = ServicesConstants.ServiceResources.JobsApiResource;
@@ -19,6 +22,8 @@ namespace Shared
         {
             this.logger = logger;
             this.jobServiceUrl = config.Value.BaseUrl;
+
+            this.logger.LogTrace($"Created an instance of {nameof(JobRepositoryClient)} with service url: {config.Value.BaseUrl}");
         }
     }
 }

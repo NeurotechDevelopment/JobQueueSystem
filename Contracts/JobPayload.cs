@@ -1,4 +1,6 @@
-﻿namespace Contracts
+﻿using Contracts.Payloads;
+
+namespace Contracts
 {
     public class JobPayload
     {
@@ -11,6 +13,20 @@
             Data = data;
         }
 
+        public JobPayload(string data, Attachment attachment)
+        {
+            Data = data;
+            Attachment = attachment;
+        }
+
+        /// <summary>
+        /// Some strongly-typed data as JSON string.
+        /// </summary>
         public string? Data { get; set; }
+
+        /// <summary>
+        /// Represents an optional file associated with the payload.
+        /// </summary>
+        public Attachment? Attachment { get; set; }
     }
 }

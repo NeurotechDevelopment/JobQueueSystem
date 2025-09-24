@@ -2,7 +2,7 @@
 
 namespace Contracts
 {
-    public abstract class JobBase
+    public abstract record JobBase
     {
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public JobType Type { get; set; }

@@ -1,7 +1,7 @@
 ﻿namespace Contracts
 {
-    public class Job : JobBase
+    public record Job : JobInfo
     {
-        public Guid JobId { get; set; }
+        
     }
 }

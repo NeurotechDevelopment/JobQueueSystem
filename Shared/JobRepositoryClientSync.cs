@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using Contracts;
 using RestSharp;
-using Shared.Queries;
 
 namespace Shared
 {
@@ -35,7 +34,7 @@ namespace Shared
             }
         }
 
-        public IEnumerable<Job> GetJobs()
+        public IEnumerable<JobInfo> GetJobs()
         {
             using (var client = new RestClient(jobServiceUrl))
             {

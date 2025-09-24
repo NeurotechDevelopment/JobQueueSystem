@@ -2,7 +2,9 @@
 using System.Reflection;
 using System.Text.Json;
 using Contracts;
+using Contracts.Payloads;
 using Contracts.Payloads.Requests;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shared;
 using Shared.Configuration;
@@ -14,7 +16,8 @@ namespace JobRepoClientTester
     {
         static void Main(string[] args)
         {
-            JobRepositoryClient client = new JobRepositoryClient(null,
+            Logger<JobRepositoryClient> logger = new Logger<JobRepositoryClient>(new LoggerFactory());
+            JobRepositoryClient client = new JobRepositoryClient(logger,
                 Options.Create(new JobRepositoryClientConfig { BaseUrl = Settings.Default.JobRepositoryServiceUrl }));
 
             // Find all private static methods with Description attribute - these are our test actions
@@ -121,16 +124,40 @@ namespace JobRepoClientTester
             Console.WriteLine("Dumping all the jobs");
             DumpJobs(client);
         }
-        
-        [Description("Test JobRepository CRUD")]
+
+        [Description("Test strongly-typed payload request with attachment")]
         private static void JobCruds(JobRepositoryClient client)
         {
             var jobId = Guid.NewGuid();
+
+            Attachment attachment = new Attachment();
+            attachment.FileName = "GettingStartedWithOneDrive.pdf";
+            attachment.ContentType = "application/pdf";
+            
+            using (var stream = File.OpenRead("resources/GettingStartedWithOneDrive.pdf"))
+            {
+                attachment.Size = stream.Length;
+                stream.Position = 0;
+                var fileId = client.UploadAttachment(jobId.ToString(), "GettingStartedWithOneDrive.pdf", stream, "application/pdf");
+                attachment.Id = fileId;
+                
+                Console.WriteLine($"Uploaded pdf and got fileId: {fileId}");
+            }
+
+            var typedPayload = new ConvertScanToSearchablePdfPayload
+            {
+                Language = "en"
+            };
+            var payloadData = JsonSerializer.Serialize(typedPayload);
             client.AddJobRequest(new JobRequest
             {
                 JobId = jobId,
-                Type = JobType.Dummy,
-                Payload = new JobPayload { Data = "Console app test payload" }
+                Type = JobType.ConvertScanToSearchablePdf,
+                Payload = new JobPayload
+                {
+                    Data = payloadData,
+                    Attachment = attachment
+                }
             });
 
             Console.WriteLine($"Added new job with id {jobId}");
@@ -139,10 +166,8 @@ namespace JobRepoClientTester
             DumpJobs(job);
 
             Console.WriteLine("Set result job payload");
-            var typedPayload = new ConvertScanToSearchablePdfPayload();
-            typedPayload.Language = "en";
-            var payload = JsonSerializer.Serialize(typedPayload);
-            client.SetResult(jobId, new JobPayload { Data = payload } );
+           
+            client.SetResult(jobId, new JobPayload { Data = payloadData } );
 
             Console.WriteLine("Set it to status finished");
             client.SetStatus(jobId, JobStatus.Finished);
@@ -151,12 +176,12 @@ namespace JobRepoClientTester
             DumpJobs(job);
 
             client.SetResult(jobId, new JobPayload { Data = "Some result 2" });
-
+            client.DeleteAttachment(attachment.Id);
             var removed = client.RemoveJob(jobId);
             Console.WriteLine($"Removed job with id {jobId}. Affected records: {removed}.");
         }
 
-        static void DumpJobs(IEnumerable<Job> jobs)
+        static void DumpJobs(IEnumerable<JobInfo> jobs)
         {
             foreach (var job in jobs)
             {

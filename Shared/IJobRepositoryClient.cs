@@ -23,7 +23,7 @@ namespace Shared
 
         public JobPayload GetJobPayload(Guid jobId);
 
-        public IEnumerable<Job> GetJobs();
+        public IEnumerable<JobInfo> GetJobs();
 
         public void AddJobRequest(JobRequest jobRequest);
 
@@ -43,7 +43,7 @@ namespace Shared
 
         public Task<JobPayload> GetJobPayloadAsync(Guid jobId);
 
-        public Task<IEnumerable<Job>> GetJobsAsync();
+        public Task<IEnumerable<JobInfo>> GetJobsAsync();
 
         public Task AddJobRequestAsync(JobRequest jobRequest);
 
@@ -63,9 +63,15 @@ namespace Shared
 
         public string UploadAttachment(string tag, string fileName, Stream fileStream, string contentType);
 
+        public void DeleteAttachment(string attachmentId);
+
         #endregion
 
         #region Async versions
+
+        public Task<string> UploadAttachmentAsync(string tag, string fileName, Stream fileStream, string contentType);
+
+        public Task DeleteAttachmentAsync(string attachmentId);
 
         #endregion 
 

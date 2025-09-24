@@ -1,4 +1,6 @@
-﻿namespace Shared
+﻿using RestSharp;
+
+namespace Shared
 {
     public partial class JobRepositoryClient
     {
@@ -11,6 +13,33 @@
             response.EnsureSuccessStatusCode();
             var fileId = response.Content.ReadAsStringAsync().Result;
             return fileId;
+        }
+
+        public async Task<string> UploadAttachmentAsync(string tag, string fileName, Stream fileStream, string contentType)
+        {
+            using var content = new StreamContent(fileStream);
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType ?? "application/octet-stream");
+            var streamUploadUri = $"{this.jobServiceUrl.TrimEnd('/')}/{AttachmentsApiResource}/stream/{tag}/{fileName}";
+            var response = await HttpClient.PostAsync(streamUploadUri, content);
+            response.EnsureSuccessStatusCode();
+            var fileId = await response.Content.ReadAsStringAsync();
+            return fileId;
+        }
+
+        public void DeleteAttachment(string attachmentId)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                client.Delete($"{AttachmentsApiResource}/{attachmentId}");
+            }
+        }
+
+        public async Task DeleteAttachmentAsync(string attachmentId)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                await client.DeleteAsync($"{AttachmentsApiResource}/{attachmentId}");
+            }
         }
     }
 }

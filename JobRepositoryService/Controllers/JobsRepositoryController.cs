@@ -28,7 +28,7 @@ namespace JobRepositoryService.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Job>> GetJobs()
+        public async Task<IEnumerable<JobInfo>> GetJobInfos()
         {
             return await this.repository.GetJobsAsync();
         }

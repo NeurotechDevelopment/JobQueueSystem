@@ -32,7 +32,7 @@ namespace Shared
             }
         }
 
-        public async Task<IEnumerable<Job>> GetJobsAsync()
+        public async Task<IEnumerable<JobInfo>> GetJobsAsync()
         {
             using (var client = new RestClient(jobServiceUrl))
             {
