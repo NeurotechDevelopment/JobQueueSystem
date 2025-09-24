@@ -13,13 +13,13 @@ namespace JobRepositoryService
         private const string Job = "JobCollection";
         private readonly IMapper mapper;
         private readonly IOptions<ApplicationSettings> optionSettings;
-        private readonly MongoClient mongoClient = null;
+        private readonly IMongoClient mongoClient = null;
 
-        public MongoJobRepository(IMapper mapper, IOptions<ApplicationSettings> optionSettings)
+        public MongoJobRepository(IMongoClient client, IMapper mapper, IOptions<ApplicationSettings> optionSettings)
         {
             this.mapper = mapper;
             this.optionSettings = optionSettings;
-            this.mongoClient = new MongoClient(this.optionSettings.Value.ConnectionString);
+            this.mongoClient = client;
         }
 
         public async Task<JobPayload> GetJobPayloadAsync(Guid jobId)

@@ -2,6 +2,7 @@ using Contracts;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using MongoDB.Driver;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -35,6 +36,11 @@ namespace JobRepositoryService
             builder.Services.AddSingleton<IJobRepository, MongoJobRepository>();
             builder.Services.AddSingleton<IBlobStorage, GridFsBlobStorage>();
             builder.Services.AddSingleton<JobTypesService>();
+            builder.Services.AddSingleton<IMongoClient>(sp =>
+            {
+                var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ApplicationSettings>>().Value;
+                return new MongoClient(settings.ConnectionString);
+            });
 
             var app = builder.Build();
 

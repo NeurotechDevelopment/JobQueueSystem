@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Microsoft.AspNetCore.Mvc;
+
 namespace JobRepositoryService.Controllers
 {
     [ApiController]

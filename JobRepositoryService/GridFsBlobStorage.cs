@@ -10,10 +10,9 @@ namespace JobRepositoryService
         private const string BucketName = "JobsRepositoryBucket";
         private readonly GridFSBucket gridFsBucket;
 
-        public GridFsBlobStorage(IOptions<ApplicationSettings> optionSettings)
+        public GridFsBlobStorage(IMongoClient client, IOptions<ApplicationSettings> optionSettings)
         {
-            var mongoClient = new MongoClient(optionSettings.Value.ConnectionString);
-            var db = mongoClient.GetDatabase(optionSettings.Value.Database);
+            var db = client.GetDatabase(optionSettings.Value.Database);
             this.gridFsBucket = new GridFSBucket(db, new GridFSBucketOptions
             {
                 BucketName = BucketName
