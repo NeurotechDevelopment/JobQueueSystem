@@ -13,6 +13,8 @@ namespace Shared
 
         #endregion
 
+        #region Jobs
+
         #region Sync versions
 
         public IEnumerable<JobTypeDescriptor> GetJobTypes();
@@ -50,6 +52,23 @@ namespace Shared
         Task<long> SetStatusAsync(Guid jobId, JobStatus inProgress);
 
         Task<long> SetResultAsync(Guid jobId, JobPayload jobPayload);
+
+        #endregion
+
+        #endregion
+
+        #region Attachments
+
+        #region Sync versions
+
+        public string UploadAttachment(string tag, string fileName, Stream fileStream, string contentType);
+
+        #endregion
+
+        #region Async versions
+
+        #endregion 
+
 
         #endregion
     }

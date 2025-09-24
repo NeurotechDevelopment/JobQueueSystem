@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace JobRepositoryService.Controllers
 {
-    [Route(ServicesConstants.OdataRoutePrefix + "/" + ServicesConstants.JobsEntity)]
+    [Route(ServicesConstants.ServiceResources.OdataJobsApiResource)]
     [ApiController]
     public class JobsRepositoryOdataController : ODataController
     {

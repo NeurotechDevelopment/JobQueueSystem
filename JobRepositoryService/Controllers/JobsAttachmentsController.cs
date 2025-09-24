@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Contracts;
+using Microsoft.AspNetCore.Mvc;
 namespace JobRepositoryService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route(ServicesConstants.ServiceResources.AttachmentsApiResource)]
     public class JobsAttachmentsController : ControllerBase
     {
         private readonly ILogger<JobsAttachmentsController> logger;
@@ -33,7 +34,7 @@ namespace JobRepositoryService.Controllers
             await using var stream = Request.Body;
             var id = await this.storage.UploadStreamAsync(tag, blobName, Request.ContentType ?? "application/octet-stream", stream);
             
-            return Ok(new { Id = id });
+            return Ok(id);
         }
 
         [HttpGet("stream/{id}")]

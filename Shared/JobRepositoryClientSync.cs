@@ -1,65 +1,12 @@
 ﻿using System.Text.Json;
 using Contracts;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using RestSharp;
-using Shared.Configuration;
 using Shared.Queries;
 
 namespace Shared
 {
-    public partial class JobRepositoryClient : IJobRepositoryClient
+    public partial class JobRepositoryClient
     {
-        private readonly ILogger<JobRepositoryClient> logger;
-        private readonly string jobServiceUrl;
-
-        public JobRepositoryClient(ILogger<JobRepositoryClient> logger, IOptions<JobRepositoryClientConfig> config)
-        {
-            this.logger = logger;
-            this.jobServiceUrl = config.Value.BaseUrl;
-        }
-
-        #region ODATA
-
-        public IEnumerable<Job> QueryJobs(JobOdataQueryBuilder? queryBuilder = null)
-        {
-            using (var client = new RestClient(jobServiceUrl))
-            {
-                var odataFilterParams = queryBuilder?.ToRequestParams();
-                var request = new RestRequest($"{ServicesConstants.OdataRoutePrefix}/{ServicesConstants.JobsEntity}");
-
-                if (odataFilterParams != null)
-                {
-                    foreach (var odataRequestParam in odataFilterParams)
-                    {
-                        request.AddParameter(odataRequestParam.Key, odataRequestParam.Value);
-                    }
-                }
-
-                var response = client.Get<ODataJobResponse>(request);
-                return response.Value;
-            }
-        }
-
-        public int CountJobs(JobOdataQueryBuilder? queryBuilder = null)
-        {
-            using (var client = new RestClient(jobServiceUrl))
-            {
-                var odataFilterParams = queryBuilder?.ToRequestParams();
-                var request = new RestRequest($"{ServicesConstants.OdataRoutePrefix}/{ServicesConstants.JobsEntity}/$count");
-
-                foreach (var odataRequestParam in odataFilterParams)
-                {
-                    request.AddParameter(odataRequestParam.Key, odataRequestParam.Value);
-                }
-
-                var response = client.Get(request);
-                return int.Parse(response.Content);
-            }
-        }
-
-        #endregion
-
         #region REST API
 
         #region Sync versions
@@ -68,7 +15,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                return client.Get<IEnumerable<JobTypeDescriptor>>($"{ServicesConstants.JobsRepository}/{ServicesConstants.JobTypesUrlSegment}");
+                return client.Get<IEnumerable<JobTypeDescriptor>>($"{JobApiResource}/{ServicesConstants.JobTypesUrlSegment}");
             }
         }
 
@@ -76,7 +23,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                return client.Get<Job>($"{ServicesConstants.JobsRepository}/{jobId}");
+                return client.Get<Job>($"{JobApiResource}/{jobId}");
             }
         }
 
@@ -84,7 +31,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                return client.Get<JobPayload>($"{ServicesConstants.JobsRepository}/payload/{jobId}");
+                return client.Get<JobPayload>($"{JobApiResource}/payload/{jobId}");
             }
         }
 
@@ -92,7 +39,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                return client.Get<IEnumerable<Job>>(ServicesConstants.JobsRepository);
+                return client.Get<IEnumerable<Job>>(JobApiResource);
             }
         }
 
@@ -100,7 +47,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                var request = new RestRequest(ServicesConstants.JobsRepository, Method.Post)
+                var request = new RestRequest(JobApiResource, Method.Post)
                     .AddJsonBody(jobRequest);
                 client.Post<JobRequest>(request);
             }
@@ -110,7 +57,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                var request = new RestRequest($"{ServicesConstants.JobsRepository}/{jobId}", Method.Delete);
+                var request = new RestRequest($"{JobApiResource}/{jobId}", Method.Delete);
                 return client.Delete<long>(request);
             }
         }
@@ -119,7 +66,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                var request = new RestRequest($"{ServicesConstants.JobsRepository}/{jobId}/SetStatus/{status}", Method.Put);
+                var request = new RestRequest($"{JobApiResource}/{jobId}/SetStatus/{status}", Method.Put);
                 
                 return client.Put<long>(request);
             }
@@ -129,7 +76,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                var request = new RestRequest($"{ServicesConstants.JobsRepository}/{jobId}/SetResult", Method.Put);
+                var request = new RestRequest($"{JobApiResource}/{jobId}/SetResult", Method.Put);
                 request.AddStringBody(JsonSerializer.Serialize(request), ContentType.Json);
                 return client.Put<long>(request);
             }

@@ -5,7 +5,7 @@ using AutoMapper;
 namespace JobRepositoryService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route(ServicesConstants.ServiceResources.JobsApiResource)]
     public class JobsRepositoryController : ControllerBase
     {
         private readonly ILogger<JobsRepositoryController> logger;
