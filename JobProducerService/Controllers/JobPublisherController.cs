@@ -68,13 +68,7 @@ namespace JobProducerService.Controllers
                     JobId = jobId, 
                     Payload = new JobPayload
                     {
-                        Attachment = new Attachment
-                        {
-                            Id = fileId,
-                            FileName = file.FileName,
-                            ContentType = file.ContentType,
-                            Size = file.Length
-                        },
+                        Attachment = new Attachment(fileId, file.FileName, file.ContentType, file.Length),
                         Data = payload
                     }, 
                     Type = type
