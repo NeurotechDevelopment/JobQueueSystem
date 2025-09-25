@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using System.Text.Json;
 
 namespace JobRepositoryService
 {
@@ -52,7 +49,9 @@ namespace JobRepositoryService
                     LastStatusChanged = x.LastStatusChanged,
                     ReceivedAt = x.ReceivedAt,
                     Status = x.Status,
-                    Type = x.Type
+                    Type = x.Type,
+                    RequestPayload = x.Payload != null ? new JobPayload(x.Payload.Data, x.Payload.Attachment) : null,
+                    ResultPayload = x.Result != null ? new JobPayload(x.Result.Data, x.Result.Attachment) : null
                 });
         }
 

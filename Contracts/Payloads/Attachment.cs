@@ -5,6 +5,18 @@
     /// </summary>
     public record Attachment
     {
+        public Attachment()
+        {
+        }
+
+        public Attachment(string id, string fileName, string contentType, long size)
+        {
+            Id = id;
+            FileName = fileName;
+            ContentType = contentType;
+            Size = size;
+        }
+
         /// <summary>
         /// Id as assigned by the storage service.
         /// </summary>

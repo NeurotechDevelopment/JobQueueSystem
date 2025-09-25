@@ -5,6 +5,7 @@ using Microsoft.OData.ModelBuilder;
 using MongoDB.Driver;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Contracts.Payloads;
 
 namespace JobRepositoryService
 {
@@ -65,6 +66,11 @@ namespace JobRepositoryService
             var builder = new ODataConventionModelBuilder();
             var jobEntitySet = builder.EntitySet<Job>(ServicesConstants.JobsEntity);
             jobEntitySet.EntityType.HasKey(j => j.JobId);
+
+            // Explicitly declare these as embedded complex objects
+            builder.ComplexType<JobPayload>();
+            builder.ComplexType<Attachment>();
+
             return builder.GetEdmModel();
         }
     }
