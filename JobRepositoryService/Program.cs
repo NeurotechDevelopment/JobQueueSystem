@@ -35,7 +35,7 @@ namespace JobRepositoryService
                 builder.Configuration.GetSection(nameof(ApplicationSettings)));
             builder.Services.AddSingleton<IJobRepository, MongoJobRepository>();
             builder.Services.AddSingleton<IBlobStorage, GridFsBlobStorage>();
-            builder.Services.AddSingleton<JobTypesService>();
+            builder.Services.AddSingleton<IJobService, JobService>();
             builder.Services.AddSingleton<IMongoClient>(sp =>
             {
                 var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ApplicationSettings>>().Value;
@@ -63,7 +63,8 @@ namespace JobRepositoryService
         private static IEdmModel GetEdmModel()
         {
             var builder = new ODataConventionModelBuilder();
-            builder.EntitySet<Job>(ServicesConstants.JobsEntity);
+            var jobEntitySet = builder.EntitySet<Job>(ServicesConstants.JobsEntity);
+            jobEntitySet.EntityType.HasKey(j => j.JobId);
             return builder.GetEdmModel();
         }
     }

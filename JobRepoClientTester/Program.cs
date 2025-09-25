@@ -149,15 +149,16 @@ namespace JobRepoClientTester
                 Language = "en"
             };
             var payloadData = JsonSerializer.Serialize(typedPayload);
+            var payloadWithAttachment = new JobPayload
+            {
+                Data = payloadData,
+                Attachment = attachment
+            };
             client.AddJobRequest(new JobRequest
             {
                 JobId = jobId,
                 Type = JobType.ConvertScanToSearchablePdf,
-                Payload = new JobPayload
-                {
-                    Data = payloadData,
-                    Attachment = attachment
-                }
+                Payload = payloadWithAttachment
             });
 
             Console.WriteLine($"Added new job with id {jobId}");
@@ -167,7 +168,7 @@ namespace JobRepoClientTester
 
             Console.WriteLine("Set result job payload");
            
-            client.SetResult(jobId, new JobPayload { Data = payloadData } );
+            client.SetResult(jobId, payloadWithAttachment);
 
             Console.WriteLine("Set it to status finished");
             client.SetStatus(jobId, JobStatus.Finished);
@@ -175,8 +176,6 @@ namespace JobRepoClientTester
             job = client.GetJob(jobId);
             DumpJobs(job);
 
-            client.SetResult(jobId, new JobPayload { Data = "Some result 2" });
-            client.DeleteAttachment(attachment.Id);
             var removed = client.RemoveJob(jobId);
             Console.WriteLine($"Removed job with id {jobId}. Affected records: {removed}.");
         }

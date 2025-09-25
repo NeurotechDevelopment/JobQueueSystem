@@ -1,8 +1,9 @@
 ﻿using Contracts.Payloads;
+using Contracts.Payloads.Requests;
 
 namespace Contracts
 {
-    public class JobPayload
+    public record JobPayload : JobPayloadBase
     {
         public JobPayload()
         {

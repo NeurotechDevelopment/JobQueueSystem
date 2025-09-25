@@ -10,21 +10,23 @@ namespace JobRepositoryService.Controllers
     {
         private readonly ILogger<JobsRepositoryController> logger;
         private readonly IJobRepository repository;
-        private readonly JobTypesService jobTypeService;
         private readonly IMapper mapper;
+        private readonly IJobService jobService;
 
-        public JobsRepositoryController(ILogger<JobsRepositoryController> logger, IJobRepository repository, JobTypesService jobTypeService, IMapper mapper)
+        public JobsRepositoryController(ILogger<JobsRepositoryController> logger, IJobRepository repository, IMapper mapper, IJobService jobService)
         {
             this.logger = logger;
             this.repository = repository;
-            this.jobTypeService = jobTypeService;
             this.mapper = mapper;
+            this.jobService = jobService;
+
+            this.logger.LogTrace($"Created {nameof(JobsRepositoryController)} instance.");
         }
 
         [HttpGet(ServicesConstants.JobTypesUrlSegment)]
         public IEnumerable<JobTypeDescriptor> GetJobTypes()
         {
-            return this.mapper.Map<IEnumerable<JobTypeDescriptor>>(jobTypeService.GetJobTypes());
+            return this.mapper.Map<IEnumerable<JobTypeDescriptor>>(this.jobService.GetJobTypes());
         }
 
         [HttpGet]
@@ -34,11 +36,9 @@ namespace JobRepositoryService.Controllers
         }
 
         [HttpGet("{jobId}")]
-        public Job GetJob(Guid jobId)
+        public async Task<Job> GetJob(Guid jobId)
         {
-            return this.repository
-                .GetQueryableJobDocuments()
-                .SingleOrDefault(x => x.JobId == jobId);
+            return await this.repository.GetJobAsync(jobId);
         }
 
         [HttpGet("payload/{jobId}")]
@@ -57,7 +57,8 @@ namespace JobRepositoryService.Controllers
         [HttpDelete("{jobId}")]
         public async Task<ActionResult<long>> DeleteJob(Guid jobId)
         {
-            return await this.repository.DeleteJobAsync(jobId);
+            // Removes a job from datastore with associated files.
+            return await this.jobService.DeleteJobAsync(jobId);
         }
 
         [HttpPut("{jobId}/SetStatus/{status}")]

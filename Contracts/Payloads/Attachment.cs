@@ -3,7 +3,7 @@
     /// <summary>
     /// File for job requests and results.
     /// </summary>
-    public class Attachment
+    public record Attachment
     {
         /// <summary>
         /// Id as assigned by the storage service.

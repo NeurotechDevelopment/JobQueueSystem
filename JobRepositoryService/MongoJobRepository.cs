@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace JobRepositoryService
 {
-    public class MongoJobRepository : IJobRepository, IDisposable
+    public class MongoJobRepository : IJobRepository
     {
         private const string Job = "JobCollection";
         private readonly IMapper mapper;
@@ -31,12 +31,12 @@ namespace JobRepositoryService
             return item.SingleOrDefault()?.Payload;
         }
 
-        public async Task<IEnumerable<Job>> GetJobsAsync()
+        public async Task<IEnumerable<JobInfo>> GetJobsAsync()
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
             var items = await db.GetCollection<JobDocument>(Job)
                 .FindAsync(_ => true);
-            return items.ToList().Select(mapper.Map<Job>);
+            return items.ToList().Select(mapper.Map<JobInfo>);
         }
 
         public IQueryable<Job> GetQueryableJobDocuments()
@@ -113,9 +113,24 @@ namespace JobRepositoryService
             return updateResult.ModifiedCount;
         }
 
-        public void Dispose()
+        public Job? GetJob(Guid jobId)
         {
-            mongoClient.Dispose();
+            var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
+            var filter = Builders<JobDocument>.Filter
+                .Eq(j => j.JobId, jobId);
+            var jobDocument = db.GetCollection<JobDocument>(Job).Find(filter).SingleOrDefault();
+            return this.mapper.Map<Job>(jobDocument);
+        }
+
+        public async Task<Job?> GetJobAsync(Guid jobId)
+        {
+            var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
+            var filter = Builders<JobDocument>.Filter
+                .Eq(j => j.JobId, jobId);
+            var asyncCursorJobDocument = await db.GetCollection<JobDocument>(Job).FindAsync(filter);
+            
+            return this.mapper.Map<Job>(asyncCursorJobDocument.SingleOrDefault());
+
         }
     }
 }
