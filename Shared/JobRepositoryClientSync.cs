@@ -76,7 +76,7 @@ namespace Shared
             using (var client = new RestClient(jobServiceUrl))
             {
                 var request = new RestRequest($"{JobApiResource}/{jobId}/SetResult", Method.Put);
-                request.AddStringBody(JsonSerializer.Serialize(request), ContentType.Json);
+                request.AddStringBody(JsonSerializer.Serialize(result), ContentType.Json);
                 return client.Put<long>(request);
             }
         }
