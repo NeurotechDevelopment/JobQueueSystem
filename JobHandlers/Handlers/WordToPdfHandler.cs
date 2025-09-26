@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Contracts.Payloads;
 using Shared;
+using Shared.FileTypes;
 using Syncfusion.Pdf;
 using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
@@ -11,17 +12,20 @@ namespace JobHandlers.Handlers
     [JobTypeHandler(JobType.ConvertWordToPdf)]
     internal sealed class WordToPdfHandler : JobHandler<EmptyPayload, EmptyPayload>
     {
-        public WordToPdfHandler(ILogger<WordToPdfHandler> logger, IJobRepositoryClient client) : base(logger, client)
+        private readonly IFileUtilitiesService fileService;
+
+        public WordToPdfHandler(ILogger<WordToPdfHandler> logger, IJobRepositoryClient client, IFileUtilitiesService fileService) : base(logger, client)
         {
+            this.fileService = fileService;
         }
 
         public override JobType Handles => JobType.ConvertWordToPdf;
 
         protected override async Task<(EmptyPayload Result, Attachment? ResultFile)> PerformWorkAsync(Guid jobId, EmptyPayload? payload, Attachment? requestAttachment)
         {
-            FileUtilities.AssertValidAttachment(requestAttachment);
+            this.fileService.AssertValidAttachment(requestAttachment);
 
-            using (var inputStream = await FileUtilities.FetchStreamAsync(this.client, requestAttachment))
+            using (var inputStream = await this.fileService.FetchStreamAsync(this.client, requestAttachment))
             {
                 //Loads an existing Word document.
                 using (WordDocument wordDocument = new WordDocument(inputStream, FormatType.Automatic))
@@ -37,13 +41,15 @@ namespace JobHandlers.Handlers
                             {
                                 pdfDocument.Save(outputStream);
                                 outputStream.Position = 0;
-                                var length = outputStream.Length;
-                                var newFileName = FileUtilities.ReplaceFileExtension(requestAttachment.FileName, "pdf");
-                                var contentType = "application/pdf";
-                                var fileId = await this.client.UploadAttachmentAsync(jobId.ToString(),
-                                    newFileName, outputStream, contentType);
+                                
+                                var resultAttachment = this.fileService.CreateAttachment(requestAttachment, FileType.Pdf, outputStream.Length);
+                                resultAttachment.Id = await this.client.UploadAttachmentAsync(
+                                    jobId.ToString(),
+                                    resultAttachment.FileName,
+                                    outputStream,
+                                    resultAttachment.ContentType);
 
-                                return (EmptyPayload.Instance, new Attachment(fileId, newFileName, contentType, length));
+                                return (EmptyPayload.Instance, resultAttachment);
                             }
                         }
                     }

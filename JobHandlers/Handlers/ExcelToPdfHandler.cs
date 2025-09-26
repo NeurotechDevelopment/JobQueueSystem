@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Contracts.Payloads;
 using Shared;
+using Shared.FileTypes;
 using Syncfusion.Pdf;
 using Syncfusion.XlsIO;
 using Syncfusion.XlsIORenderer;
@@ -10,15 +11,18 @@ namespace JobHandlers.Handlers
     [JobTypeHandler(JobType.ConvertExcelToPdf)]
     internal class ExcelToPdfHandler : JobHandler<EmptyPayload, EmptyPayload>
     {
-        public ExcelToPdfHandler(ILogger<ExcelToPdfHandler> logger, IJobRepositoryClient client) : base(logger, client)
+        private readonly IFileUtilitiesService fileService;
+
+        public ExcelToPdfHandler(ILogger<ExcelToPdfHandler> logger, IJobRepositoryClient client, IFileUtilitiesService fileService) : base(logger, client)
         {
+            this.fileService = fileService;
         }
 
         public override JobType Handles => JobType.ConvertExcelToPdf;
 
         protected override async Task<(EmptyPayload Result, Attachment? ResultFile)> PerformWorkAsync(Guid jobId, EmptyPayload? payload, Attachment? requestAttachment)
         {
-            FileUtilities.AssertValidAttachment(requestAttachment);
+            this.fileService.AssertValidAttachment(requestAttachment);
 
             using (ExcelEngine excelEngine = new ExcelEngine())
             {
@@ -27,7 +31,7 @@ namespace JobHandlers.Handlers
 
                 IWorkbook workbook = null;
 
-                await using (var stream = await FileUtilities.FetchStreamAsync(this.client, requestAttachment))
+                await using (var stream = await this.fileService.FetchStreamAsync(this.client, requestAttachment))
                 {
                     workbook = application.Workbooks.Open(stream);
                 }
@@ -43,13 +47,14 @@ namespace JobHandlers.Handlers
                     pdfDocument.Save(outputStream);
                     outputStream.Position = 0;
 
-                    var length = outputStream.Length;
-                    var newFileName = FileUtilities.ReplaceFileExtension(requestAttachment.FileName, "pdf");
-                    var contentType = "application/pdf";
-                    var fileId = await this.client.UploadAttachmentAsync(jobId.ToString(),
-                        newFileName, outputStream, contentType);
+                    var resultAttachment = this.fileService.CreateAttachment(requestAttachment, FileType.Pdf, outputStream.Length);
+                    resultAttachment.Id = await this.client.UploadAttachmentAsync(
+                        jobId.ToString(),
+                        resultAttachment.FileName, 
+                        outputStream, 
+                        resultAttachment.ContentType);
                     
-                    return (EmptyPayload.Instance, new Attachment(fileId, newFileName, contentType, length) );
+                    return (EmptyPayload.Instance, resultAttachment);
                 }
             }
         }

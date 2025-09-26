@@ -4,21 +4,25 @@ using Shared;
 using Syncfusion.HtmlConverter;
 using Syncfusion.Pdf;
 using System.Text;
+using Shared.FileTypes;
 
 namespace JobHandlers.Handlers
 {
     [JobTypeHandler(JobType.ConvertHtmlToPdf)]
     internal class HtmlToPdfHandler : JobHandler<EmptyPayload, EmptyPayload>
     {
-        public HtmlToPdfHandler(ILogger<HtmlToPdfHandler> logger, IJobRepositoryClient client) : base(logger, client)
+        private readonly IFileUtilitiesService fileService;
+
+        public HtmlToPdfHandler(ILogger<HtmlToPdfHandler> logger, IJobRepositoryClient client, IFileUtilitiesService fileService) : base(logger, client)
         {
+            this.fileService = fileService;
         }
 
         public override JobType Handles => JobType.ConvertHtmlToPdf;
 
         protected override async Task<(EmptyPayload Result, Attachment? ResultFile)> PerformWorkAsync(Guid jobId, EmptyPayload? payload, Attachment? requestAttachment)
         {
-            FileUtilities.AssertValidAttachment(requestAttachment);
+            this.fileService.AssertValidAttachment(requestAttachment);
 
             //Initialize HTML to PDF converter.
             HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
@@ -39,13 +43,14 @@ namespace JobHandlers.Handlers
                     document.Save(outputStream);
                     outputStream.Position = 0;
 
-                    var length = outputStream.Length;
-                    var newFileName = FileUtilities.ReplaceFileExtension(requestAttachment.FileName, "xlsx");
-                    var contentType = "application/vnd.ms-excel";
-                    var fileId = await this.client.UploadAttachmentAsync(jobId.ToString(),
-                        newFileName, outputStream, contentType);
+                    var resultAttachment = this.fileService.CreateAttachment(requestAttachment, FileType.Pdf, outputStream.Length);
+                    resultAttachment.Id = await this.client.UploadAttachmentAsync(
+                        jobId.ToString(),
+                        resultAttachment.FileName,
+                        outputStream,
+                        resultAttachment.ContentType);
 
-                    return (EmptyPayload.Instance, new Attachment(fileId, newFileName, contentType, length));
+                    return (EmptyPayload.Instance, resultAttachment);
                 }
             }
         }

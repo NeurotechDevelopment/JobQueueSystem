@@ -65,7 +65,7 @@ namespace JobRepoClientTester
         {
             Console.WriteLine("Enter attachment id:");
             var id = Console.ReadLine();
-            client.
+            
             using (var stream = client.DownloadAttachmentStream(id))
             {
                 using (var fileStream = File.Create("downloadedFile"))

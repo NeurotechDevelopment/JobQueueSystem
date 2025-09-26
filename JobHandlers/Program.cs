@@ -17,7 +17,8 @@ namespace JobHandlers
             builder.Services.Configure<JobRepositoryClientConfig>(
                 builder.Configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(JobRepositoryClientConfig)}"));
             builder.Services.AddSingleton<IJobRepositoryClient, JobRepositoryClient>();
-            
+            builder.Services.AddSingleton<IFileUtilitiesService, FileUtilitiesService>();
+
             var handlerTypes = ResolveJobHandlers();
 
             builder.Services.AddMassTransit(opt =>
@@ -64,6 +65,9 @@ namespace JobHandlers
             host.Run();
         }
 
+        /// <summary>
+        /// Looks for all types in the current assembly that implement IConsumer<JobRequest>
+        /// </summary>
         private static IEnumerable<Type> ResolveJobHandlers()
         {
             var jobHandlerTypes = Assembly.GetExecutingAssembly().GetTypes()
