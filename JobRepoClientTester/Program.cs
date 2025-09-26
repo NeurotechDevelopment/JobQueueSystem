@@ -1,14 +1,15 @@
-﻿using System.ComponentModel;
-using System.Reflection;
-using System.Text.Json;
-using Contracts;
+﻿using Contracts;
 using Contracts.Payloads;
 using Contracts.Payloads.Requests;
+using Contracts.Payloads.Responses;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shared;
 using Shared.Configuration;
 using Shared.Queries;
+using System.ComponentModel;
+using System.Reflection;
+using System.Text.Json;
 
 namespace JobRepoClientTester
 {
@@ -58,6 +59,17 @@ namespace JobRepoClientTester
 
                 keyInfo = Console.ReadKey(true);
             }
+        }
+
+        [Description("Set error result for a job")]
+        private static void SetErrorResultTest(JobRepositoryClient client)
+        {
+            Console.WriteLine("Enter job id:");
+            var jobId = Guid.Parse(Console.ReadLine());
+            Console.WriteLine("Enter error message:");
+            var errorMessage = Console.ReadLine();
+            var affected = client.SetErrorResult(jobId, errorMessage);
+            Console.WriteLine($"Set error result for job {jobId}. Affected records: {affected}.");
         }
 
         [Description("Download attachment as stream")]
@@ -151,6 +163,37 @@ namespace JobRepoClientTester
             DumpJobs(client);
         }
 
+        [Description("Create Dummy JobRequest")]
+        private static void DummyJobRequestTest(JobRepositoryClient client)
+        {
+            var jobId = Guid.NewGuid();
+            client.AddJobRequest(new JobRequest
+            {
+                JobId = jobId,
+                Type = JobType.Dummy,
+                Payload = new JobPayload
+                {
+                    Data = JsonSerializer.Serialize(new SimpleMessagePayload("Hello from Dummy job at console world."))
+                }
+            });
+           
+            var job = client.GetJob(jobId);
+            DumpJobs(job);
+
+            var resultPayload = JsonSerializer.Serialize(new SimpleMessagePayload("Console result"));
+            client.SetResult(jobId, new JobPayload(resultPayload));
+            Console.WriteLine("Set it to status finished");
+            
+            job = client.GetJob(jobId);
+            DumpJobs(job);
+
+            client.SetErrorResult(jobId, "Now it is console error");
+            job = client.GetJob(jobId);
+            DumpJobs(job);
+
+            var removed = client.RemoveJob(jobId);
+            Console.WriteLine($"Removed job with id {jobId}. Affected records: {removed}.");
+        }
         [Description("Test strongly-typed payload request with attachment")]
         private static void JobCrudsTest(JobRepositoryClient client)
         {

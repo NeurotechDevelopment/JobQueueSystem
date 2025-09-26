@@ -1,4 +1,5 @@
 ﻿using Contracts;
+using Contracts.Payloads;
 using Shared.Queries;
 
 namespace Shared
@@ -31,6 +32,8 @@ namespace Shared
 
         public long SetResult(Guid jobId, JobPayload result);
 
+        public long SetErrorResult(Guid jobId, string errorMessage);
+
         #endregion
 
         #region Async versions
@@ -47,7 +50,15 @@ namespace Shared
 
         Task<long> SetStatusAsync(Guid jobId, JobStatus inProgress);
 
+        /// <summary>
+        /// Sets the result of a job. Implies success.
+        /// </summary>
         Task<long> SetResultAsync(Guid jobId, JobPayload jobPayload);
+
+        /// <summary>
+        /// Sets the result of a job as failed with the provided error message.
+        /// </summary>
+        Task<long> SetErrorResultAsync(Guid jobId, string errorMessage);
 
         #endregion
 

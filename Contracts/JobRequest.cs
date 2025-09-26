@@ -1,4 +1,6 @@
-﻿namespace Contracts
+﻿using Contracts.Payloads;
+
+namespace Contracts
 {
     /// <summary>
     /// Represents a request to create a new job for processing.

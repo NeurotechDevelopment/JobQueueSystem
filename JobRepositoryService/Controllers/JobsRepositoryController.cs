@@ -1,6 +1,7 @@
 using Contracts;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using Contracts.Payloads;
 
 namespace JobRepositoryService.Controllers
 {
@@ -65,6 +66,12 @@ namespace JobRepositoryService.Controllers
         public async Task<ActionResult<long>> SetResult(Guid jobId, [FromBody] JobPayload result)
         {
             return await this.repository.SetResultAsync(jobId, result);
+        }
+
+        [HttpPut("{jobId}/SetErrorResult")]
+        public async Task<ActionResult<long>> SetErrorResult(Guid jobId, [FromBody] ErrorPayload errorPayload)
+        {
+            return await this.repository.SetErrorResultAsync(jobId, errorPayload.ErrorMessage);
         }
     }
 }

@@ -59,7 +59,7 @@ namespace JobRepositoryService
             }
 
             DeleteAttachment(job.RequestPayload?.Attachment);
-            DeleteAttachment(job.ResultPayload?.Attachment);
+            DeleteAttachment(job.ResultPayload?.Payload?.Attachment);
             var affected = await this.jobs.DeleteJobAsync(jobId);
 
             this.logger.LogTrace("Job {jobId} deleted", jobId);

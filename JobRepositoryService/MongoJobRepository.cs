@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts;
+using Contracts.Payloads;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -41,8 +42,10 @@ namespace JobRepositoryService
                     ReceivedAt = x.ReceivedAt,
                     Status = x.Status,
                     Type = x.Type,
+                    // An ugly workaround for Mongo Linq provider not working with AutoMapper or any functions.
                     RequestPayload = x.Payload != null ? new JobPayload(x.Payload.Data, x.Payload.Attachment) : null,
-                    ResultPayload = x.Result != null ? new JobPayload(x.Result.Data, x.Result.Attachment) : null
+                    // An ugly workaround for Mongo Linq provider not working with AutoMapper or any functions.
+                    ResultPayload = x.Result != null ? new JobResult(new JobPayload(x.Result.Payload != null ? x.Result.Payload.Data : null, x.Result.Payload != null ? x.Result.Payload.Attachment : null), x.Result.IsSuccess, x.Result.ErrorMessage) : null
                 });
         }
 
@@ -85,7 +88,7 @@ namespace JobRepositoryService
             return updateResult.ModifiedCount;
         }
 
-        public async Task<long> SetResultAsync(Guid jobId, JobPayload result)
+        public async Task<long> SetResultAsync(Guid jobId, JobPayload resultPayload)
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
             var items = db.GetCollection<JobDocument>(Job);
@@ -93,8 +96,15 @@ namespace JobRepositoryService
             var filter = Builders<JobDocument>.Filter
                 .Eq(j => j.JobId, jobId);
             
+            var jobResult = new JobResult
+            {
+                Payload = resultPayload,
+                IsSuccess = true,
+                ErrorMessage = null
+            };
+
             var update = Builders<JobDocument>.Update
-                .Set(j => j.Result, result)
+                .Set(j => j.Result, jobResult)
                 .Set(j => j.Status, JobStatus.Finished)
                 .Set(j => j.LastStatusChanged, DateTime.UtcNow)
                 .Set(j => j.FinishedAt, DateTime.UtcNow);
@@ -103,13 +113,29 @@ namespace JobRepositoryService
             return updateResult.ModifiedCount;
         }
 
-        public Job? GetJob(Guid jobId)
+        public async Task<long> SetErrorResultAsync(Guid jobId, string errorMessage)
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
+            var items = db.GetCollection<JobDocument>(Job);
+
             var filter = Builders<JobDocument>.Filter
                 .Eq(j => j.JobId, jobId);
-            var jobDocument = db.GetCollection<JobDocument>(Job).Find(filter).SingleOrDefault();
-            return this.mapper.Map<Job>(jobDocument);
+
+            var jobResult = new JobResult
+            {
+                Payload = null,
+                IsSuccess = false,
+                ErrorMessage = errorMessage
+            };
+
+            var update = Builders<JobDocument>.Update
+                .Set(j => j.Result, jobResult)
+                .Set(j => j.Status, JobStatus.Failed)
+                .Set(j => j.LastStatusChanged, DateTime.UtcNow)
+                .Set(j => j.FinishedAt, DateTime.UtcNow);
+
+            var updateResult = await items.UpdateOneAsync(filter, update);
+            return updateResult.ModifiedCount;
         }
 
         public async Task<Job?> GetJobAsync(Guid jobId)
@@ -124,3 +150,4 @@ namespace JobRepositoryService
         }
     }
 }
+

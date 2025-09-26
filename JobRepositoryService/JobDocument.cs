@@ -1,4 +1,5 @@
 ﻿using Contracts;
+using Contracts.Payloads;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -15,6 +16,6 @@ namespace JobRepositoryService
 
         public JobPayload? Payload { get; set; }
 
-        public JobPayload? Result { get; set; }
+        public JobResult? Result { get; set; }
     }
 }

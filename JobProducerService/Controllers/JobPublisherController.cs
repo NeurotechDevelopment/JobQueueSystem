@@ -5,7 +5,6 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Shared;
-using System.Net;
 
 namespace JobProducerService.Controllers
 {

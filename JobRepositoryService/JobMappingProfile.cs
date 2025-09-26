@@ -14,7 +14,9 @@ namespace JobRepositoryService
                 .ForMember(d => d.RequestPayload, s => s.MapFrom(opt => opt.Payload))
                 .ForMember(d => d.ResultPayload, s => s.MapFrom(opt => opt.Result));
 
-            CreateMap<JobDocument, JobInfo>();
+            CreateMap<JobDocument, JobInfo>()
+                .ForMember(d => d.ErrorMessage, s => s.MapFrom(opt => opt.Result != null ? opt.Result.ErrorMessage : null))
+                .ForMember(d => d.IsSuccess, s => s.MapFrom(opt => opt.Result != null ? opt.Result.IsSuccess : null));
 
             CreateMap<Job, JobDocument>();
 

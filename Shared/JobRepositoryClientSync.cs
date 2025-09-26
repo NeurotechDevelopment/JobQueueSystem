@@ -1,6 +1,7 @@
-﻿using System.Text.Json;
-using Contracts;
+﻿using Contracts;
+using Contracts.Payloads;
 using RestSharp;
+using System.Text.Json;
 
 namespace Shared
 {
@@ -69,6 +70,16 @@ namespace Shared
             {
                 var request = new RestRequest($"{JobApiResource}/{jobId}/SetResult", Method.Put);
                 request.AddStringBody(JsonSerializer.Serialize(result), ContentType.Json);
+                return client.Put<long>(request);
+            }
+        }
+
+        public long SetErrorResult(Guid jobId, string errorMessage)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                var request = new RestRequest($"{JobApiResource}/{jobId}/SetErrorResult", Method.Put);
+                request.AddJsonBody(new ErrorPayload { ErrorMessage = errorMessage });
                 return client.Put<long>(request);
             }
         }

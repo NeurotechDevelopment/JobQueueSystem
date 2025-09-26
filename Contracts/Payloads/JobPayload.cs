@@ -1,7 +1,6 @@
-﻿using Contracts.Payloads;
-using Contracts.Payloads.Requests;
+﻿using Contracts.Payloads.Requests;
 
-namespace Contracts
+namespace Contracts.Payloads
 {
     public record JobPayload : JobPayloadBase
     {
@@ -9,12 +8,12 @@ namespace Contracts
         {
         }
         
-        public JobPayload(string data)
+        public JobPayload(string? data)
         {
             Data = data;
         }
 
-        public JobPayload(string data, Attachment attachment)
+        public JobPayload(string? data, Attachment? attachment)
         {
             Data = data;
             Attachment = attachment;

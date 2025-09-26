@@ -16,7 +16,7 @@ namespace JobHandlers.Handlers
             this.logger = logger;
             this.client = client;
 
-            this.logger.LogTrace($"JobRequest handler {GetType().Name} instantiated that handles {Handles}.");
+            this.logger.LogTrace($"JobRequest handler {GetType().Name} instantiated that handles {Handles} job type.");
         }
 
         public abstract JobType Handles { get; }
@@ -47,9 +47,9 @@ namespace JobHandlers.Handlers
             catch (Exception ex)
             {
                 this.logger.LogError(ex, $"Error with jobId={jobId}");
-                // TODO: store exception in ErrorMessage, IsSuccess = false
-                await this.client.SetResultAsync(jobId, new JobPayload(ex.ToString()));
-                await this.client.SetStatusAsync(jobId, JobStatus.Failed);
+
+                // SetErrorResult also sets status to Failed
+                await this.client.SetErrorResultAsync(jobId, ex.ToString());
             }
 
             this.logger.LogTrace($"Leaving job request handler for jobId: {jobId}");
