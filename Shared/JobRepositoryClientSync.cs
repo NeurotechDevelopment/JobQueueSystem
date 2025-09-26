@@ -26,14 +26,6 @@ namespace Shared
             }
         }
 
-        public JobPayload GetJobPayload(Guid jobId)
-        {
-            using (var client = new RestClient(jobServiceUrl))
-            {
-                return client.Get<JobPayload>($"{JobApiResource}/payload/{jobId}");
-            }
-        }
-
         public IEnumerable<JobInfo> GetJobs()
         {
             using (var client = new RestClient(jobServiceUrl))

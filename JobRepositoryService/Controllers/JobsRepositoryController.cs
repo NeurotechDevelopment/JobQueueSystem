@@ -41,12 +41,6 @@ namespace JobRepositoryService.Controllers
             return await this.repository.GetJobAsync(jobId);
         }
 
-        [HttpGet("payload/{jobId}")]
-        public async Task<JobPayload> GetJobPayload(Guid jobId)
-        {
-            return await this.repository.GetJobPayloadAsync(jobId);
-        }
-
         [HttpPost]
         public async Task<IActionResult> CreateJobRequest(JobRequest jobRequest)
         {

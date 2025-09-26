@@ -21,8 +21,6 @@ namespace Shared
 
         public Job GetJob(Guid jobId);
 
-        public JobPayload GetJobPayload(Guid jobId);
-
         public IEnumerable<JobInfo> GetJobs();
 
         public void AddJobRequest(JobRequest jobRequest);
@@ -40,8 +38,6 @@ namespace Shared
         public Task<IEnumerable<JobTypeDescriptor>> GetJobTypesAsync();
 
         public Task<Job> GetJobAsync(Guid jobId);
-
-        public Task<JobPayload> GetJobPayloadAsync(Guid jobId);
 
         public Task<IEnumerable<JobInfo>> GetJobsAsync();
 

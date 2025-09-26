@@ -19,15 +19,6 @@ namespace JobRepositoryService
             this.mongoClient = client;
         }
 
-        public async Task<JobPayload> GetJobPayloadAsync(Guid jobId)
-        {
-            var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
-            var item = await db.GetCollection<JobDocument>(Job)
-                .FindAsync(x => x.JobId == jobId);
-            
-            return item.SingleOrDefault()?.Payload;
-        }
-
         public async Task<IEnumerable<JobInfo>> GetJobsAsync()
         {
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
