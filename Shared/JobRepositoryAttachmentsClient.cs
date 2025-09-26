@@ -1,4 +1,5 @@
-﻿using RestSharp;
+﻿using Newtonsoft.Json.Linq;
+using RestSharp;
 
 namespace Shared
 {
@@ -24,6 +25,42 @@ namespace Shared
             response.EnsureSuccessStatusCode();
             var fileId = await response.Content.ReadAsStringAsync();
             return fileId;
+        }
+
+        public Stream DownloadAttachmentStream(string attachmentId)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                var request = new RestRequest($"{AttachmentsApiResource}/stream/{attachmentId}");
+                return client.DownloadStream(request);
+            }
+        }
+
+        public async Task<Stream> DownloadAttachmentStreamAsync(string attachmentId, CancellationToken token = default)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                var request = new RestRequest($"{AttachmentsApiResource}/stream/{attachmentId}");
+                return await client.DownloadStreamAsync(request, token);
+            }
+        }
+
+        public byte[] DownloadAttachment(string attachmentId)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                var request = new RestRequest($"{AttachmentsApiResource}/{attachmentId}");
+                return client.DownloadData(request);
+            }
+        }
+
+        public async Task<byte[]> DownloadAttachmentAsync(string attachmentId)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                var request = new RestRequest($"{AttachmentsApiResource}/{attachmentId}");
+                return await client.DownloadDataAsync(request);
+            }
         }
 
         public void DeleteAttachment(string attachmentId)

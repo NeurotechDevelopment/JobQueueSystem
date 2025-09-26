@@ -63,6 +63,10 @@ namespace Shared
 
         public string UploadAttachment(string tag, string fileName, Stream fileStream, string contentType);
 
+        public Stream DownloadAttachmentStream(string attachmentId);
+
+        public byte[] DownloadAttachment(string requestAttachmentId);
+
         public void DeleteAttachment(string attachmentId);
 
         #endregion
@@ -70,6 +74,10 @@ namespace Shared
         #region Async versions
 
         public Task<string> UploadAttachmentAsync(string tag, string fileName, Stream fileStream, string contentType);
+
+        public Task<Stream> DownloadAttachmentStreamAsync(string attachmentId, CancellationToken token = default);
+
+        public Task<byte[]> DownloadAttachmentAsync(string requestAttachmentId);
 
         public Task DeleteAttachmentAsync(string attachmentId);
 

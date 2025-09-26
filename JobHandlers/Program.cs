@@ -1,3 +1,4 @@
+using Contracts;
 using JobHandlers.Handlers;
 using MassTransit;
 using Shared;
@@ -66,7 +67,7 @@ namespace JobHandlers
         private static IEnumerable<Type> ResolveJobHandlers()
         {
             var jobHandlerTypes = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(x => typeof(JobHandler).IsAssignableFrom(x) 
+                .Where(x => typeof(IConsumer<JobRequest>).IsAssignableFrom(x) 
                        && !x.IsAbstract 
                        && x.GetCustomAttribute<JobTypeHandlerAttribute>() != null);
             return jobHandlerTypes;

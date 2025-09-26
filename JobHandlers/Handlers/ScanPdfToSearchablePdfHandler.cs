@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Contracts;
+using Contracts.Payloads;
 using Shared;
 using Syncfusion.Pdf.Parsing;
 using Syncfusion.OCRProcessor;
@@ -8,39 +9,43 @@ using Contracts.Payloads.Requests;
 namespace JobHandlers.Handlers
 {
     [JobTypeHandler(JobType.ConvertScanToSearchablePdf)]
-    internal class ScanPdfToSearchablePdfHandler : JobHandler
+    internal class ScanPdfToSearchablePdfHandler : JobHandler<ConvertScanToSearchablePdfPayload, EmptyPayload>
     {
-        public ScanPdfToSearchablePdfHandler(ILogger<JobHandler> logger, IJobRepositoryClient client) : base(logger, client)
+        public ScanPdfToSearchablePdfHandler(ILogger<ScanPdfToSearchablePdfHandler> logger, IJobRepositoryClient client) : base(logger, client)
         {
         }
 
         public override JobType Handles => JobType.ConvertScanToSearchablePdf;
 
-        protected override Task<string> PerformWorkAsync(Guid jobId, JobPayload payload)
+        protected override async Task<(EmptyPayload Result, Attachment? ResultFile)> PerformWorkAsync(Guid jobId, ConvertScanToSearchablePdfPayload? payload, Attachment? requestAttachment)
         {
-            // TODO: move this to the base var specificPayload = JsonSerializer.Deserialize<ConvertScanToSearchablePdfPayload>(payload.Data);
+            FileUtilities.AssertValidAttachment(requestAttachment);
+
             // Initialize the OCR processor
             using (OCRProcessor processor = new OCRProcessor())
             {
-                var fileContent = Convert.FromBase64String(payload.Data);
-                using (MemoryStream stream = new MemoryStream(fileContent))
+                await using var stream = await FileUtilities.FetchStreamAsync(this.client, requestAttachment);
+                using (PdfLoadedDocument pdfLoadedDocument = new PdfLoadedDocument(stream))
                 {
-                    using (PdfLoadedDocument pdfLoadedDocument = new PdfLoadedDocument(stream))
+                    // Set OCR language to process
+                    processor.Settings.Language = payload.Language;
+
+                    // Process OCR by providing the PDF document
+                    processor.PerformOCR(pdfLoadedDocument);
+
+                    //Create file stream.
+                    using (MemoryStream outputStream = new MemoryStream())
                     {
-                        // Set OCR language to process
-                        processor.Settings.Language = Languages.English; // specificPayload.Language;
+                        //Save the PDF document to file stream.
+                        pdfLoadedDocument.Save(outputStream);
 
-                        // Process OCR by providing the PDF document
-                        processor.PerformOCR(pdfLoadedDocument);
+                        var length = outputStream.Length;
+                        var newFileName = FileUtilities.ReplaceFileExtension(requestAttachment.FileName, "pdf");
+                        var contentType = "application/pdf";
+                        var fileId = await this.client.UploadAttachmentAsync(jobId.ToString(),
+                            newFileName, outputStream, contentType);
 
-                        //Create file stream.
-                        using (MemoryStream outputFileStream = new MemoryStream())
-                        {
-                            //Save the PDF document to file stream.
-                            pdfLoadedDocument.Save(outputFileStream);
-
-                            return Task.FromResult(Convert.ToBase64String(outputFileStream.ToArray()));
-                        }
+                        return (EmptyPayload.Instance, new Attachment(fileId, newFileName, contentType, length));
                     }
                 }
             }

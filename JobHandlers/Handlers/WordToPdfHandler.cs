@@ -1,4 +1,5 @@
 ﻿using Contracts;
+using Contracts.Payloads;
 using Shared;
 using Syncfusion.Pdf;
 using Syncfusion.DocIO;
@@ -8,18 +9,19 @@ using Syncfusion.DocIORenderer;
 namespace JobHandlers.Handlers
 {
     [JobTypeHandler(JobType.ConvertWordToPdf)]
-    internal sealed class WordToPdfHandler : JobHandler
+    internal sealed class WordToPdfHandler : JobHandler<EmptyPayload, EmptyPayload>
     {
-        public WordToPdfHandler(ILogger<JobHandler> logger, IJobRepositoryClient client) : base(logger, client)
+        public WordToPdfHandler(ILogger<WordToPdfHandler> logger, IJobRepositoryClient client) : base(logger, client)
         {
         }
 
         public override JobType Handles => JobType.ConvertWordToPdf;
 
-        protected override Task<string> PerformWorkAsync(Guid jobId, JobPayload payload)
+        protected override async Task<(EmptyPayload Result, Attachment? ResultFile)> PerformWorkAsync(Guid jobId, EmptyPayload? payload, Attachment? requestAttachment)
         {
-            var fileContent = Convert.FromBase64String(payload.Data);
-            using (MemoryStream inputStream = new MemoryStream(fileContent))
+            FileUtilities.AssertValidAttachment(requestAttachment);
+
+            using (var inputStream = await FileUtilities.FetchStreamAsync(this.client, requestAttachment))
             {
                 //Loads an existing Word document.
                 using (WordDocument wordDocument = new WordDocument(inputStream, FormatType.Automatic))
@@ -35,7 +37,13 @@ namespace JobHandlers.Handlers
                             {
                                 pdfDocument.Save(outputStream);
                                 outputStream.Position = 0;
-                                return Task.FromResult(Convert.ToBase64String(outputStream.ToArray()));
+                                var length = outputStream.Length;
+                                var newFileName = FileUtilities.ReplaceFileExtension(requestAttachment.FileName, "pdf");
+                                var contentType = "application/pdf";
+                                var fileId = await this.client.UploadAttachmentAsync(jobId.ToString(),
+                                    newFileName, outputStream, contentType);
+
+                                return (EmptyPayload.Instance, new Attachment(fileId, newFileName, contentType, length));
                             }
                         }
                     }

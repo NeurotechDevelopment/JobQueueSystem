@@ -21,7 +21,7 @@ namespace JobDispatcherService
             var workerQueue = new Uri($"queue:{job.Type}-queue");
             var sendEndpoint = await sendEndpointProvider.GetSendEndpoint(workerQueue);
             logger.LogTrace($"Sending job {job.JobId} to {workerQueue}");
-            await sendEndpoint.Send(new JobRequest { JobId = job.JobId }, ct);
+            await sendEndpoint.Send(new JobRequest { JobId = job.JobId, Type = job.Type, Payload = job.RequestPayload }, ct);
             logger.LogTrace($"Sent job {job.JobId} to {workerQueue}");
         }
     }

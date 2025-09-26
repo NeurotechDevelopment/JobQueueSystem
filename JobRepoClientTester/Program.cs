@@ -60,8 +60,34 @@ namespace JobRepoClientTester
             }
         }
 
+        [Description("Download attachment as stream")]
+        private static void DownloadAttachmentStreamTest(JobRepositoryClient client)
+        {
+            Console.WriteLine("Enter attachment id:");
+            var id = Console.ReadLine();
+            client.
+            using (var stream = client.DownloadAttachmentStream(id))
+            {
+                using (var fileStream = File.Create("downloadedFile"))
+                {
+                    stream.CopyTo(fileStream);
+                }
+            }
+        }
+
+        [Description("Download attachment as bytes")]
+        private static void DownloadAttachmentAsBytesTest(JobRepositoryClient client)
+        {
+            Console.WriteLine("Enter attachment id:");
+            var id = Console.ReadLine();
+
+            var bytes = client.DownloadAttachment(id);
+
+            File.WriteAllBytes("downloadedFile", bytes);
+        }
+
         [Description("Upload attachment as stream")]
-        private static void TestUploadAttachment(JobRepositoryClient client)
+        private static void UploadAttachmentTest(JobRepositoryClient client)
         {
             using (var stream = File.OpenRead("resources/GettingStartedWithOneDrive.pdf"))
             {
@@ -71,7 +97,7 @@ namespace JobRepoClientTester
         }
 
         [Description("Dumps job types")]
-        private static void TestJobTypes(JobRepositoryClient client)
+        private static void JobTypesTest(JobRepositoryClient client)
         {
             var jobTypes = client.GetJobTypes();
             Console.WriteLine("Allowed job types are:");
@@ -82,7 +108,7 @@ namespace JobRepoClientTester
         }
 
         [Description("Demonstrates usage of Odata queries")]
-        private static void TestOdata(JobRepositoryClient client)
+        private static void OdataTest(JobRepositoryClient client)
         {
             IEnumerable<Job> jobs;
             Console.WriteLine("Testing Odata");
@@ -119,14 +145,14 @@ namespace JobRepoClientTester
         }
 
         [Description("Dump all jobs")]
-        private static void DumpAllJobs(JobRepositoryClient client)
+        private static void DumpAllJobsTest(JobRepositoryClient client)
         {
             Console.WriteLine("Dumping all the jobs");
             DumpJobs(client);
         }
 
         [Description("Test strongly-typed payload request with attachment")]
-        private static void JobCruds(JobRepositoryClient client)
+        private static void JobCrudsTest(JobRepositoryClient client)
         {
             var jobId = Guid.NewGuid();
 

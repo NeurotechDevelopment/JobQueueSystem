@@ -1,4 +1,5 @@
 ﻿using Contracts;
+using Contracts.Payloads;
 using Shared;
 using Syncfusion.Pdf;
 using Syncfusion.XlsIO;
@@ -7,26 +8,28 @@ using Syncfusion.XlsIORenderer;
 namespace JobHandlers.Handlers
 {
     [JobTypeHandler(JobType.ConvertExcelToPdf)]
-    internal class ExcelToPdfHandler : JobHandler
+    internal class ExcelToPdfHandler : JobHandler<EmptyPayload, EmptyPayload>
     {
-        public ExcelToPdfHandler(ILogger<JobHandler> logger, IJobRepositoryClient client) : base(logger, client)
+        public ExcelToPdfHandler(ILogger<ExcelToPdfHandler> logger, IJobRepositoryClient client) : base(logger, client)
         {
         }
 
         public override JobType Handles => JobType.ConvertExcelToPdf;
 
-        protected override Task<string> PerformWorkAsync(Guid jobId, JobPayload payload)
+        protected override async Task<(EmptyPayload Result, Attachment? ResultFile)> PerformWorkAsync(Guid jobId, EmptyPayload? payload, Attachment? requestAttachment)
         {
+            FileUtilities.AssertValidAttachment(requestAttachment);
+
             using (ExcelEngine excelEngine = new ExcelEngine())
             {
                 IApplication application = excelEngine.Excel;
                 application.DefaultVersion = ExcelVersion.Xlsx;
 
-                var fileContent = Convert.FromBase64String(payload.Data);
                 IWorkbook workbook = null;
-                using (MemoryStream inputStream = new MemoryStream(fileContent))
+
+                await using (var stream = await FileUtilities.FetchStreamAsync(this.client, requestAttachment))
                 {
-                    workbook = application.Workbooks.Open(inputStream);
+                    workbook = application.Workbooks.Open(stream);
                 }
 
                 //Initialize XlsIO renderer.
@@ -35,11 +38,18 @@ namespace JobHandlers.Handlers
                 //Convert Excel document into PDF document 
                 PdfDocument pdfDocument = renderer.ConvertToPDF(workbook);
 
-                using(var outputStream = new MemoryStream())
+                await using (var outputStream = new MemoryStream())
                 {
                     pdfDocument.Save(outputStream);
                     outputStream.Position = 0;
-                    return Task.FromResult(Convert.ToBase64String(outputStream.ToArray()));
+
+                    var length = outputStream.Length;
+                    var newFileName = FileUtilities.ReplaceFileExtension(requestAttachment.FileName, "pdf");
+                    var contentType = "application/pdf";
+                    var fileId = await this.client.UploadAttachmentAsync(jobId.ToString(),
+                        newFileName, outputStream, contentType);
+                    
+                    return (EmptyPayload.Instance, new Attachment(fileId, newFileName, contentType, length) );
                 }
             }
         }
