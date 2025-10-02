@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JobRepositoryService.Controllers
 {
+    [ApiExplorerSettings(GroupName = ServicesConstants.JobsAttachments)]
     [ApiController]
     [Route(ServicesConstants.ServiceResources.AttachmentsApiResource)]
     public class JobsAttachmentsController : ControllerBase

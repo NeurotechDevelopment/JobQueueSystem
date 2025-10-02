@@ -1,11 +1,12 @@
 using Contracts;
+using Contracts.Payloads;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using Contracts.Payloads;
 
 namespace JobRepositoryService
 {
@@ -30,7 +31,15 @@ namespace JobRepositoryService
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc(ServicesConstants.JobsRepository,
+                    new OpenApiInfo { Title = "Jobs REST API", Version = "v1" });
+                c.SwaggerDoc(ServicesConstants.JobsAttachments,
+                    new OpenApiInfo { Title = "Attachments REST API", Version = "v1" });
+                c.SwaggerDoc(ServicesConstants.OdataRoutePrefix,
+                    new OpenApiInfo { Title = "Jobs ODATA API", Version = "v1" });
+            });
             builder.Services.AddAutoMapper( p => p.AddMaps(Assembly.GetExecutingAssembly()));
             builder.Services.Configure<ApplicationSettings>(
                 builder.Configuration.GetSection(nameof(ApplicationSettings)));
@@ -49,7 +58,12 @@ namespace JobRepositoryService
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint($"/swagger/{ServicesConstants.JobsRepository}/swagger.json", "Job Repository API");
+                    c.SwaggerEndpoint($"/swagger/{ServicesConstants.JobsAttachments}/swagger.json", "Attachments API");
+                    c.SwaggerEndpoint($"/swagger/{ServicesConstants.OdataRoutePrefix}/swagger.json", "Jobs ODATA API");
+                });
             }
 
            // app.UseHttpsRedirection();

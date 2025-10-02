@@ -5,6 +5,7 @@ using Contracts.Payloads;
 
 namespace JobRepositoryService.Controllers
 {
+    [ApiExplorerSettings(GroupName = ServicesConstants.JobsRepository)]
     [ApiController]
     [Route(ServicesConstants.ServiceResources.JobsApiResource)]
     public class JobsRepositoryController : ControllerBase

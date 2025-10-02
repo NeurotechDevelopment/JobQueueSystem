@@ -4,9 +4,9 @@
     {
         private const string ApiPrefix = "api";
 
-        private const string JobsRepository = "JobsRepository";
+        public const string JobsRepository = "JobsRepository";
 
-        private const string JobsAttachments = "JobsAttachments";
+        public const string JobsAttachments = "JobsAttachments";
 
         public const string JobsEntity = "Jobs";
 

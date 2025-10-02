@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace JobRepositoryService.Controllers
 {
+    [ApiExplorerSettings(GroupName = ServicesConstants.OdataRoutePrefix)]
     [Route(ServicesConstants.ServiceResources.OdataJobsApiResource)]
     [ApiController]
     public class JobsRepositoryOdataController : ODataController
