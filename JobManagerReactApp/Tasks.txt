@@ -1,0 +1,18 @@
+1.Install dependencies for generating openapi client with contracts 
+from JobRepositoryService.
+For REST API client generation we use openapi-typescript package.
+# Install openapi-typescript
+npm install --save-dev openapi-typescript
+# Generate contracts
+npx openapi-typescript http://localhost:5178/swagger/JobsRepository/swagger.json -o src/api/JobsRepository.tsx
+
+For ODATA client generation we use openapi-generator-cli package.
+# Install odata2ts
+npm install --save-dev odata2ts
+# Generate contracts
+# Worked only by adding odata2ts.config.json config file. 
+# And then, only by first manually downloading xml metadata to file.
+curl http://localhost:5178/odata/$metadata -o src/odata/JobRepositoryOdataMetadata.xml
+npx odata2ts
+
+
