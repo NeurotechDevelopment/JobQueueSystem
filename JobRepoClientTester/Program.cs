@@ -1,7 +1,6 @@
 ﻿using Contracts;
 using Contracts.Payloads;
 using Contracts.Payloads.Requests;
-using Contracts.Payloads.Responses;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shared;

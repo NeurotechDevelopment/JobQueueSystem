@@ -1,4 +1,4 @@
-﻿namespace Contracts.Payloads.Requests
+﻿namespace Contracts.Payloads
 {
     /// <summary>
     /// Base class for job request payloads.

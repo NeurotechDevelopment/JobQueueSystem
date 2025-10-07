@@ -1,6 +1,6 @@
-﻿namespace Contracts.Payloads.Responses
+﻿namespace Contracts.Payloads
 {
-    public record SimpleMessagePayload
+    public record SimpleMessagePayload : JobPayloadBase
     {
         public SimpleMessagePayload(string message)
         {

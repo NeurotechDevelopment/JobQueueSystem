@@ -1,6 +1,4 @@
-﻿using Contracts.Payloads.Requests;
-
-namespace Contracts.Payloads
+﻿namespace Contracts.Payloads
 {
     public record JobPayload : JobPayloadBase
     {

@@ -1,4 +1,4 @@
-﻿namespace Contracts.Payloads
+﻿namespace Contracts
 {
     /// <summary>
     /// File for job requests and results.

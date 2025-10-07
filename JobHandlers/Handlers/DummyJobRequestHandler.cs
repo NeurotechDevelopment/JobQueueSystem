@@ -1,6 +1,5 @@
 ﻿using Contracts;
 using Contracts.Payloads;
-using Contracts.Payloads.Responses;
 using Shared;
 
 namespace JobHandlers.Handlers
