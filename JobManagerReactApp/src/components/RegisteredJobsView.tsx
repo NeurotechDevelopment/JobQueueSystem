@@ -41,6 +41,7 @@ function RegisteredJobsView() {
                     <td>Error message</td>
                 </tr>
             </thead>
+            <tbody>
         {jobs.map((j,i) => (
             <tr key={i}>
                 <td>{j.jobId}</td>
@@ -50,6 +51,7 @@ function RegisteredJobsView() {
                 <td className="text-truncate">{j.errorMessage}</td>
             </tr>
         ))}
+            </tbody>
         </Table>
             </div>);
 }

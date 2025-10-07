@@ -75,4 +75,6 @@ export interface IJobResult {
 export interface IJobTypeDescriptor {
     jobType: JobType;
     description: string;
+    payloadJsonSchema: string;
+    resultJsonSchema: string;
 }
