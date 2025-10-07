@@ -19,6 +19,14 @@ namespace Shared
             }
         }
 
+        public JobTypeDescriptor GetJobTypeDescriptor(JobType jobType)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                return client.Get<JobTypeDescriptor>($"{JobApiResource}/{ServicesConstants.JobTypesUrlSegment}/{jobType}");
+            }
+        }
+
         public Job GetJob(Guid jobId)
         {
             using (var client = new RestClient(jobServiceUrl))

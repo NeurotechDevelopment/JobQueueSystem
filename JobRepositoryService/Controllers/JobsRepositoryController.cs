@@ -26,9 +26,16 @@ namespace JobRepositoryService.Controllers
         }
 
         [HttpGet(ServicesConstants.JobTypesUrlSegment)]
-        public IEnumerable<JobTypeDescriptor> GetJobTypes()
+        public IEnumerable<JobTypeDescriptor> GetJobTypeDescriptors()
         {
             return this.mapper.Map<IEnumerable<JobTypeDescriptor>>(this.jobService.GetJobTypes());
+        }
+
+        [HttpGet($"{ServicesConstants.JobTypesUrlSegment}/{{jobTypeId}}")]
+        public JobTypeDescriptor GetJobTypeDescriptor(JobType jobTypeId)
+        {
+            var jobTypeDescriptor = this.jobService.GetJobTypes().Single(x => x.Key == jobTypeId);
+            return this.mapper.Map<JobTypeDescriptor>(jobTypeDescriptor);
         }
 
         [HttpGet]

@@ -20,6 +20,8 @@ namespace Shared
 
         public IEnumerable<JobTypeDescriptor> GetJobTypes();
 
+        public JobTypeDescriptor GetJobTypeDescriptor(JobType jobType);
+
         public Job GetJob(Guid jobId);
 
         public IEnumerable<JobInfo> GetJobs();
@@ -39,6 +41,8 @@ namespace Shared
         #region Async versions
 
         public Task<IEnumerable<JobTypeDescriptor>> GetJobTypesAsync();
+
+        public Task<JobTypeDescriptor> GetJobTypeDescriptorAsync(JobType jobType);
 
         public Task<Job> GetJobAsync(Guid jobId);
 

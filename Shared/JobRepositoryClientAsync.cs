@@ -17,6 +17,14 @@ namespace Shared
             }
         }
 
+        public async Task<JobTypeDescriptor> GetJobTypeDescriptorAsync(JobType jobType)
+        {
+            using (var client = new RestClient(jobServiceUrl))
+            {
+                return await client.GetAsync<JobTypeDescriptor>($"{JobApiResource}/{ServicesConstants.JobTypesUrlSegment}/{jobType}");
+            }
+        }
+
         public async Task<Job> GetJobAsync(Guid jobId)
         {
             using (var client = new RestClient(jobServiceUrl))

@@ -1,8 +1,7 @@
 ﻿using Contracts;
 using Contracts.Payloads;
 using Contracts.Payloads.Requests;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Schema.Generation;
+using NJsonSchema;
 
 namespace JobRepositoryService
 {
@@ -10,29 +9,18 @@ namespace JobRepositoryService
     {
         public static string GetPayloadSchema(JobType jobType)
         {
-            JSchemaGenerator generator = new JSchemaGenerator
-            {
-                DefaultRequired = Required.Default,
-                SchemaReferenceHandling = SchemaReferenceHandling.None
-            };
-
             var payloadType = GetPayloadSchemaType(jobType);
-            var schema = generator.Generate(payloadType);
+            var schema = JsonSchema.FromType(payloadType);
             schema.Title = payloadType.Name;
-            return schema.ToString();
+            return schema.ToJson();
         }
 
         public static string GetResultPayloadSchema(JobType jobType)
         {
-            JSchemaGenerator generator = new JSchemaGenerator
-            {
-                DefaultRequired = Required.Default,
-                SchemaReferenceHandling = SchemaReferenceHandling.None
-            };
-
             var payloadType = GetResultPayloadSchemaType(jobType);
-            var schema = generator.Generate(payloadType);
-            return schema.ToString();
+            var schema = JsonSchema.FromType(payloadType);
+            schema.Title = payloadType.Name;
+            return schema.ToJson();
         }
 
         private static Type GetPayloadSchemaType(JobType jobType)
