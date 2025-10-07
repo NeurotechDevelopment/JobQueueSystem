@@ -1,0 +1,6 @@
+.text-truncate {
+    text-overflow: ellipsis;
+    max-width: 450px;
+    white-space: nowrap;
+    overflow: hidden;
+}
