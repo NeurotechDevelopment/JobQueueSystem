@@ -10,6 +10,8 @@ namespace Contracts
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public JobStatus Status { get; set; }
 
+        public string? Description { get; set; }
+
         public DateTime? LastStatusChanged { get; set; }
 
         public DateTime? ReceivedAt { get; set; }

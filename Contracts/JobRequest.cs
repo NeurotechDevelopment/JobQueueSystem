@@ -18,6 +18,11 @@ namespace Contracts
         public JobType Type { get; set; }
 
         /// <summary>
+        /// Description for this job.
+        /// </summary>
+        public string? Description { get; set; }
+
+        /// <summary>
         /// Represents job request payload, such as instructions for file processing
         /// or direct payload for processing when job type is not of a file type.
         /// </summary>
