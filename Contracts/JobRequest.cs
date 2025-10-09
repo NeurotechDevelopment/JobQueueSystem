@@ -1,4 +1,5 @@
 ﻿using Contracts.Payloads;
+using System.Text.Json.Serialization;
 
 namespace Contracts
 {
@@ -15,6 +16,7 @@ namespace Contracts
         /// <summary>
         /// Job type.
         /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public JobType Type { get; set; }
 
         /// <summary>

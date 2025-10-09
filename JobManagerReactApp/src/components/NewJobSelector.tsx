@@ -99,7 +99,7 @@ function NewJobSelector() {
         if (file) {
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('jobRequest', new Blob([JSON.stringify(jobRequest)], { type: 'application/json' }));
+            formData.append('jobRequest', JSON.stringify(jobRequest));
             axios.post(`${import.meta.env.VITE_JOB_PRODUCER_API}/create-job-file`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'

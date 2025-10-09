@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Contracts;
 using Contracts.Payloads;
 using JobProducerService.Configuration;
@@ -38,35 +39,46 @@ namespace JobProducerService.Controllers
             return Accepted(jobRequest.JobId);
         }
 
+        /// <summary>
+        /// Posting a job request with an attachment file.
+        /// jobRequest is a JSON string representing the JobRequest object.
+        /// It doesn't work if you try specifying the JobRequest object directly as a parameter.
+        /// </summary>
+        /// <param name="jobRequest">Serialized job request.</param>
+        /// <param name="file">Mandatory file attachment.</param>
         [HttpPost]
         [Route("create-job-file")]
-        public async Task<ActionResult> Post([FromForm] JobRequest jobRequest, IFormFile? file)
+        public async Task<ActionResult> Post([FromForm] string jobRequest, IFormFile? file)
         {
-            this.logger.LogTrace($"Entered Post with jobId: {jobRequest.JobId}, jobType: {jobRequest.Type}");
+            this.logger.LogTrace($"Entered Post with {jobRequest}");
 
+            var request = JsonSerializer.Deserialize<JobRequest>(jobRequest, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
             if (file == null || file.Length == 0)
             {
                 return BadRequest("No file uploaded.");
             }
 
-            this.logger.LogTrace($"Uploading attachment for jobId: {jobRequest.JobId}, fileName: {file.FileName}, contentType: {file.ContentType}, size: {file.Length}");
+            this.logger.LogTrace($"Uploading attachment for jobId: {request.JobId}, fileName: {file.FileName}, contentType: {file.ContentType}, size: {file.Length}");
 
             await using (var stream = file.OpenReadStream())
             {
-                var fileId = await this.client.UploadAttachmentAsync(jobRequest.JobId.ToString(), file.FileName, stream, file.ContentType);
+                var fileId = await this.client.UploadAttachmentAsync(request.JobId.ToString(), file.FileName, stream, file.ContentType);
                 var attachment = new Attachment(fileId, file.FileName, file.ContentType, file.Length);
-                if (jobRequest.Payload == null)
+                if (request.Payload == null)
                 {
-                    jobRequest = jobRequest with { Payload = new JobPayload(null, attachment) };
+                    request = request with { Payload = new JobPayload(null, attachment) };
                 }
                 else
                 {
-                    jobRequest.Payload.Attachment = attachment;
+                    request.Payload.Attachment = attachment;
                 }
             }
 
-            await SendJobRequest(jobRequest);
-            return Accepted(jobRequest.JobId);
+            await SendJobRequest(request);
+            return Accepted(request.JobId);
         }
 
         private async Task SendJobRequest(JobRequest jobRequest)
