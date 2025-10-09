@@ -1,3 +1,5 @@
+import type { JSONSchema7 } from "json-schema";
+
 export enum JobType {
     Dummy,
     ConvertWordToPdf,
@@ -62,6 +64,7 @@ export interface IJobPayload {
 export interface IJobRequest {
     /** Format: uuid */
     jobId?: string;
+    description?: string | null;
     type?:    JobType;
     payload?: IJobPayload;
 }
@@ -75,6 +78,7 @@ export interface IJobResult {
 export interface IJobTypeDescriptor {
     jobType: JobType;
     description: string;
-    payloadJsonSchema: string;
-    resultJsonSchema: string;
+    allowedAttachments: string[];
+    payloadJsonSchema: JSONSchema7;
+    resultJsonSchema: JSONSchema7;
 }
