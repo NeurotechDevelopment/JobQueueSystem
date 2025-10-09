@@ -16,12 +16,17 @@ namespace Contracts
         /// Json schema of a job request payload.
         /// Consumers may include React GUI that needs to dynamically construct forms.
         /// </summary>
-        public string? PayloadJsonSchema { get; set; }
+        public required PayloadJsonSchema PayloadJsonSchema { get; set; }
 
         /// <summary>
         /// Json schema of a job result payload.
         /// Consumers may include React GUI that needs to dynamically construct forms.
         /// </summary>
-        public string? ResultJsonSchema { get; set; }
+        public required PayloadJsonSchema ResultJsonSchema { get; set; }
+
+        /// <summary>
+        /// A collection of file extensions allowed for JobRequest payload.
+        /// </summary>
+        public IEnumerable<string> AllowedAttachments { get; set; }
     }
 }

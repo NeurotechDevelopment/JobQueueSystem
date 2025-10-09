@@ -15,7 +15,9 @@ namespace JobRepositoryService
                     s => s.MapFrom(opt => JobTypePayloadRegistry.GetPayloadSchema(opt.Key)))
                 // Map return payload type to json schema
                 .ForMember(d => d.ResultJsonSchema,
-                    s => s.MapFrom(opt => JobTypePayloadRegistry.GetResultPayloadSchema(opt.Key)));
+                    s => s.MapFrom(opt => JobTypePayloadRegistry.GetResultPayloadSchema(opt.Key)))
+                .ForMember(d => d.AllowedAttachments,
+                    s => s.MapFrom(opt => JobTypePayloadRegistry.GetAllowedFileExtensions(opt.Key)));
             CreateMap<JobDocument, Job>()
                 .ForMember(d => d.RequestPayload, s => s.MapFrom(opt => opt.Payload))
                 .ForMember(d => d.ResultPayload, s => s.MapFrom(opt => opt.Result));
