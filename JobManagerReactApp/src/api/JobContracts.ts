@@ -36,6 +36,7 @@ export interface IJob {
     jobId?: string;
     type?: JobType;
     status?: JobStatus;
+    description?: string;
     /** Format: date-time */
     lastStatusChanged?: Date | null;
     /** Format: date-time */

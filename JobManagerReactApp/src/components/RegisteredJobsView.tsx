@@ -36,6 +36,7 @@ function RegisteredJobsView() {
                 <tr>
                     <td>JobId</td>
                     <td>Type</td>
+                    <td>Description</td>
                     <td>Status</td>
                     <td>IsSuccess</td>
                     <td>Error message</td>
@@ -46,6 +47,7 @@ function RegisteredJobsView() {
             <tr key={i}>
                 <td>{j.jobId}</td>
                 <td>{j.type}</td>
+                <td>{j.description}</td>
                 <td>{j.status}</td>
                 <td>{j.isSuccess ? "true" : (j.isSuccess == null ? "N/A" : "false")}</td>
                 <td className="text-truncate">{j.errorMessage}</td>
