@@ -6,6 +6,11 @@ namespace Shared
     {
         public string UploadAttachment(string tag, string fileName, Stream fileStream, string contentType)
         {
+            if (fileStream.CanSeek)
+            {
+                // Ensure the stream position is at the beginning
+                fileStream.Position = 0;
+            }
             using var content = new StreamContent(fileStream);
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType ?? "application/octet-stream");
             var streamUploadUri = $"{this.jobServiceUrl.TrimEnd('/')}/{AttachmentsApiResource}/stream/{tag}/{fileName}";
@@ -17,6 +22,12 @@ namespace Shared
 
         public async Task<string> UploadAttachmentAsync(string tag, string fileName, Stream fileStream, string contentType)
         {
+            if (fileStream.CanSeek)
+            {
+                // Ensure the stream position is at the beginning
+                fileStream.Position = 0;
+            }
+
             using var content = new StreamContent(fileStream);
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType ?? "application/octet-stream");
             var streamUploadUri = $"{this.jobServiceUrl.TrimEnd('/')}/{AttachmentsApiResource}/stream/{tag}/{fileName}";

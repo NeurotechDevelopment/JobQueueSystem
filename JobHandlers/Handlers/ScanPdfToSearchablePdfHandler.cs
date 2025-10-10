@@ -41,7 +41,7 @@ namespace JobHandlers.Handlers
                     {
                         //Save the PDF document to file stream.
                         pdfLoadedDocument.Save(outputStream);
-
+                        outputStream.Position = 0;
                         var resultAttachment = this.fileService.CreateAttachment(requestAttachment, FileType.Pdf, outputStream.Length);
                         resultAttachment.Id = await this.client.UploadAttachmentAsync(
                             jobId.ToString(),
