@@ -3,6 +3,7 @@ import { LinkContainer } from "react-router-bootstrap";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RegisteredJobsView from './components/RegisteredJobsView'
 import NewJobSelector from './components/NewJobSelector'
+import JobDetailsView from './components/JobDetailsView'
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 import './App.css'
@@ -28,6 +29,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<RegisteredJobsView />} />
                     <Route path="/new" element={<NewJobSelector />} />
+                    <Route path="/jobs/:jobId" element={<JobDetailsView />} />
                 </Routes>
             </Container>
         </BrowserRouter>

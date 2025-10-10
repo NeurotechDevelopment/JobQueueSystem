@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Table from 'react-bootstrap/Table';
+import { Link } from 'react-router-dom'
 import axios from 'axios';
 import type { IJobInfo as JobInfo } from '../api/JobContracts';
 import './RegisteredJobsView.css'
@@ -42,7 +43,7 @@ function RegisteredJobsView() {
             <tbody>
         {jobs.map((j,i) => (
             <tr key={i}>
-                <td>{j.jobId}</td>
+                <td><Link to={`/jobs/${j.jobId}`}>{j.jobId}</Link></td>
                 <td>{j.type}</td>
                 <td>{j.description}</td>
                 <td>{j.status}</td>
