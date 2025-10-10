@@ -37,7 +37,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                return await client.GetAsync<IEnumerable<Job>>(JobApiResource);
+                return await client.GetAsync<IEnumerable<JobInfo>>(JobApiResource);
             }
         }
 

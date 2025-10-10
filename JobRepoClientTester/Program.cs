@@ -130,7 +130,7 @@ namespace JobRepoClientTester
                 .OrderBy(x => x.FinishedAt));
 
             Console.WriteLine("Queried finished jobs ordered by type and than by finished.");
-            DumpJobs(jobs);
+            DumpJobs(jobs.ToArray());
 
             jobs = client.QueryJobs(JobOdataQueryBuilder.Create()
                 .Where(x => x.Status == JobStatus.Finished)
@@ -138,7 +138,7 @@ namespace JobRepoClientTester
                 .Top(3));
 
             Console.WriteLine("First 3 finished jobs order by FinishedAt.");
-            DumpJobs(jobs);
+            DumpJobs(jobs.ToArray());
 
             var count = client.CountJobs(JobOdataQueryBuilder.Create()
                 .Where(x => x.Status == JobStatus.Finished)
@@ -152,7 +152,7 @@ namespace JobRepoClientTester
                 .Skip(7));
 
             Console.WriteLine("All finished jobs skipping first 7 order descending by FinishedAt.");
-            DumpJobs(jobs);
+            DumpJobs(jobs.ToArray());
         }
 
         [Description("Dump all jobs")]

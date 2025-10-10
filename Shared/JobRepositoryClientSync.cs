@@ -39,7 +39,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                return client.Get<IEnumerable<Job>>(JobApiResource);
+                return client.Get<IEnumerable<JobInfo>>(JobApiResource);
             }
         }
 
