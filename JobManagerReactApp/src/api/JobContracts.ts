@@ -83,3 +83,11 @@ export interface IJobTypeDescriptor {
     payloadJsonSchema: JSONSchema7;
     resultJsonSchema: JSONSchema7;
 }
+
+// Check if the payload schema has any properties. If not, don't render rjfs form.
+export function payloadHasProperties(schema: JSONSchema7): boolean {
+        if (schema.type === 'object' && schema.properties) {
+            return Object.keys(schema.properties).length > 0;
+        }
+        return false;
+}

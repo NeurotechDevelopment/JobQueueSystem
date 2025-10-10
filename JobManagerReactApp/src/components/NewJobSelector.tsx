@@ -6,15 +6,15 @@ import validator from "@rjsf/validator-ajv8"
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-import * as JobContracts from '../api/JobContracts.ts';
+import type { JobType, 
+              IJobTypeDescriptor as JobTypeDescriptor, 
+              IJobRequest as JobRequest, 
+              IJob as Job } from '../api/JobContracts';
+import { payloadHasProperties } from '../api/JobContracts';
 import axios from 'axios';
 import './NewJobSelector.css'
 import type { JSONSchema7 } from "json-schema";
 
-// Type aliases for better readability and definitions for state variables
-type JobType = JobContracts.JobType
-type IJobTypeDescriptor = JobContracts.IJobTypeDescriptor
-type JobRequest = JobContracts.IJobRequest
 type AlertType = 'success' | 'danger';
 type AlertState = {
     show: boolean;
@@ -25,10 +25,10 @@ type AlertState = {
 // Function component.
 function NewJobSelector() {
     // Initially fetch all job type descriptors
-    const [jobTypeDescriptors, setJobTypeDescriptors] = useState<IJobTypeDescriptor[]>([]);
+    const [jobTypeDescriptors, setJobTypeDescriptors] = useState<JobTypeDescriptor[]>([]);
 
     // Currently selected job type descriptor from dropdown
-    const [jobTypeDescriptor, setJobTypeDescriptor] = useState<IJobTypeDescriptor>();
+    const [jobTypeDescriptor, setJobTypeDescriptor] = useState<JobTypeDescriptor>();
 
     // Currently filled payload for the selected job type in rjsf form
     const [payload, setPayload] = useState<any>();
@@ -62,14 +62,6 @@ function NewJobSelector() {
     function stripRedundantSchemaProps(schema: JSONSchema7) {
         const { title, description, ...rest } = schema;
         return rest;
-    }
-
-    // Check if the payload schema has any properties. If not, don't render rjfs form.
-    function payloadHasProperties(schema: JSONSchema7): boolean {
-        if (schema.type === 'object' && schema.properties) {
-            return Object.keys(schema.properties).length > 0;
-        }
-        return false;
     }
 
     // When user selects a job type from dropdown, set it as current job type descriptor
@@ -181,7 +173,6 @@ function NewJobSelector() {
                             &&
                             (<div>
                                 <h4>Parameters:</h4>
-
                                 <RjfsForm
                                     validator={validator}
                                     schema={jobTypeDescriptor.payloadJsonSchema}

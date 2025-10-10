@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react'
 import Table from 'react-bootstrap/Table';
 import axios from 'axios';
-import * as JobContracts from '../api/JobContracts';
+import type { IJobInfo as JobInfo } from '../api/JobContracts';
 import './RegisteredJobsView.css'
 
-// Define type to omit prefixing the ns
-// (This since named export isn't working yet for some reason, I export all types from JobContracts)
-type JobInfo = JobContracts.IJobInfo
 function RegisteredJobsView() {
     const [jobs, setJobs] = useState<JobInfo[]>([]);
     useEffect(() => {
