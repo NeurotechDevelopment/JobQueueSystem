@@ -1,0 +1,70 @@
+import type { JSONSchema7 } from "json-schema";
+import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job, IAttachment as Attachment } from '../api/JobContracts.ts';
+
+// Forms file download link to JobRepository service with the given fileId.
+export function getFileLink(fileId: string): string {
+    return `${import.meta.env.VITE_API_BASE_URL}/JobsAttachments/${fileId}`
+}
+
+// Accesses Job Request payload schema. Stips away title and description for RJFS not to render those.
+export function getRequestSchema(jobTypeDescriptor: JobTypeDescriptor): JSONSchema7 {
+    const { title, description, ...rest } = jobTypeDescriptor.payloadJsonSchema;
+    return rest;
+}
+
+// Accesses JobResult payload schema. Stips away title and description for RJFS not to render those.
+export function getResultSchema(jobTypeDescriptor: JobTypeDescriptor) : JSONSchema7 {
+    const { title, description, ...rest } = jobTypeDescriptor.resultJsonSchema;
+    return rest;
+}
+
+// Checks whether job has resultPayload set.
+export function hasResult(job: Job) : boolean {
+    if (!job) {
+        return false;
+    }
+
+    return job.resultPayload;
+}
+
+// Checks whether job has requestPayload set and its data is set.
+export function hasRequestPayload(job: Job) {
+    if (!job) {
+        return false;
+    }
+
+    return job.requestPayload && job.requestPayload.data;
+}
+
+// Checks whether job has requestPayload attachment set (i.e. if file was uploaded with JobRequest).
+export function hasRequestAttachment(job: Job) : boolean {
+    if (!job) {
+        return false;
+    }
+    
+    return job.requestPayload && job.requestPayload.attachment;
+}
+
+// Checks whether job has resultPayload set and its data is set.
+export function hasResultPayload(job: Job) : boolean {
+    return hasResult(job) && job.resultPayload.payload && job.resultPayload.payload.data;
+}
+
+// Checks whether job result errored out and contains error message.
+export function isErrorResult(job: Job) : boolean {
+    return hasResult(job) && !job.resultPayload.isSuccess && !!job.resultPayload.errorMessage;
+}
+
+// Checks whether job has resultPayload attachment set (i.e. if file was formed as a job result).
+export function hasResultAttachment(job: Job) : boolean {
+    return hasResult(job) && job.resultPayload && job.resultPayload.payload && job.resultPayload.payload.attachment;
+}
+
+// Tries to parse value as json or returns empty {} object.
+export function parseJson(value: string)  {
+    try {
+        return JSON.parse(value);
+    } catch {
+        return {};
+    }
+}
