@@ -66,6 +66,7 @@ namespace JobHandlers
                 await using var downloadStream = await client.DownloadAttachmentStreamAsync(attachment.Id);
                 var ms = new MemoryStream();
                 await downloadStream.CopyToAsync(ms);
+                ms.Position = 0;
                 return ms;
             }
         }
