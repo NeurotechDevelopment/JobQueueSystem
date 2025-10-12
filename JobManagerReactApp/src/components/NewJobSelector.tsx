@@ -54,6 +54,7 @@ function NewJobSelector() {
             })
             .catch(err => {
                 console.error('Error fetching job type descriptor', err);
+                setAlertState( { show: true, type: 'danger', message: 'Error fetching job type descriptor.' + err.message})
             });
     }, []);
 
@@ -129,7 +130,7 @@ function NewJobSelector() {
     return (
         <div>
             <Alert show={alertState.show} variant={alertState.type} dismissible>{alertState.message}</Alert>
-            <h2>Create new task</h2>
+            <h3>Create new task</h3>
             <Dropdown className="mt-5" onSelect={handleSelect}>
                 <Dropdown.Toggle variant="success" id="dropdown-basic">
                     Select task type

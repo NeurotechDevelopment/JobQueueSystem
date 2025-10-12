@@ -12,6 +12,7 @@ import { payloadHasProperties } from '../api/JobContracts';
 import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job, IAttachment as Attachment } from '../api/JobContracts';
 import axios from 'axios';
 import * as jobUtils from '../utils/jobdetails.ts'
+import bugImage from "../assets/bug.svg"
 
 function JobDetailsView() {
     const { jobId } = useParams<{ jobId: uuid }>(); 
@@ -19,20 +20,28 @@ function JobDetailsView() {
     const [error, setError] = useState<string | null>(null);
     const [jobTypeDescriptor, setJobTypeDescriptor] = useState<JobTypeDescriptor>();
     useEffect(() => {
-        const jobDescriptors = 
-                
-        (async () => {
-            const jobTypeDescriptors = await fetchJobTypeDescriptors();
-            const job = await fetchJob(jobId);
-            const jobTypeDescriptor = jobTypeDescriptors.find(x => x.jobType == job.type);
-            setJobTypeDescriptor(jobTypeDescriptor);
-        })();
+            (async () => fetchData())();
         }, [jobId]);
+
+    async function fetchData() {
+        const jobTypeDescriptors = await fetchJobTypeDescriptors();
+        if (!jobTypeDescriptors) {
+            return;
+        }
+        const job = await fetchJob(jobId);
+        if (!job) {
+            return;
+        }
+        setJob(job);
+        const jobTypeDescriptor = jobTypeDescriptors.find(x => x.jobType == job.type);
+        setJobTypeDescriptor(jobTypeDescriptor);
+    }
 
     // Fetches job type descriptors from job repository service
     async function fetchJobTypeDescriptors() {
         try {
             const response = await axios.get<JobTypeDescriptor[]>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/job-types`);
+            setError(null);
             return response.data;
         }
         catch(err) {
@@ -46,7 +55,6 @@ function JobDetailsView() {
     async function fetchJob(jobId: uuid) : Promise<Job | null> {
         try {
             const response = await axios.get<Job>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/${jobId}`);
-            setJob(response.data);
             setError(null);
             return response.data;
         } catch(err) {
@@ -54,6 +62,15 @@ function JobDetailsView() {
             setError('Error fetching job details: ' + err.message);
             return null;
         }
+    }
+
+    function renderGenericErrorCard() : JSX.Element {
+        return (
+            <Card border='danger'>                
+                <Card.Title><i class="bi bi-bug text-danger">&nbsp;</i>General Error</Card.Title>
+                <Card.Body>We could not retrieve task details due to internal error. Please try again later.</Card.Body>
+            </Card>
+        );
     }
 
     function renderJobDetails() : JSX.Element {
@@ -137,8 +154,9 @@ function JobDetailsView() {
           <i className="bi bi-arrow-clockwise"
              title="Refresh"
              style={{ fontSize: '1.5rem', cursor: 'pointer' }}
-             onClick={() => fetchJob(jobId)}
+             onClick={() => fetchData(jobId)}
            ></i>
+           {error && renderGenericErrorCard()}
            <Stack gap={3}>
             {job && 
                 <div className="p-2">{renderJobDetails()}</div>}
