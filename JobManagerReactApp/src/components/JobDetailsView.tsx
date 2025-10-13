@@ -24,23 +24,23 @@ function JobDetailsView() {
         }, [jobId]);
 
     async function fetchData() {
-        const jobTypeDescriptors = await fetchJobTypeDescriptors();
-        if (!jobTypeDescriptors) {
-            return;
-        }
         const job = await fetchJob(jobId);
         if (!job) {
             return;
         }
+        const jobTypeDescriptor = await fetchJobTypeDescriptor(job.type);
+        if (!jobTypeDescriptor) {
+            return;
+        }
+
         setJob(job);
-        const jobTypeDescriptor = jobTypeDescriptors.find(x => x.jobType == job.type);
         setJobTypeDescriptor(jobTypeDescriptor);
     }
 
     // Fetches job type descriptors from job repository service
-    async function fetchJobTypeDescriptors() {
+    async function fetchJobTypeDescriptor(jobType: string) {
         try {
-            const response = await axios.get<JobTypeDescriptor[]>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/job-types`);
+            const response = await axios.get<JobTypeDescriptor>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/job-types/${jobType}`);
             setError(null);
             return response.data;
         }
