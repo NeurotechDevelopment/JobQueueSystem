@@ -1,7 +1,6 @@
 ﻿using Contracts;
 using Contracts.FileTypes;
 using Shared;
-using Shared.FileTypes;
 
 namespace JobHandlers;
 
@@ -21,6 +20,13 @@ internal interface IFileUtilitiesService
     /// </summary>
     /// <param name="attachment">Attachment to validate.</param>
     public void AssertValidAttachment(Attachment? attachment);
+
+    /// <summary>
+    /// Reads file extension from filename of the attachment.
+    /// </summary>
+    /// <param name="attachment">Attachment whose filename to check.</param>
+    /// <returns>Found FileType or FileType.Any, if not found.</returns>
+    public FileType TryParseFileType(Attachment attachment);
 
     /// <summary>
     /// Fetches a stream from the repository client.

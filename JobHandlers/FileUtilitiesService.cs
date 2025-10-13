@@ -37,6 +37,25 @@ namespace JobHandlers
         }
 
         /// <summary>
+        /// Reads file extension from filename of the attachment.
+        /// </summary>
+        /// <param name="attachment">Attachment whose filename to check.</param>
+        /// <returns>Found FileType or FileType.Any, if not found.</returns>
+        public FileType TryParseFileType(Attachment attachment)
+        {
+            var indexOfExt = attachment.FileName.LastIndexOf('.');
+            if (indexOfExt == -1 || indexOfExt == attachment.FileName.Length - 1)
+            {
+                return FileType.Any;
+            }
+
+            var ext = attachment.FileName.Substring(indexOfExt + 1);
+            FileType type = FileType.Any;
+            Enum.TryParse<FileType>(ext, ignoreCase: true, out type);
+            return type;
+        }
+
+        /// <summary>
         /// Creates a stream from a stream fetched from the repository client.
         /// Remember to dispose the stream when done.
         /// For small files, a memory stream is returned.

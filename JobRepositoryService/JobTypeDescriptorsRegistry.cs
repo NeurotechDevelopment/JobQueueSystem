@@ -39,18 +39,18 @@ namespace JobRepositoryService
                 }
 
                 // Complex type recurses, simple go as a property.
-                if (!pi.PropertyType.IsPrimitive && pi.PropertyType != typeof(string))
-                {
-                    props[pi.Name] = GenerateSchema(pi.PropertyType);
-                }
-                else
+                if (pi.PropertyType.IsPrimitiveType())
                 {
                     props[pi.Name] = new PropertyJsonSchema
                     {
-                        Type = pi.PropertyType.Name.ToLower(),
+                        Type = pi.PropertyType.ToJsonType(),
                         Title = pi.Name,
                         Default = null
                     };
+                }
+                else
+                {
+                    props[pi.Name] = GenerateSchema(pi.PropertyType);
                 }
             }
 
@@ -75,6 +75,7 @@ namespace JobRepositoryService
                 JobType.ConvertHtmlToPdf => new[] { "htm", "html" },
                 JobType.ConvertWordToPdf => new[] { "doc", "docx" },
                 JobType.ConvertScanToSearchablePdf => new[] { "pdf" },
+                JobType.ConvertWordToImages => new [] { "doc", "docx" },
                 _ => throw new NotImplementedException($"No payload binding found for a job type {jobType}")
             };
         }
@@ -91,6 +92,8 @@ namespace JobRepositoryService
                     return typeof(EmptyPayload);
                 case JobType.ConvertScanToSearchablePdf:
                     return typeof(ConvertScanToSearchablePdfPayload);
+                case JobType.ConvertWordToImages:
+                    return typeof(ConvertWordToImagesPayload);
                 default:
                     throw new NotImplementedException($"No payload binding found for a job type {jobType}");
             }
@@ -106,10 +109,80 @@ namespace JobRepositoryService
                 case JobType.ConvertHtmlToPdf:
                 case JobType.ConvertWordToPdf:
                 case JobType.ConvertScanToSearchablePdf:
+                case JobType.ConvertWordToImages:
                     return typeof(EmptyPayload);
                 default:
                     throw new NotImplementedException($"No payload binding found for a job type {jobType}");
             }
         }
+
+
+        #region Extension methods for types
+
+        private static bool IsPrimitiveType(this Type type)
+        {
+            if (type.IsPrimitive || type == typeof(string) || type.IsEnum)
+            {
+                return true;
+            }
+
+            if (type.IsNullableType() && type.IsGenericType)
+            {
+                return type.GenericTypeArguments[0].IsPrimitiveType();
+            }
+
+            return false;
+        }
+
+        private static string ToJsonType(this Type type)
+        {
+            // Unwrap nullable types
+            if (Nullable.GetUnderlyingType(type) is Type underlying)
+            {
+                type = underlying;
+            }
+
+            if (type.IsEnum)
+            {
+                return "string";
+            }
+
+            if (type == typeof(string))
+            {
+                return "string";
+            }
+
+            if (type == typeof(bool))
+            {
+                return "boolean";
+            }
+
+            if (type == typeof(byte) || type == typeof(short) ||
+                type == typeof(int) || type == typeof(long))
+            {
+                return "integer";
+            }
+
+            if (type == typeof(float) || type == typeof(double) ||
+                type == typeof(decimal))
+            {
+                return "number";
+            }
+
+            if (type.IsArray || (type.IsGenericType &&
+                                 typeof(IEnumerable<>).IsAssignableFrom(type.GetGenericTypeDefinition())))
+            {
+                return "array";
+            }
+
+            if (type.IsClass || type.IsValueType)
+            {
+                return "object";
+            }
+
+            return "string"; // fallback
+        }
+
+        #endregion
     }
 }
