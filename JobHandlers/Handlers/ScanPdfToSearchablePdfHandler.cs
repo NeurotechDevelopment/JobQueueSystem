@@ -1,10 +1,10 @@
 ﻿using Contracts;
+using Contracts.FileTypes;
 using Contracts.Payloads;
 using Shared;
 using Syncfusion.Pdf.Parsing;
 using Syncfusion.OCRProcessor;
 using Contracts.Payloads.Requests;
-using Shared.FileTypes;
 
 namespace JobHandlers.Handlers
 {

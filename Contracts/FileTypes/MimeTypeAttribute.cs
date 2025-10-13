@@ -1,4 +1,4 @@
-﻿namespace Shared.FileTypes
+﻿namespace Contracts.FileTypes
 {
     /// <summary>
     /// To decorate FileType enum values with MIME types.

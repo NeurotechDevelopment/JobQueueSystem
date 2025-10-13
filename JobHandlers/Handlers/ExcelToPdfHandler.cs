@@ -1,7 +1,7 @@
 ﻿using Contracts;
+using Contracts.FileTypes;
 using Contracts.Payloads;
 using Shared;
-using Shared.FileTypes;
 using Syncfusion.Pdf;
 using Syncfusion.XlsIO;
 using Syncfusion.XlsIORenderer;

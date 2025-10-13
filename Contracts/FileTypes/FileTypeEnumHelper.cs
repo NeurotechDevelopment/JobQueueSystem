@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Shared.FileTypes
+namespace Contracts.FileTypes
 {
     public static class FileTypeEnumHelper
     {

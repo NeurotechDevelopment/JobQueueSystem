@@ -4,7 +4,7 @@ using Shared;
 using Syncfusion.HtmlConverter;
 using Syncfusion.Pdf;
 using System.Text;
-using Shared.FileTypes;
+using Contracts.FileTypes;
 
 namespace JobHandlers.Handlers
 {

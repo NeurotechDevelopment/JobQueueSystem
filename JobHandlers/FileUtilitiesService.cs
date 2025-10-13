@@ -1,6 +1,6 @@
 ﻿using Contracts;
 using Shared;
-using Shared.FileTypes;
+using Contracts.FileTypes;
 
 namespace JobHandlers
 {

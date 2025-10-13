@@ -1,4 +1,5 @@
 ﻿using Contracts;
+using Contracts.FileTypes;
 using Shared;
 using Shared.FileTypes;
 

@@ -1,4 +1,4 @@
-﻿namespace Shared.FileTypes;
+﻿namespace Contracts.FileTypes;
 
 /// <summary>
 /// Lists supported file types together with their MIME types in a <see cref="MimeTypeAttribute"/>.
@@ -22,5 +22,11 @@ public enum FileType
     [MimeType("text/plain")]
     Txt,
     [MimeType("text/html")]
-    Html
+    Html,
+    [MimeType(FileTypeEnumHelper.DefaultMimeType)]
+    Zip,
+    [MimeType("image/jpeg")]
+    Jpeg,
+    [MimeType("image/png")]
+    Png
 }
