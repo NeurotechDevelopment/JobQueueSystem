@@ -5,59 +5,30 @@ using Contracts.Payloads.Requests;
 
 namespace JobRepositoryService
 {
+    /// <summary>
+    /// Contains definitions per <see cref="JobType"/> for Request/Response payloads, allowed file names.
+    /// Generates json schema per each payload.
+    /// </summary>
     internal static class JobTypePayloadRegistry
     {
+        /// <summary>
+        /// Generates <see cref="PayloadJsonSchema"/> for request Payload for the given <see cref="JobType"/>
+        /// </summary>
+        /// <param name="jobType">Job type for which request schema to be generated.</param>
         public static PayloadJsonSchema GetPayloadSchema(JobType jobType)
         {
             var payloadType = GetPayloadSchemaType(jobType);
             return GenerateSchema(payloadType);
         }
 
+        /// <summary>
+        /// Generates <see cref="PayloadJsonSchema"/> for response Payload for the given <see cref="JobType"/>
+        /// </summary>
+        /// <param name="jobType">Job type for which result schema to be generated.</param>
         public static PayloadJsonSchema GetResultPayloadSchema(JobType jobType)
         {
             var payloadType = GetResultPayloadSchemaType(jobType);
             return GenerateSchema(payloadType);
-        }
-
-        private static PayloadJsonSchema GenerateSchema(Type payloadType)
-        {
-            var requiredProperties = new List<string>();
-            var schema = new PayloadJsonSchema
-            {
-                Title = payloadType.Name,
-                Description = payloadType.FullName,
-                Type = "object"
-            };
-
-            var props = new Dictionary<string, PropertyJsonSchema>();
-            foreach (var pi in payloadType.GetProperties())
-            {
-                // Add to schema Required
-                if (!pi.PropertyType.IsNullableType())
-                {
-                    requiredProperties.Add(pi.Name);
-                }
-
-                // Complex type recurses, simple go as a property.
-                if (pi.PropertyType.IsPrimitiveType())
-                {
-                    props[pi.Name] = new PropertyJsonSchema
-                    {
-                        Type = pi.PropertyType.ToJsonType(),
-                        Title = pi.Name,
-                        Default = null
-                    };
-                }
-                else
-                {
-                    props[pi.Name] = GenerateSchema(pi.PropertyType);
-                }
-            }
-
-            schema.Required = requiredProperties;
-            schema.Properties = props;
-
-            return schema;
         }
 
         /// <summary>
@@ -80,6 +51,77 @@ namespace JobRepositoryService
             };
         }
 
+        /// <summary>
+        /// Generates json schema for a given payload type. Expected consumer: React rjfs component.
+        /// </summary>
+        /// <param name="payloadType">Payload type.</param>
+        /// <returns>Json schema.</returns>
+        private static PayloadJsonSchema GenerateSchema(Type payloadType)
+        {
+            var enumDefs = new Dictionary<string, IDictionary<string, IEnumerable<string>>>();
+            var requiredProperties = new List<string>();
+            var schema = new PayloadJsonSchema
+            {
+                Title = payloadType.Name,
+                Description = payloadType.FullName,
+                Type = "object"
+            };
+
+            var props = new Dictionary<string, PropertyJsonSchema>();
+            foreach (var pi in payloadType.GetProperties())
+            {
+                // Add to schema Required
+                if (!pi.PropertyType.IsNullableType())
+                {
+                    requiredProperties.Add(pi.Name);
+                }
+
+                // Complex type recurses, simple go as a property.
+                if (pi.PropertyType.IsPrimitiveType())
+                {
+                    if (pi.PropertyType.IsEnum())
+                    {
+                        var enumNames = Enum.GetNames(pi.PropertyType.ToUnderlying());
+                        enumDefs.Add($"{pi.Name}s", new Dictionary<string, IEnumerable<string>> { { "enum", enumNames } });
+                        props[pi.Name] = new PropertyJsonSchema
+                        {
+                            //Type = "enum",
+                            Title = pi.Name,
+                            Default = null,
+                            Ref = $"#/definitions/{pi.Name}s"
+                        };
+                    }
+                    else
+                    {
+                        props[pi.Name] = new PropertyJsonSchema
+                        {
+                            Type = pi.PropertyType.ToJsonType(),
+                            Title = pi.Name,
+                            Default = null
+                        };
+                    }
+                }
+                else
+                {
+                    props[pi.Name] = GenerateSchema(pi.PropertyType);
+                }
+            }
+
+            schema.Required = requiredProperties;
+            schema.Properties = props;
+            if (enumDefs.Any())
+            {
+                schema.Definitions = enumDefs;
+            }
+
+            return schema;
+        }
+
+        /// <summary>
+        /// Lists bindings between JobType and Request Payload.
+        /// </summary>
+        /// <param name="jobType">JobType for which request payload type is requested.</param>
+        /// <exception cref="NotImplementedException"></exception>
         private static Type GetPayloadSchemaType(JobType jobType)
         {
             switch (jobType)
@@ -99,6 +141,11 @@ namespace JobRepositoryService
             }
         }
 
+        /// <summary>
+        /// Lists bindings between JobType and Result Payload.
+        /// </summary>
+        /// <param name="jobType">JobType for which result payload type is requested.</param>
+        /// <exception cref="NotImplementedException"></exception>
         private static Type GetResultPayloadSchemaType(JobType jobType)
         {
             switch (jobType)
@@ -116,9 +163,13 @@ namespace JobRepositoryService
             }
         }
 
-
         #region Extension methods for types
 
+        /// <summary>
+        /// For our case, primitive is a string, .NET primitive, enum or any of these for nullable underlying type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         private static bool IsPrimitiveType(this Type type)
         {
             if (type.IsPrimitive || type == typeof(string) || type.IsEnum)
@@ -134,6 +185,36 @@ namespace JobRepositoryService
             return false;
         }
 
+        private static bool IsEnum(this Type type)
+        {
+            if (type.IsEnum)
+            {
+                return true;
+            }
+
+            if (type.IsNullableType() && type.IsGenericType)
+            {
+                return type.GenericTypeArguments[0].IsEnum;
+            }
+
+            return false;
+        }
+
+        private static Type ToUnderlying(this Type type)
+        {
+            if (Nullable.GetUnderlyingType(type) is Type underlying)
+            {
+                return underlying;
+            }
+
+            return type;
+        }
+
+        /// <summary>
+        /// Maps .NET type to one of the json types: string, number, integer, boolean, array, object.
+        /// </summary>
+        /// <param name="type">.NET type.</param>
+        /// <returns>Json equivalent type.</returns>
         private static string ToJsonType(this Type type)
         {
             // Unwrap nullable types
