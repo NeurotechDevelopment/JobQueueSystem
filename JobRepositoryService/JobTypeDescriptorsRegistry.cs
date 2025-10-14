@@ -1,4 +1,6 @@
-﻿using AutoMapper.Internal;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using AutoMapper.Internal;
 using Contracts;
 using Contracts.Payloads;
 using Contracts.Payloads.Requests;
@@ -79,27 +81,8 @@ namespace JobRepositoryService
                 // Complex type recurses, simple go as a property.
                 if (pi.PropertyType.IsPrimitiveType())
                 {
-                    if (pi.PropertyType.IsEnum())
-                    {
-                        var enumNames = Enum.GetNames(pi.PropertyType.ToUnderlying());
-                        enumDefs.Add($"{pi.Name}s", new Dictionary<string, IEnumerable<string>> { { "enum", enumNames } });
-                        props[pi.Name] = new PropertyJsonSchema
-                        {
-                            //Type = "enum",
-                            Title = pi.Name,
-                            Default = null,
-                            Ref = $"#/definitions/{pi.Name}s"
-                        };
-                    }
-                    else
-                    {
-                        props[pi.Name] = new PropertyJsonSchema
-                        {
-                            Type = pi.PropertyType.ToJsonType(),
-                            Title = pi.Name,
-                            Default = null
-                        };
-                    }
+                    var propGenerator = GetSimplePropGenerator(pi, enumDefs);
+                    props[pi.Name] = propGenerator();
                 }
                 else
                 {
@@ -115,6 +98,33 @@ namespace JobRepositoryService
             }
 
             return schema;
+        }
+
+        private static Func<PropertyJsonSchema> GetSimplePropGenerator(PropertyInfo pi, Dictionary<string, IDictionary<string, IEnumerable<string>>> enumDefs)
+        {
+            return pi.PropertyType.IsEnum() ? () => GenerateEnumEntry(pi, enumDefs) : () => GenerateSimpleProp(pi);
+        }
+
+        private static PropertyJsonSchema GenerateEnumEntry(PropertyInfo pi, Dictionary<string, IDictionary<string, IEnumerable<string>>> enumDefs)
+        {
+            var enumNames = Enum.GetNames(pi.PropertyType.ToUnderlying());
+            enumDefs.Add($"{pi.Name}s", new Dictionary<string, IEnumerable<string>> { { "enum", enumNames } });
+            return new PropertyJsonSchema
+            {
+                Title = pi.GetFriendlyName(),
+                Ref = $"#/definitions/{pi.Name}s",
+                Default = null
+            };
+        }
+
+        private static PropertyJsonSchema GenerateSimpleProp(PropertyInfo pi)
+        {
+            return new PropertyJsonSchema
+            {
+                Title = pi.GetFriendlyName(),
+                Type = pi.PropertyType.ToJsonType(),
+                Default = null
+            };
         }
 
         /// <summary>
@@ -164,6 +174,16 @@ namespace JobRepositoryService
         }
 
         #region Extension methods for types
+
+        /// <summary>
+        /// Reads Name prop of a Display attribute when found, or just a property name.
+        /// </summary>
+        /// <param name="pi">Property info.</param>
+        private static string GetFriendlyName(this PropertyInfo pi)
+        {
+            var displayAttribute = pi.GetCustomAttribute<DisplayAttribute>();
+            return displayAttribute != null ? displayAttribute.Name : pi.Name;
+        }
 
         /// <summary>
         /// For our case, primitive is a string, .NET primitive, enum or any of these for nullable underlying type.
