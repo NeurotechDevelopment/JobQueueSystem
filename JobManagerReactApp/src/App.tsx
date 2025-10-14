@@ -13,13 +13,13 @@ function App() {
         <BrowserRouter>
             <Navbar bg="dark" variant="dark" expand="lg">
                 <Container>
-                    <Navbar.Brand>Job Manager</Navbar.Brand>
+                    <Navbar.Brand><i class="bi bi-leaf-fill text-info"> </i>Tasks Manager</Navbar.Brand>
                     <Nav className="me-auto">
                         <LinkContainer to="/">
-                            <Nav.Link>Jobs</Nav.Link>
+                            <Nav.Link>All Tasks</Nav.Link>
                         </LinkContainer>
                         <LinkContainer to="/new">
-                            <Nav.Link>Create Job</Nav.Link>
+                            <Nav.Link>Create New Task</Nav.Link>
                         </LinkContainer>
                     </Nav>
                 </Container>

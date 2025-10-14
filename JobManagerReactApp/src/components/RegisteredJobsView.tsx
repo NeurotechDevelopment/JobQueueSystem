@@ -36,15 +36,21 @@ function RegisteredJobsView() {
             style={{ fontSize: '1.5rem', cursor: 'pointer' }}
             onClick={fetchJobs}
         ></i>
-        <Table bordered striped responsive hover>
+        <Table bordered striped hover responsive="xs">
+            <colgroup>
+              <col style={{ width: "28%" }} />
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "48%" }} />
+              <col style={{ width: "7%" }} />
+              <col style={{ width: "7%" }} />
+            </colgroup>
             <thead>
                 <tr>
-                    <td>JobId</td>
-                    <td>Type</td>
-                    <td>Description</td>
-                    <td>Status</td>
-                    <td>IsSuccess</td>
-                    <td>Error message</td>
+                    <th>JobId</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>IsSuccess</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,7 +61,6 @@ function RegisteredJobsView() {
                 <td>{j.description}</td>
                 <td>{j.status}</td>
                 <td>{j.isSuccess ? "true" : (j.isSuccess == null ? "N/A" : "false")}</td>
-                <td className="text-truncate">{j.errorMessage}</td>
             </tr>
         ))}
             </tbody>
