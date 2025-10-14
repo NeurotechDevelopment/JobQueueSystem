@@ -88,7 +88,7 @@ namespace JobHandlers.Handlers
                 for (var i = 0; i < pagesStreams.Length; i++)
                 {
                     var stream = pagesStreams[i];
-                    var item = archive.AddItem($"{baseFileName}_{i + 1}.{targetType}", stream, bControlStream: true,
+                    var item = archive.AddItem($"{baseFileName}_{i + 1}.{targetType.ToString().ToLower()}", stream, bControlStream: true,
                         FileAttributes.Normal);
                     archiveSize += item.DataStream.Length;
 
