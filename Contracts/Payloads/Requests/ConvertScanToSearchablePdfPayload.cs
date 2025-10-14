@@ -1,10 +1,23 @@
-﻿namespace Contracts.Payloads.Requests
+﻿using System.Text.Json.Serialization;
+
+namespace Contracts.Payloads.Requests
 {
     public record ConvertScanToSearchablePdfPayload : JobPayloadBase
     {
         /// <summary>
         /// Language for OCR processing, e.g. "eng" for English, "fra" for French.
         /// </summary>
-        public string? Language { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public PdfScanLanguage? Language { get; set; }
+    }
+
+    public enum PdfScanLanguage
+    {
+        Bulgarian,
+        English,
+        French, 
+        Polish, 
+        Russian,
+        Ukrainian
     }
 }

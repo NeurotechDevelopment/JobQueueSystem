@@ -214,7 +214,7 @@ namespace JobRepoClientTester
 
             var typedPayload = new ConvertScanToSearchablePdfPayload
             {
-                Language = "en"
+                Language = PdfScanLanguage.English
             };
             var payloadData = JsonSerializer.Serialize(typedPayload);
             var payloadWithAttachment = new JobPayload

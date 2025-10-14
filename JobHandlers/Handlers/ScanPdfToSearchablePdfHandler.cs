@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using System.Reflection;
+using Contracts;
 using Contracts.FileTypes;
 using Contracts.Payloads;
 using Shared;
@@ -30,8 +31,11 @@ namespace JobHandlers.Handlers
                 await using var stream = await this.fileService.FetchStreamAsync(this.client, requestAttachment);
                 using (PdfLoadedDocument pdfLoadedDocument = new PdfLoadedDocument(stream))
                 {
+                    var langEnum = payload?.Language ?? PdfScanLanguage.English;
+
                     // Set OCR language to process
-                    processor.Settings.Language = payload.Language;
+                    // Most tessdata language file names are prefixed with the first 3 letters of a language (eng.traineddata, ukr.traineddata etc)
+                    processor.Settings.Language = langEnum.ToString().Substring(0, 3).ToLowerInvariant();
 
                     // Process OCR by providing the PDF document
                     processor.PerformOCR(pdfLoadedDocument);
