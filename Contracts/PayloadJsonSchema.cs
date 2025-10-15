@@ -3,34 +3,35 @@
 namespace Contracts
 {
     /// <summary>
-    /// Schema definition.
+    /// Schema definition or schema property. Has 2-fold purpose: hold the schema for a payload.
+    /// Each property can also be a schema itself. When not a schema, only Title and Type are set.
+    /// This is done because of serialization issues if we were to use separate record for property item.
     /// </summary>
-    public record PayloadJsonSchema : PropertyJsonSchema
+    public record PayloadJsonSchema
     {
-        public string Description { get; set; }
+        public string Title { get; set; }
 
-        public IEnumerable<string> Required { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Description { get; set; }
 
-        public IDictionary<string, PropertyJsonSchema> Properties { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Type { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public object? Default { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public IEnumerable<string>? Required { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public IDictionary<string, PayloadJsonSchema> Properties { get; set; }
 
         /// <summary>
         /// Enum definitions.
         /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public IDictionary<string, IDictionary<string, IEnumerable<string>>>? Definitions { get; set; }
-    }
-
-    /// <summary>
-    /// Holds schema property value.
-    /// </summary>
-    public record PropertyJsonSchema
-    {
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Type { get; set; }
-
-        public string Title { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public object? Default { get; set; }
 
         /// <summary>
         /// Holds reference to Definitions.

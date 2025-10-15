@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using AutoMapper.Internal;
 using Contracts;
@@ -69,11 +70,11 @@ namespace JobRepositoryService
                 Type = "object"
             };
 
-            var props = new Dictionary<string, PropertyJsonSchema>();
+            var props = new Dictionary<string, PayloadJsonSchema>();
             foreach (var pi in payloadType.GetProperties())
             {
                 // Add to schema Required
-                if (!pi.PropertyType.IsNullableType())
+                if (!pi.PropertyType.IsNullableType() && pi.PropertyType.IsPrimitiveType())
                 {
                     requiredProperties.Add(pi.Name);
                 }
@@ -86,7 +87,9 @@ namespace JobRepositoryService
                 }
                 else
                 {
-                    props[pi.Name] = GenerateSchema(pi.PropertyType);
+                    props[pi.Name] = GenerateSchema(pi.PropertyType.ToUnderlying());
+                    props[pi.Name].Title = pi.GetFriendlyName();
+                    props[pi.Name].Description = null;
                 }
             }
 
@@ -100,30 +103,30 @@ namespace JobRepositoryService
             return schema;
         }
 
-        private static Func<PropertyJsonSchema> GetSimplePropGenerator(PropertyInfo pi, Dictionary<string, IDictionary<string, IEnumerable<string>>> enumDefs)
+        private static Func<PayloadJsonSchema> GetSimplePropGenerator(PropertyInfo pi, Dictionary<string, IDictionary<string, IEnumerable<string>>> enumDefs)
         {
             return pi.PropertyType.IsEnum() ? () => GenerateEnumEntry(pi, enumDefs) : () => GenerateSimpleProp(pi);
         }
 
-        private static PropertyJsonSchema GenerateEnumEntry(PropertyInfo pi, Dictionary<string, IDictionary<string, IEnumerable<string>>> enumDefs)
+        private static PayloadJsonSchema GenerateEnumEntry(PropertyInfo pi, Dictionary<string, IDictionary<string, IEnumerable<string>>> enumDefs)
         {
             var enumNames = Enum.GetNames(pi.PropertyType.ToUnderlying());
             enumDefs.Add($"{pi.Name}s", new Dictionary<string, IEnumerable<string>> { { "enum", enumNames } });
-            return new PropertyJsonSchema
+            return new PayloadJsonSchema
             {
                 Title = pi.GetFriendlyName(),
                 Ref = $"#/definitions/{pi.Name}s",
-                Default = null
+                Default = pi.GetCustomAttribute<DefaultValueAttribute>()?.Value
             };
         }
 
-        private static PropertyJsonSchema GenerateSimpleProp(PropertyInfo pi)
+        private static PayloadJsonSchema GenerateSimpleProp(PropertyInfo pi)
         {
-            return new PropertyJsonSchema
+            return new PayloadJsonSchema
             {
                 Title = pi.GetFriendlyName(),
                 Type = pi.PropertyType.ToJsonType(),
-                Default = null
+                Default = pi.GetCustomAttribute<DefaultValueAttribute>()?.Value
             };
         }
 
