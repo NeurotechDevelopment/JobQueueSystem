@@ -25,7 +25,8 @@ namespace JobRepositoryService
             var db = mongoClient.GetDatabase(this.optionSettings.Value.Database);
             var items = await db.GetCollection<JobDocument>(Job)
                 .FindAsync(_ => true);
-            return items.ToList().Select(mapper.Map<JobInfo>);
+            
+            return items.ToList().OrderByDescending(x => x.ReceivedAt).Select(mapper.Map<JobInfo>);
         }
 
         public IQueryable<Job> GetQueryableJobDocuments()
