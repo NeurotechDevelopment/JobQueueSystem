@@ -142,6 +142,7 @@ namespace JobRepositoryService
                 case JobType.Dummy:
                     return typeof(SimpleMessagePayload);
                 case JobType.ConvertExcelToPdf:
+                    return typeof(ConvertExcelToPdfPayload);
                 case JobType.ConvertHtmlToPdf:
                 case JobType.ConvertWordToPdf:
                     return typeof(EmptyPayload);
