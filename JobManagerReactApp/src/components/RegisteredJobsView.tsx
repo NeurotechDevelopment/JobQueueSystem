@@ -50,7 +50,7 @@ function RegisteredJobsView() {
                     <th>Type</th>
                     <th>Description</th>
                     <th>Status</th>
-                    <th>IsSuccess</th>
+                    <th>Success</th>
                 </tr>
             </thead>
             <tbody>

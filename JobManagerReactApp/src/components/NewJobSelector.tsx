@@ -132,7 +132,7 @@ function NewJobSelector() {
             <Alert show={alertState.show} variant={alertState.type} dismissible>{alertState.message}</Alert>
             <h3>Create new task</h3>
             <Dropdown className="mt-5" onSelect={handleSelect}>
-                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                <Dropdown.Toggle variant="primary" id="dropdown-basic">
                     Select task type
                 </Dropdown.Toggle>
 
@@ -186,7 +186,7 @@ function NewJobSelector() {
                             </div>)}
                         <Button
                             className="mb-5"
-                            variant="success"
+                            variant="primary"
                             type="submit"
                             disabled={isSubmitting}
                         >Create</Button>
