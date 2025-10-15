@@ -47,7 +47,7 @@ namespace JobHandlers
                             logger.LogWarning($"No handler found for job type {jobTypeDescriptor.JobType}. No queue subscription will be done.");
                             continue;
                         }
-                        cfg.ReceiveEndpoint($"{jobTypeDescriptor.JobType}-queue",
+                        cfg.ReceiveEndpoint($"{jobTypeDescriptor.JobType}{QueueNames.DispatchedQueueSuffix}",
                             e =>
                             {
                                 e.ConfigureConsumeTopology = false;

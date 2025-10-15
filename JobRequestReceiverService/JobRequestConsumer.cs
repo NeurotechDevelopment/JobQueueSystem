@@ -1,29 +1,44 @@
 ﻿using Contracts;
 using MassTransit;
+using MassTransit.Configuration;
+using Microsoft.Extensions.Options;
 using Shared;
 
 namespace JobRequestReceiverService
 {
-    public class JobRequestConsumer : IConsumer<JobRequest>
+    internal class JobRequestConsumer : IConsumer<JobRequest>
     {
         private readonly ILogger<JobRequestConsumer> logger;
         private readonly IJobRepositoryClient client;
+        private readonly ISendEndpointProvider sendEndpointProvider;
 
         public JobRequestConsumer(ILogger<JobRequestConsumer> logger, 
-            IJobRepositoryClient client)
+            IJobRepositoryClient client,
+            ISendEndpointProvider sendEndpointProvider)
         {
             this.logger = logger;
             this.client = client;
+            this.sendEndpointProvider = sendEndpointProvider;
         }
 
-        public Task Consume(ConsumeContext<JobRequest> context)
+        public async Task Consume(ConsumeContext<JobRequest> context)
         {
-            var msg = context.Message;
-            this.logger.LogDebug($"Received queue message. JobId {msg.JobId}, Type: {msg.Type}, Payload: {msg.Payload}");
+            var jobRequest = context.Message;
+            
+            this.logger.LogTrace($"Received queue message. JobId {jobRequest.JobId}, Type: {jobRequest.Type}, Payload: {jobRequest.Payload}");
 
-            this.client.AddJobRequest(msg);
+            this.client.AddJobRequest(jobRequest);
 
-            return Task.CompletedTask;
+            this.logger.LogTrace($"Published job {jobRequest.JobId} request to repository.");
+
+            const string uri = $"queue:{QueueNames.DispatcherReady}";
+            this.logger.LogTrace($"Publishing job request {jobRequest.JobId} to dispatcher queue {uri}");
+
+            var endpoint = await sendEndpointProvider.GetSendEndpoint(new Uri(uri));
+
+            await endpoint.Send(jobRequest);
+
+            this.logger.LogTrace($"Sent job request to {jobRequest.JobId} to dispatcher queue {uri} successfully.");
         }
     }
 }

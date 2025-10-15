@@ -4,6 +4,10 @@ using Shared.Queries;
 
 namespace JobDispatcherService
 {
+    /// <summary>
+    /// Currently disabled job dispatcher worker (not hosted by Program.cs). It is a polling model.
+    /// We are using JobRequestConsumer instead subscribed to a queue. 
+    /// </summary>
     public class JobDispatcherWorker : BackgroundService
     {
         private const int PollInterval = 1000; // ms
@@ -35,11 +39,11 @@ namespace JobDispatcherService
                 {
                     try
                     {
-                        await this.jobDispatcher.DispatchAsync(job, ct);
+                        await this.jobDispatcher.DispatchJobAsync(job, ct);
 
                         // Mark job as enqueued. We don't want to pick it up again.
                         logger.LogTrace($"Changing job {job.JobId} to status {JobStatus.Enqueued}");
-                        this.client.SetStatus(job.JobId, JobStatus.Enqueued);
+                        await this.client.SetStatusAsync(job.JobId, JobStatus.Enqueued);
                         logger.LogTrace($"Changed job {job.JobId} to status {JobStatus.Enqueued}");
                     }
                     catch (Exception e)

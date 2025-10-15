@@ -83,7 +83,9 @@ namespace JobProducerService.Controllers
 
         private async Task SendJobRequest(JobRequest jobRequest)
         {
-            var uri = $"queue:{this.appSettings.Value.RabbitConfig.QueueName}";
+            var uri = string.IsNullOrWhiteSpace(this.appSettings.Value.RabbitConfig.QueueName)
+                ? $"queue:{QueueNames.InitialJobRequests}"
+                : $"queue:{this.appSettings.Value.RabbitConfig.QueueName}";
 
             this.logger.LogTrace($"Getting endpoint for uri: {uri}");
 

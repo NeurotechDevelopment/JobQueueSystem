@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using MassTransit;
+using Shared;
 
 namespace JobDispatcherService
 {
@@ -14,15 +15,28 @@ namespace JobDispatcherService
             this.scopeFactory = scopeFactory;
         }
 
-        public async Task DispatchAsync(Job job, CancellationToken ct)
+        public async Task DispatchJobAsync(Job job, CancellationToken ct)
+        {
+            await DispatchJobRequestAsync(
+                new JobRequest
+                {
+                    JobId = job.JobId, 
+                    Description = job.Description, 
+                    Type = job.Type, 
+                    Payload = job.RequestPayload
+                },
+                ct);
+        }
+
+        public async Task DispatchJobRequestAsync(JobRequest jobRequest, CancellationToken ct)
         {
             using var scope = this.scopeFactory.CreateScope();
             var sendEndpointProvider = scope.ServiceProvider.GetService<ISendEndpointProvider>();
-            var workerQueue = new Uri($"queue:{job.Type}-queue");
+            var workerQueue = new Uri($"queue:{jobRequest.Type}{QueueNames.DispatchedQueueSuffix}");
             var sendEndpoint = await sendEndpointProvider.GetSendEndpoint(workerQueue);
-            logger.LogTrace($"Sending job {job.JobId} to {workerQueue}");
-            await sendEndpoint.Send(new JobRequest { JobId = job.JobId, Description = job.Description, Type = job.Type, Payload = job.RequestPayload }, ct);
-            logger.LogTrace($"Sent job {job.JobId} to {workerQueue}");
+            logger.LogTrace($"Sending job {jobRequest.JobId} to {workerQueue}");
+            await sendEndpoint.Send(jobRequest, ct);
+            logger.LogTrace($"Sent job {jobRequest.JobId} to {workerQueue}");
         }
     }
 }

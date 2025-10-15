@@ -4,6 +4,8 @@ namespace JobDispatcherService
 {
     public interface IJobDispatcher
     {
-        public Task DispatchAsync(Job job, CancellationToken ct);
+        public Task DispatchJobAsync(Job job, CancellationToken ct = default);
+
+        public Task DispatchJobRequestAsync(JobRequest jobRequest, CancellationToken ct = default);
     }
 }

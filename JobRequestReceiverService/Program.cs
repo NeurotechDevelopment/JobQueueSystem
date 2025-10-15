@@ -1,4 +1,3 @@
-using Contracts;
 using MassTransit;
 using Shared;
 using Shared.Configuration;
@@ -30,15 +29,17 @@ namespace JobRequestReceiverService
                     {
                         x.AddConsumer<JobRequestConsumer>(); // Consumer
 
+                        var rabbitConfig = appSettings.RabbitConfig;
                         x.UsingRabbitMq((ctx, cfg) =>
                         {
-                            cfg.Host(appSettings.RabbitConfig.Host, h =>
+                            cfg.Host(rabbitConfig.Host, h =>
                             {
-                                h.Username(appSettings.RabbitConfig.User);
-                                h.Password(appSettings.RabbitConfig.Password);
+                                h.Username(rabbitConfig.User);
+                                h.Password(rabbitConfig.Password);
                             });
-                            
-                            cfg.ReceiveEndpoint($"{appSettings.RabbitConfig.QueueName}", e =>
+
+                            var queueName = string.IsNullOrWhiteSpace(rabbitConfig.QueueName) ? QueueNames.InitialJobRequests : rabbitConfig.QueueName;
+                            cfg.ReceiveEndpoint(queueName, e =>
                             {
                                 e.ConfigureConsumer<JobRequestConsumer>(ctx);
                             });
