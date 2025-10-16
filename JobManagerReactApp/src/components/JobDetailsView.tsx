@@ -1,29 +1,28 @@
 import { useState, useEffect } from 'react'
+import type { JSX } from 'react'
 import { useParams } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
 import Stack  from 'react-bootstrap/Stack';
 import Accordion from 'react-bootstrap/Accordion';
 import RjfsForm from "@rjsf/core";
 import validator from "@rjsf/validator-ajv8"
-import type { JSONSchema7 } from "json-schema";
 import { payloadHasProperties } from '../api/JobContracts';
-import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job, IAttachment as Attachment } from '../api/JobContracts';
+import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job, JobType } from '../api/JobContracts';
 import axios from 'axios';
 import * as jobUtils from '../utils/jobdetails.ts'
-import bugImage from "../assets/bug.svg"
 
 function JobDetailsView() {
-    const { jobId } = useParams<{ jobId: uuid }>(); 
+    const { jobId } = useParams<{ jobId: string }>(); 
     const [job, setJob] = useState<Job | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [jobTypeDescriptor, setJobTypeDescriptor] = useState<JobTypeDescriptor>();
     useEffect(() => {
-            (async () => fetchData())();
+            (async () => fetchData(jobId))();
         }, [jobId]);
 
-    async function fetchData() {
+    async function fetchData(jobId: string | undefined) {
+        if (!jobId) return;
         const job = await fetchJob(jobId);
         if (!job) {
             return;
@@ -38,7 +37,7 @@ function JobDetailsView() {
     }
 
     // Fetches job type descriptors from job repository service
-    async function fetchJobTypeDescriptor(jobType: string) {
+    async function fetchJobTypeDescriptor(jobType: JobType) {
         try {
             const response = await axios.get<JobTypeDescriptor>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/job-types/${jobType}`);
             setError(null);
@@ -52,7 +51,7 @@ function JobDetailsView() {
     }
 
     // Reads job details from JobRepository service.
-    async function fetchJob(jobId: uuid) : Promise<Job | null> {
+    async function fetchJob(jobId: string) : Promise<Job | null> {
         try {
             const response = await axios.get<Job>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/${jobId}`);
             setError(null);
@@ -67,13 +66,13 @@ function JobDetailsView() {
     function renderGenericErrorCard() : JSX.Element {
         return (
             <Card border='danger'>                
-                <Card.Title><i class="bi bi-bug text-danger">&nbsp;</i>General Error</Card.Title>
+                <Card.Title><i className="bi bi-bug text-danger">&nbsp;</i>General Error</Card.Title>
                 <Card.Body>We could not retrieve task details due to internal error. Please try again later.</Card.Body>
             </Card>
         );
     }
 
-    function renderJobDetails() : JSX.Element {
+    function renderJobDetails(job: Job) : JSX.Element {
         return (
             <div>
                 <p><strong>ID:</strong> {job.jobId}</p>
@@ -83,14 +82,14 @@ function JobDetailsView() {
                 {jobUtils.isErrorResult(job) && 
                  <Card border='danger'>
                     <Card.Title>Error</Card.Title>  
-                    <Card.Body>{job.resultPayload.errorMessage}</Card.Body>
+                    <Card.Body>{job.resultPayload!.errorMessage}</Card.Body>
                  </Card>
                 }
             </div>
         );
     }
 
-    function renderJobRequestPayload() : JSX.Element {
+    function renderJobRequestPayload(job: Job, jobTypeDescriptor: JobTypeDescriptor) : JSX.Element {
         return (
             <Accordion>
             {(jobUtils.hasRequestPayload(job) || jobUtils.hasRequestAttachment(job)) && 
@@ -100,7 +99,7 @@ function JobDetailsView() {
                 {jobUtils.hasRequestPayload(job) && payloadHasProperties(jobUtils.getRequestSchema(jobTypeDescriptor)) &&
                  <RjfsForm
                    schema={jobUtils.getRequestSchema(jobTypeDescriptor)}
-                   formData={jobUtils.parseJson(job.requestPayload.data)}
+                   formData={jobUtils.parseJson(job.requestPayload!.data)}
                    disabled={true}
                    showErrorList={false}
                    liveValidate={true}
@@ -110,7 +109,7 @@ function JobDetailsView() {
                  </RjfsForm>}
                 {jobUtils.hasRequestAttachment(job) && 
                     <div>Uploaded attachment:  
-                        <a target='_blank' href={jobUtils.getFileLink(job.requestPayload.attachment.id)}>{job.requestPayload.attachment.fileName}</a>
+                        <a target='_blank' href={jobUtils.getFileLink(job.requestPayload!.attachment!.id)}>{job.requestPayload!.attachment!.fileName}</a>
                     </div>
                 }
                 </Accordion.Body>
@@ -119,13 +118,13 @@ function JobDetailsView() {
         );
     }
 
-    function renderJobResultPayload() : JSX.Element {
+    function renderJobResultPayload(job: Job, jobTypeDescriptor: JobTypeDescriptor) : JSX.Element {
         return (
             <div>
                 <h3>Result</h3>
                 <RjfsForm
                    schema={jobUtils.getResultSchema(jobTypeDescriptor)}
-                   formData={jobUtils.parseJson(job.resultPayload.payload.data)}
+                   formData={jobUtils.parseJson(job.resultPayload!.payload!.data)}
                    disabled={true}
                    showErrorList={false}
                    liveValidate={true}
@@ -137,11 +136,11 @@ function JobDetailsView() {
         );
     }
 
-    function renderJobResultAttachment() : JSX.Element {
+    function renderJobResultAttachment(job: Job) : JSX.Element {
         return (
                 <div>File result:  
-                 <a target='_blank' href={jobUtils.getFileLink(job.resultPayload.payload.attachment.id)}>
-                     {job.resultPayload.payload.attachment.fileName}
+                 <a target='_blank' href={jobUtils.getFileLink(job.resultPayload!.payload!.attachment!.id)}>
+                     {job.resultPayload!.payload!.attachment!.fileName}
                  </a>
                 </div>
         );
@@ -159,13 +158,13 @@ function JobDetailsView() {
            {error && renderGenericErrorCard()}
            <Stack gap={3}>
             {job && 
-                <div className="p-2">{renderJobDetails()}</div>}
-            {job && 
-                <div className="p-2">{renderJobRequestPayload()}</div>}
-            {jobUtils.hasResultPayload(job) && payloadHasProperties(jobUtils.getResultSchema(jobTypeDescriptor)) && 
-                <div className="p-2">{renderJobResultPayload()}</div>}
-            {jobUtils.hasResultAttachment(job) && 
-                <div className="p-2">{renderJobResultAttachment()}</div>}
+                <div className="p-2">{renderJobDetails(job)}</div>}
+            {job && jobTypeDescriptor &&
+                <div className="p-2">{renderJobRequestPayload(job, jobTypeDescriptor)}</div>}
+            {job && jobTypeDescriptor && jobUtils.hasResultPayload(job) && payloadHasProperties(jobUtils.getResultSchema(jobTypeDescriptor)) && 
+                <div className="p-2">{renderJobResultPayload(job, jobTypeDescriptor)}</div>}
+            {job && jobUtils.hasResultAttachment(job) && 
+                <div className="p-2">{renderJobResultAttachment(job)}</div>}
            </Stack>
         </div>
     );

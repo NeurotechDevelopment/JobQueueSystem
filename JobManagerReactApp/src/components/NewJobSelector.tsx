@@ -8,8 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import type { JobType, 
               IJobTypeDescriptor as JobTypeDescriptor, 
-              IJobRequest as JobRequest, 
-              IJob as Job } from '../api/JobContracts';
+              IJobRequest as JobRequest } from '../api/JobContracts';
 import { payloadHasProperties } from '../api/JobContracts';
 import axios from 'axios';
 import './NewJobSelector.css'
@@ -46,7 +45,7 @@ function NewJobSelector() {
     const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'success', message: '' });
 
     useEffect(() => {
-        axios.get<IJobTypeDescriptor[]>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/job-types`)
+        axios.get<JobTypeDescriptor[]>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/job-types`)
             .then(r => {
                 console.log('Fetched job type descriptor ok with axios.' + r.data);
                 console.log(r.data);
@@ -66,12 +65,17 @@ function NewJobSelector() {
     }
 
     // When user selects a job type from dropdown, set it as current job type descriptor
-    function handleSelect(jobType: JobType) {
+    function handleSelect(eventKey: string | null) {
+        const jobType: JobType = eventKey as unknown as JobType;
         let currentJobType = jobTypeDescriptors.find(j => j.jobType === jobType)!;
         currentJobType.payloadJsonSchema = stripRedundantSchemaProps(currentJobType.payloadJsonSchema);
         setJobTypeDescriptor(currentJobType);
         setDescription('');
         setFile(null);
+    }
+
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setFile(e.target.files?.[0] ?? null);
     }
 
     async function handleSubmit(e: React.FormEvent) {
@@ -164,9 +168,10 @@ function NewJobSelector() {
                             <Form.Group controlId="formFile" className="mb-3">
                                 <Form.Label>Attachment</Form.Label>
                                 <Form.Control
+                                    key={jobTypeDescriptor.jobType}
                                     type="file"
-                                    accept={jobTypeDescriptor.allowedAttachments.map(x => `.${x}`)}
-                                    onChange={e => setFile(e.target.files ? e.target.files[0] : null)}
+                                    accept={jobTypeDescriptor.allowedAttachments.map(x => `.${x}`).join(',')}
+                                    onChange={handleFileChange}
                                 />
                             </Form.Group>
                         }

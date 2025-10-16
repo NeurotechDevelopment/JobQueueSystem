@@ -18,7 +18,7 @@ function RegisteredJobsView() {
             .then(r => {
                 console.log('Fetched jobs ok with axios.');
                 setJobs(r.data);
-                setFetchErrorMessage(null);
+                setFetchErrorMessage(undefined);
             })
             .catch(err => {
                 console.error('Error fetching jobs', err)
@@ -58,7 +58,7 @@ function RegisteredJobsView() {
             <tr key={i}>
                 <td><Link to={`/jobs/${j.jobId}`}>{j.jobId}</Link></td>
                 <td>{j.type}</td>
-                <td>{j.description}</td>
+                <td>{j.description }</td>
                 <td>{j.status}</td>
                 <td>{j.isSuccess ? "true" : (j.isSuccess == null ? "N/A" : "false")}</td>
             </tr>

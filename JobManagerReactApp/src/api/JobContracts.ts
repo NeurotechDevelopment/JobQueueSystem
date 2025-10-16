@@ -20,6 +20,7 @@ export interface IJobInfo {
     /** Format: uuid */
     jobId?: string;
     type?: JobType;
+    description?: string | null;
     status?: JobStatus;
     /** Format: date-time */
     lastStatusChanged?: Date | null;
@@ -33,9 +34,9 @@ export interface IJobInfo {
 
 export interface IJob {
     /** Format: uuid */
-    jobId?: string;
-    type?: JobType;
-    status?: JobStatus;
+    jobId: string;
+    type: JobType;
+    status: JobStatus;
     description?: string;
     /** Format: date-time */
     lastStatusChanged?: Date | null;
@@ -86,8 +87,8 @@ export interface IJobTypeDescriptor {
 
 // Check if the payload schema has any properties. If not, don't render rjfs form.
 export function payloadHasProperties(schema: JSONSchema7): boolean {
-        if (schema.type === 'object' && schema.properties) {
-            return Object.keys(schema.properties).length > 0;
-        }
-        return false;
+    if (schema.type === 'object' && schema.properties) {
+        return Object.keys(schema.properties).length > 0;
+    }
+    return false;
 }
