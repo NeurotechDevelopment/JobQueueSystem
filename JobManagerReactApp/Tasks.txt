@@ -16,3 +16,9 @@ curl http://localhost:5178/odata/$metadata -o src/odata/JobRepositoryOdataMetada
 npx odata2ts
 
 
+Keycloack setup.
+Followed this guide for react implementation:https://blog.logrocket.com/implement-keycloak-authentication-react/
+Spent few hours.
+Installed keycloak server on local machine using docker: https://www.keycloak.org/getting-started/getting-started-docker
+Played with keycloak server, created realm, client, user. About 3 hours.
+Would be good adapting keycloack login page adapting to JobManagerReact style.
