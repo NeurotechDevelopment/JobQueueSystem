@@ -3,6 +3,7 @@ using MassTransit;
 using Shared;
 using Shared.Configuration;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace JobProducerService
 {
@@ -14,7 +15,6 @@ namespace JobProducerService
             builder.Services.AddLogging();
 
             // Add services to the container.
-
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 // Allow enum values to be serialized as strings.
@@ -29,6 +29,14 @@ namespace JobProducerService
             var appSettings = appSettingsSection.Get<ApplicationSettings>();
             builder.Services.Configure<ApplicationSettings>(appSettingsSection);
 
+            // Add authentication
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = appSettings.AuthOptions.Authority;
+                    options.Audience = appSettings.AuthOptions.ClientId;
+                    options.RequireHttpsMetadata = appSettings.AuthOptions.RequireHttpsMetadata;
+                });
             // Explicitly bind this subsection for the JobRepositoryClient
             var jobReposClientSection = appSettingsSection.GetSection(nameof(JobRepositoryClientConfig));
             builder.Services.Configure<JobRepositoryClientConfig>(jobReposClientSection);
@@ -57,7 +65,7 @@ namespace JobProducerService
             }
 
             //app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

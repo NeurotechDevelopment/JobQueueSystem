@@ -63,6 +63,11 @@ docker run -d --hostname my-rabbit --name some-rabbit  -p 5672:5672 -p 15672:156
 ## Logging
 Perhaps another microservice. Where will it log?
 
+## Authentication/Authorization
+Installed Keycloak docker.
+Created realm JobQueueSystemRealm. Added client for JobManagerReact.
+To authenticate front-end client, added separate audience claim (that will contain client id of a react app) https://dev.to/saltorgil/react-keycloak-integration-secure-auth-for-existing-backend-182b.
+
 # Notes
 Downloading MongoDB. Done.
 Launched MongoDB Compass. Created JobQueueSystem database and looking on what all this means. Apparently schema isn't created without data.

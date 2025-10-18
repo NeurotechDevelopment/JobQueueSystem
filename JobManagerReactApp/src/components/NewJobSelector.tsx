@@ -10,6 +10,7 @@ import type { JobType,
               IJobTypeDescriptor as JobTypeDescriptor, 
               IJobRequest as JobRequest } from '../api/JobContracts';
 import { payloadHasProperties } from '../api/JobContracts';
+import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import './NewJobSelector.css'
 import type { JSONSchema7 } from "json-schema";
@@ -23,6 +24,8 @@ type AlertState = {
 
 // Function component.
 function NewJobSelector() {
+    const { keycloak } = useKeycloak();
+
     // Initially fetch all job type descriptors
     const [jobTypeDescriptors, setJobTypeDescriptors] = useState<JobTypeDescriptor[]>([]);
 
@@ -92,14 +95,15 @@ function NewJobSelector() {
                 data: payload ? JSON.stringify(payload) : undefined
             }
         }
-
+ 
         if (file) {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('jobRequest', JSON.stringify(jobRequest));
             axios.post(`${import.meta.env.VITE_JOB_PRODUCER_API}/create-job-file`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${keycloak.token}`
                 }
             })
                 .then(r => {
@@ -114,7 +118,11 @@ function NewJobSelector() {
                     setIsSubmitting(false);
                 });
         } else {
-            axios.post(`${import.meta.env.VITE_JOB_PRODUCER_API}/create-job`, jobRequest)
+            axios.post(`${import.meta.env.VITE_JOB_PRODUCER_API}/create-job`, jobRequest, {
+                    headers: {
+                        Authorization: `Bearer ${keycloak.token}`
+                    }
+                })
                 .then(r => {
                     console.log('Job created successfully.', r.data);
                     setAlertState({ show: true, type: 'success', message: 'Job created successfully.' });

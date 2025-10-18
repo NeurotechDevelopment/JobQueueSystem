@@ -3,12 +3,14 @@ using Contracts;
 using Contracts.Payloads;
 using JobProducerService.Configuration;
 using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Shared;
 
 namespace JobProducerService.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class JobPublisherController : ControllerBase
