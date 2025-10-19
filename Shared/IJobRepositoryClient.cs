@@ -72,7 +72,7 @@ namespace Shared
 
         #region Sync versions
 
-        public string UploadAttachment(string tag, string fileName, Stream fileStream, string contentType);
+        public string UploadAttachment(string tag, string fileName, Stream fileStream, string contentType, string? authToken = null);
 
         public Stream DownloadAttachmentStream(string attachmentId);
 
@@ -84,7 +84,7 @@ namespace Shared
 
         #region Async versions
 
-        public Task<string> UploadAttachmentAsync(string tag, string fileName, Stream fileStream, string contentType);
+        public Task<string> UploadAttachmentAsync(string tag, string fileName, Stream fileStream, string contentType, string? authToken = null);
 
         public Task<Stream> DownloadAttachmentStreamAsync(string attachmentId, CancellationToken token = default);
 

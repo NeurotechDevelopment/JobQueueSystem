@@ -1,10 +1,11 @@
-﻿using RestSharp;
+﻿using System.Net.Http.Headers;
+using RestSharp;
 
 namespace Shared
 {
     public partial class JobRepositoryClient
     {
-        public string UploadAttachment(string tag, string fileName, Stream fileStream, string contentType)
+        public string UploadAttachment(string tag, string fileName, Stream fileStream, string contentType, string? authToken = null)
         {
             if (fileStream.CanSeek)
             {
@@ -12,15 +13,24 @@ namespace Shared
                 fileStream.Position = 0;
             }
             using var content = new StreamContent(fileStream);
-            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType ?? "application/octet-stream");
+            content.Headers.ContentType = new MediaTypeHeaderValue(contentType ?? "application/octet-stream");
             var streamUploadUri = $"{this.jobServiceUrl.TrimEnd('/')}/{AttachmentsApiResource}/stream/{tag}/{fileName}";
-            var response = HttpClient.PostAsync(streamUploadUri, content).Result;
+            var request = new HttpRequestMessage(HttpMethod.Post, streamUploadUri)
+            {
+                Content = content
+            };
+            if (!string.IsNullOrWhiteSpace(authToken))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authToken.Replace("Bearer ", string.Empty));
+            }
+
+            var response = HttpClient.Send(request);
             response.EnsureSuccessStatusCode();
             var fileId = response.Content.ReadAsStringAsync().Result;
             return fileId;
         }
 
-        public async Task<string> UploadAttachmentAsync(string tag, string fileName, Stream fileStream, string contentType)
+        public async Task<string> UploadAttachmentAsync(string tag, string fileName, Stream fileStream, string contentType, string? authToken = null)
         {
             if (fileStream.CanSeek)
             {
@@ -29,9 +39,19 @@ namespace Shared
             }
 
             using var content = new StreamContent(fileStream);
-            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType ?? "application/octet-stream");
+            content.Headers.ContentType = new MediaTypeHeaderValue(contentType ?? "application/octet-stream");
             var streamUploadUri = $"{this.jobServiceUrl.TrimEnd('/')}/{AttachmentsApiResource}/stream/{tag}/{fileName}";
-            var response = await HttpClient.PostAsync(streamUploadUri, content);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, streamUploadUri)
+            {
+                Content = content
+            };
+            if (authToken != null)
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authToken.Replace("Bearer ", string.Empty));
+            }
+            
+            var response = await HttpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var fileId = await response.Content.ReadAsStringAsync();
             return fileId;

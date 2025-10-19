@@ -62,12 +62,18 @@ namespace JobProducerService.Controllers
             {
                 return BadRequest("No file uploaded.");
             }
+            var token = Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(token))
+            {
+                this.logger.LogWarning("No authorization token provided in the request headers.");
+                return Unauthorized("Authorization token is required.");
+            }
 
             this.logger.LogTrace($"Uploading attachment for jobId: {request.JobId}, fileName: {file.FileName}, contentType: {file.ContentType}, size: {file.Length}");
 
             await using (var stream = file.OpenReadStream())
             {
-                var fileId = await this.client.UploadAttachmentAsync(request.JobId.ToString(), file.FileName, stream, file.ContentType);
+                var fileId = await this.client.UploadAttachmentAsync(request.JobId.ToString(), file.FileName, stream, file.ContentType, token);
                 var attachment = new Attachment(fileId, file.FileName, file.ContentType, file.Length);
                 if (request.Payload == null)
                 {
