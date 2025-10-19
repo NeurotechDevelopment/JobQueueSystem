@@ -9,10 +9,11 @@ import RjfsForm from "@rjsf/core";
 import validator from "@rjsf/validator-ajv8"
 import { payloadHasProperties } from '../api/JobContracts';
 import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job, JobType } from '../api/JobContracts';
-import axios from 'axios';
+import useApiClient from '../api/api-client';
 import * as jobUtils from '../utils/jobdetails.ts'
 
 function JobDetailsView() {
+    const { getJob, getJobTypeDescriptor } = useApiClient();
     const { jobId } = useParams<{ jobId: string }>(); 
     const [job, setJob] = useState<Job | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -23,14 +24,12 @@ function JobDetailsView() {
 
     async function fetchData(jobId: string | undefined) {
         if (!jobId) return;
+
         const job = await fetchJob(jobId);
-        if (!job) {
-            return;
-        }
+        if (!job) return;
+
         const jobTypeDescriptor = await fetchJobTypeDescriptor(job.type);
-        if (!jobTypeDescriptor) {
-            return;
-        }
+        if (!jobTypeDescriptor) return;
 
         setJob(job);
         setJobTypeDescriptor(jobTypeDescriptor);
@@ -39,7 +38,7 @@ function JobDetailsView() {
     // Fetches job type descriptors from job repository service
     async function fetchJobTypeDescriptor(jobType: JobType) {
         try {
-            const response = await axios.get<JobTypeDescriptor>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/job-types/${jobType}`);
+            const response = await getJobTypeDescriptor(jobType);
             setError(null);
             return response.data;
         }
@@ -53,7 +52,7 @@ function JobDetailsView() {
     // Reads job details from JobRepository service.
     async function fetchJob(jobId: string) : Promise<Job | null> {
         try {
-            const response = await axios.get<Job>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/${jobId}`);
+            const response = await getJob(jobId);
             setError(null);
             return response.data;
         } catch(err) {

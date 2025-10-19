@@ -2,28 +2,28 @@ import { useState, useEffect } from 'react'
 import Table from 'react-bootstrap/Table';
 import Alert from 'react-bootstrap/Alert';
 import { Link } from 'react-router-dom'
-import axios from 'axios';
 import type { IJobInfo as JobInfo } from '../api/JobContracts';
+import useApiClient from '../api/api-client';
 import './RegisteredJobsView.css'
 
 function RegisteredJobsView() {
+    const { getJobList } = useApiClient();
     const [jobs, setJobs] = useState<JobInfo[]>([]);
     const [fetchErrorMessage, setFetchErrorMessage] = useState<string>();
     useEffect(() => {
-            fetchJobs();
+        (async () => fetchJobs())();
         }, []);
 
-    function fetchJobs() {
-        axios.get<JobInfo[]>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository`)
-            .then(r => {
-                console.log('Fetched jobs ok with axios.');
-                setJobs(r.data);
-                setFetchErrorMessage(undefined);
-            })
-            .catch(err => {
-                console.error('Error fetching jobs', err)
-                setFetchErrorMessage('Error fetching jobs.' + err.message);
-            });
+    async function fetchJobs() {
+        try {
+            const response = await getJobList();
+            console.log('Fetched jobs ok with apiClient.');
+            setJobs(response.data);
+            setFetchErrorMessage(undefined);
+        } catch (err) {
+            console.error('Error fetching jobs', err)
+            setFetchErrorMessage('Error fetching jobs.' + err.message);
+        }
     }
 
     return (

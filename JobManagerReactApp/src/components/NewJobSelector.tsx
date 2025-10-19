@@ -10,8 +10,7 @@ import type { JobType,
               IJobTypeDescriptor as JobTypeDescriptor, 
               IJobRequest as JobRequest } from '../api/JobContracts';
 import { payloadHasProperties } from '../api/JobContracts';
-import { useKeycloak } from '@react-keycloak/web';
-import axios from 'axios';
+import useApiClient from '../api/api-client';
 import './NewJobSelector.css'
 import type { JSONSchema7 } from "json-schema";
 
@@ -24,7 +23,7 @@ type AlertState = {
 
 // Function component.
 function NewJobSelector() {
-    const { keycloak } = useKeycloak();
+    const { getJobTypeDescriptors, postJobRequest } = useApiClient();
 
     // Initially fetch all job type descriptors
     const [jobTypeDescriptors, setJobTypeDescriptors] = useState<JobTypeDescriptor[]>([]);
@@ -48,16 +47,16 @@ function NewJobSelector() {
     const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'success', message: '' });
 
     useEffect(() => {
-        axios.get<JobTypeDescriptor[]>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/job-types`)
-            .then(r => {
-                console.log('Fetched job type descriptor ok with axios.' + r.data);
-                console.log(r.data);
-                setJobTypeDescriptors(r.data);
-            })
-            .catch(err => {
+        (async () => {
+            try {
+                const response = await getJobTypeDescriptors();
+                console.log('Fetched job type descriptor ok with axios.' + response.data);
+                setJobTypeDescriptors(response.data);
+            } catch (err) {
                 console.error('Error fetching job type descriptor', err);
-                setAlertState( { show: true, type: 'danger', message: 'Error fetching job type descriptor.' + err.message})
-            });
+                setAlertState({ show: true, type: 'danger', message: 'Error fetching job type descriptor.' + err.message });
+            }
+        })();
     }, []);
 
     // Remove title and description properties from schema that rjfs will render automatically which look ugly. We just want clean form.
@@ -85,8 +84,6 @@ function NewJobSelector() {
         e.preventDefault();
         if (!jobTypeDescriptor) return;
 
-        setIsSubmitting(true);
-
         const jobRequest: JobRequest = {
             jobId: crypto.randomUUID(),
             type: jobTypeDescriptor.jobType,
@@ -95,48 +92,18 @@ function NewJobSelector() {
                 data: payload ? JSON.stringify(payload) : undefined
             }
         }
- 
-        if (file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('jobRequest', JSON.stringify(jobRequest));
-            axios.post(`${import.meta.env.VITE_JOB_PRODUCER_API}/create-job-file`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${keycloak.token}`
-                }
-            })
-                .then(r => {
-                    console.log('Job created with file attachment successfully.', r.data);
-                    setAlertState({ show: true, type: 'success', message: 'Job created with file attachment successfully.' });
-                })
-                .catch(err => {
-                    console.error('Error creating job with file attachment', err);
-                    setAlertState({ show: true, type: 'danger', message: 'Error creating job with file attachment: ' + err.message });
-                })
-                .finally(() => {
-                    setIsSubmitting(false);
-                });
-        } else {
-            axios.post(`${import.meta.env.VITE_JOB_PRODUCER_API}/create-job`, jobRequest, {
-                    headers: {
-                        Authorization: `Bearer ${keycloak.token}`
-                    }
-                })
-                .then(r => {
-                    console.log('Job created successfully.', r.data);
-                    setAlertState({ show: true, type: 'success', message: 'Job created successfully.' });
-                })
-                .catch(err => {
-                    console.error('Error creating job', err);
-                    setAlertState({ show: true, type: 'danger', message: 'Error creating job: ' + err.message });
-                })
-                .finally(() => {
-                    setIsSubmitting(false);
-                });
-        }
 
-        setIsSubmitting(false);
+        try {
+            setIsSubmitting(true);
+            const result = await postJobRequest(jobRequest, file);
+            console.log('Task created successfully.', result.data);
+            setAlertState({ show: true, type: 'success', message: 'Task created successfully.' });
+
+        } catch (err) {
+            setAlertState({ show: true, type: 'danger', message: 'Error creating job: ' + err.message });
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
