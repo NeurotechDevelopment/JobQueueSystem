@@ -1,5 +1,5 @@
 import type { JSONSchema7 } from "json-schema";
-import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job, IAttachment as Attachment } from '../api/JobContracts.ts';
+import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job } from '../api/JobContracts.ts';
 
 // Forms file download link to JobRepository service with the given fileId.
 export function getFileLink(fileId: string | null | undefined): string {

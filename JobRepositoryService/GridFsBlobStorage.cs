@@ -37,6 +37,13 @@ namespace JobRepositoryService
             return (tag.AsString, file.Filename, contentType.AsString);
         }
 
+        public async Task<bool> FileExistsAsync(string id)
+        {
+            var filter = Builders<GridFSFileInfo>.Filter.Eq(x => x.Id, ObjectId.Parse(id));
+            var asyncFileCursor = await this.gridFsBucket.FindAsync(filter);
+            return await asyncFileCursor.AnyAsync();
+        }
+
         public async Task<string> UploadAsync(string tag, string blobName, string contentType, byte[] data)
         {
             var options = new GridFSUploadOptions

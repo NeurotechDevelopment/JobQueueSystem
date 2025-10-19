@@ -15,5 +15,7 @@
         Task<byte[]> DownloadAsync(string id);
 
         Task DeleteAsync(string id);
+
+        Task<bool> FileExistsAsync(string id);
     }
 }

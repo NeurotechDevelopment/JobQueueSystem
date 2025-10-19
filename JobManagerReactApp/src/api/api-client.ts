@@ -57,5 +57,13 @@ export default function useApiClient() {
         });
     }
 
-    return { getJobList, getJob, getJobTypeDescriptor, getJobTypeDescriptors, postJobRequest }
+    const genTempFileLink = async (fileId: string) => {
+        return axios.get<string>(`${import.meta.env.VITE_API_BASE_URL}/JobsAttachments/stream/generate-temp-link/${fileId}`, {
+            headers: {
+                Authorization: `Bearer ${keycloak.token}`
+            }
+        });
+    }
+
+    return { getJobList, getJob, getJobTypeDescriptor, getJobTypeDescriptors, postJobRequest, genTempFileLink }
 }

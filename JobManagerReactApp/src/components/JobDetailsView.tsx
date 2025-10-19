@@ -12,12 +12,16 @@ import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job, JobType } fr
 import useApiClient from '../api/api-client';
 import * as jobUtils from '../utils/jobdetails.ts'
 
+// Takes jobId as a route parameter and displays job details.
 function JobDetailsView() {
-    const { getJob, getJobTypeDescriptor } = useApiClient();
-    const { jobId } = useParams<{ jobId: string }>(); 
+    const { jobId } = useParams<{ jobId: string }>();
+    const { getJob, getJobTypeDescriptor, genTempFileLink } = useApiClient();
     const [job, setJob] = useState<Job | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [jobTypeDescriptor, setJobTypeDescriptor] = useState<JobTypeDescriptor>();
+    const [requestAttachmentDownloadUrl, setRequestAttachmentDownloadUrl] = useState<string | null>(null);
+    const [resultAttachmentDownloadUrl, setResultAttachmentDownloadUrl] = useState<string | null>(null);
+
     useEffect(() => {
             (async () => fetchData(jobId))();
         }, [jobId]);
@@ -33,6 +37,16 @@ function JobDetailsView() {
 
         setJob(job);
         setJobTypeDescriptor(jobTypeDescriptor);
+
+        if (job && jobUtils.hasRequestAttachment(job)) {
+            const url = await genTempFileLink(job.requestPayload!.attachment!.id!);
+            setRequestAttachmentDownloadUrl(url.data);
+        }
+
+        if (job && jobUtils.hasResultAttachment(job)) {
+            const url = await genTempFileLink(job.resultPayload!.payload!.attachment!.id!);
+            setResultAttachmentDownloadUrl(url.data);
+        }
     }
 
     // Fetches job type descriptors from job repository service
@@ -106,9 +120,9 @@ function JobDetailsView() {
                  >
                    <></>
                  </RjfsForm>}
-                {jobUtils.hasRequestAttachment(job) && 
+                 {jobUtils.hasRequestAttachment(job) && requestAttachmentDownloadUrl &&
                     <div>Uploaded attachment:  
-                        <a target='_blank' href={jobUtils.getFileLink(job.requestPayload!.attachment!.id)}>{job.requestPayload!.attachment!.fileName}</a>
+                      <a target='_blank' href={requestAttachmentDownloadUrl}>{job.requestPayload!.attachment!.fileName}</a>
                     </div>
                 }
                 </Accordion.Body>
@@ -135,10 +149,12 @@ function JobDetailsView() {
         );
     }
 
-    function renderJobResultAttachment(job: Job) : JSX.Element {
+    function renderJobResultAttachment(job: Job): JSX.Element {
+        if (!resultAttachmentDownloadUrl) return <div></div>;
+        
         return (
                 <div>File result:  
-                 <a target='_blank' href={jobUtils.getFileLink(job.resultPayload!.payload!.attachment!.id)}>
+                 <a target='_blank' href={resultAttachmentDownloadUrl}>
                      {job.resultPayload!.payload!.attachment!.fileName}
                  </a>
                 </div>
