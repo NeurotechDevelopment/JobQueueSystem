@@ -1,6 +1,8 @@
 using Contracts;
 using Contracts.Payloads;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
@@ -41,8 +43,8 @@ namespace JobRepositoryService
                     new OpenApiInfo { Title = "Jobs ODATA API", Version = "v1" });
             });
             builder.Services.AddAutoMapper( p => p.AddMaps(Assembly.GetExecutingAssembly()));
-            builder.Services.Configure<ApplicationSettings>(
-                builder.Configuration.GetSection(nameof(ApplicationSettings)));
+            var appSettingsSection = builder.Configuration.GetSection(nameof(ApplicationSettings));
+            builder.Services.Configure<ApplicationSettings>(appSettingsSection);
             builder.Services.AddSingleton<IJobRepository, MongoJobRepository>();
             builder.Services.AddSingleton<IBlobStorage, GridFsBlobStorage>();
             builder.Services.AddSingleton<IJobService, JobService>();
@@ -51,6 +53,20 @@ namespace JobRepositoryService
                 var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ApplicationSettings>>().Value;
                 return new MongoClient(settings.ConnectionString);
             });
+
+            // Add authentication
+            var appSettings = appSettingsSection.Get<ApplicationSettings>();
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = appSettings.AuthOptions.Authority;
+                    options.RequireHttpsMetadata = appSettings.AuthOptions.RequireHttpsMetadata;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = true,
+                        ValidAudiences = appSettings.AuthOptions.Audiences
+                    };
+                });
 
             var app = builder.Build();
 

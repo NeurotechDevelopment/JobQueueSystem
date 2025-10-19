@@ -1,10 +1,12 @@
-using Contracts;
-using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using Contracts;
 using Contracts.Payloads;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JobRepositoryService.Controllers
 {
+    [Authorize]
     [ApiExplorerSettings(GroupName = ServicesConstants.JobsRepository)]
     [ApiController]
     [Route(ServicesConstants.ServiceResources.JobsApiResource)]

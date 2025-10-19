@@ -1,8 +1,10 @@
 ﻿using Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobRepositoryService.Controllers
 {
+    [Authorize]
     [ApiExplorerSettings(GroupName = ServicesConstants.JobsAttachments)]
     [ApiController]
     [Route(ServicesConstants.ServiceResources.AttachmentsApiResource)]

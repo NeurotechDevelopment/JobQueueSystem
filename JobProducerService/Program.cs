@@ -1,9 +1,10 @@
 using JobProducerService.Configuration;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Shared;
 using Shared.Configuration;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace JobProducerService
 {
@@ -34,8 +35,12 @@ namespace JobProducerService
                 .AddJwtBearer(options =>
                 {
                     options.Authority = appSettings.AuthOptions.Authority;
-                    options.Audience = appSettings.AuthOptions.ClientId;
                     options.RequireHttpsMetadata = appSettings.AuthOptions.RequireHttpsMetadata;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = true,
+                        ValidAudiences = appSettings.AuthOptions.Audiences
+                    };
                 });
             // Explicitly bind this subsection for the JobRepositoryClient
             var jobReposClientSection = appSettingsSection.GetSection(nameof(JobRepositoryClientConfig));
