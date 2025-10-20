@@ -10,9 +10,9 @@ namespace Shared
     /// </summary>
     public partial class JobRepositoryClient : IJobRepositoryClient
     {
-        private const string JobApiResource = ServicesConstants.ServiceResources.JobsApiResource;
-        private const string OdataJobApiResource = ServicesConstants.ServiceResources.OdataJobsApiResource;
-        private const string AttachmentsApiResource = ServicesConstants.ServiceResources.AttachmentsApiResource;
+        private const string JobApiResource = ServicesConstants.ControllerRoutes.JobsApiResource;
+        private const string OdataJobApiResource = ServicesConstants.ControllerRoutes.OdataJobsApiResource;
+        private const string AttachmentsApiResource = ServicesConstants.ControllerRoutes.AttachmentsApiResource;
 
         private readonly ILogger<JobRepositoryClient> logger;
         private readonly string jobServiceUrl;

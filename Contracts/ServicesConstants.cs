@@ -12,15 +12,20 @@
 
         public const string OdataRoutePrefix = "Odata";
 
-        public const string JobTypesUrlSegment = "job-types";
-
-        public class ServiceResources
+        public class ControllerRoutes
         {
             public const string JobsApiResource = $"{ApiPrefix}/{JobsRepository}";
 
             public const string OdataJobsApiResource = $"{OdataRoutePrefix}/{JobsEntity}";
 
             public const string AttachmentsApiResource = $"{ApiPrefix}/{JobsAttachments}";
+        }
+
+        public class ActionRoutes
+        {
+            public const string Jobs = "jobs";
+            public const string JobTypes = "job-types";
+            public const string Stream = "stream";
         }
     }
 }

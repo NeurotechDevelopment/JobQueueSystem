@@ -6,7 +6,7 @@ export default function useApiClient() {
     const { keycloak } = useKeycloak();
 
     const getJobList = async () => {
-        return axios.get<JobInfo[]>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository`, {
+        return axios.get<JobInfo[]>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/jobs`, {
             headers: {
                 Authorization: `Bearer ${keycloak.token}`
             }
@@ -14,7 +14,7 @@ export default function useApiClient() {
     }
 
     const getJob = async (jobId: string) => {
-        return axios.get<Job>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/${jobId}`, {
+        return axios.get<Job>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/jobs/${jobId}`, {
             headers: {
                 Authorization: `Bearer ${keycloak.token}`
             }

@@ -8,7 +8,7 @@ namespace JobRepositoryService.Controllers
 {
     [Authorize]
     [ApiExplorerSettings(GroupName = ServicesConstants.OdataRoutePrefix)]
-    [Route(ServicesConstants.ServiceResources.OdataJobsApiResource)]
+    [Route(ServicesConstants.ControllerRoutes.OdataJobsApiResource)]
     [ApiController]
     public class JobsRepositoryOdataController : ODataController
     {
@@ -19,6 +19,7 @@ namespace JobRepositoryService.Controllers
         {
             this.logger = logger;
             this.repository = repository;
+            this.logger.LogTrace($"Created {nameof(JobsRepositoryOdataController)} instance.");
         }
 
         [EnableQuery]
@@ -26,6 +27,7 @@ namespace JobRepositoryService.Controllers
         [HttpGet] // For regular queries support
         public IQueryable<Job> GetQueryableJobs()
         {
+            this.logger.LogTrace($"{nameof(GetQueryableJobs)}. Query: {Request.QueryString}");
             return this.repository.GetQueryableJobDocuments();
         }
     }

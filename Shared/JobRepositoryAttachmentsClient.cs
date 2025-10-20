@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using Contracts;
 using RestSharp;
 
 namespace Shared
@@ -14,7 +15,7 @@ namespace Shared
             }
             using var content = new StreamContent(fileStream);
             content.Headers.ContentType = new MediaTypeHeaderValue(contentType ?? "application/octet-stream");
-            var streamUploadUri = $"{this.jobServiceUrl.TrimEnd('/')}/{AttachmentsApiResource}/stream/{tag}/{fileName}";
+            var streamUploadUri = $"{this.jobServiceUrl.TrimEnd('/')}/{AttachmentsApiResource}/{ServicesConstants.ActionRoutes.Stream}/{tag}/{fileName}";
             var request = new HttpRequestMessage(HttpMethod.Post, streamUploadUri)
             {
                 Content = content
@@ -40,7 +41,7 @@ namespace Shared
 
             using var content = new StreamContent(fileStream);
             content.Headers.ContentType = new MediaTypeHeaderValue(contentType ?? "application/octet-stream");
-            var streamUploadUri = $"{this.jobServiceUrl.TrimEnd('/')}/{AttachmentsApiResource}/stream/{tag}/{fileName}";
+            var streamUploadUri = $"{this.jobServiceUrl.TrimEnd('/')}/{AttachmentsApiResource}/{ServicesConstants.ActionRoutes.Stream}/{tag}/{fileName}";
 
             var request = new HttpRequestMessage(HttpMethod.Post, streamUploadUri)
             {
@@ -61,7 +62,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                var request = new RestRequest($"{AttachmentsApiResource}/stream/{attachmentId}");
+                var request = new RestRequest($"{AttachmentsApiResource}/{ServicesConstants.ActionRoutes.Stream}/{attachmentId}");
                 return client.DownloadStream(request);
             }
         }
@@ -70,7 +71,7 @@ namespace Shared
         {
             using (var client = new RestClient(jobServiceUrl))
             {
-                var request = new RestRequest($"{AttachmentsApiResource}/stream/{attachmentId}");
+                var request = new RestRequest($"{AttachmentsApiResource}/{ServicesConstants.ActionRoutes.Stream}/{attachmentId}");
                 return await client.DownloadStreamAsync(request, token);
             }
         }

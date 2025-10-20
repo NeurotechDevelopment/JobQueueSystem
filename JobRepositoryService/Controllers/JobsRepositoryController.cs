@@ -9,7 +9,7 @@ namespace JobRepositoryService.Controllers
     [Authorize]
     [ApiExplorerSettings(GroupName = ServicesConstants.JobsRepository)]
     [ApiController]
-    [Route(ServicesConstants.ServiceResources.JobsApiResource)]
+    [Route(ServicesConstants.ControllerRoutes.JobsApiResource)]
     public class JobsRepositoryController : ControllerBase
     {
         private readonly ILogger<JobsRepositoryController> logger;
@@ -27,61 +27,69 @@ namespace JobRepositoryService.Controllers
             this.logger.LogTrace($"Created {nameof(JobsRepositoryController)} instance.");
         }
 
-        [HttpGet(ServicesConstants.JobTypesUrlSegment)]
+        #region JobTypes
+
+        [HttpGet(ServicesConstants.ActionRoutes.JobTypes)]
         public IEnumerable<JobTypeDescriptor> GetJobTypeDescriptors()
         {
             return this.mapper.Map<IEnumerable<JobTypeDescriptor>>(this.jobService.GetJobTypes());
         }
 
-        [HttpGet($"{ServicesConstants.JobTypesUrlSegment}/{{jobTypeId}}")]
+        [HttpGet($"{ServicesConstants.ActionRoutes.JobTypes}/{{jobTypeId}}")]
         public JobTypeDescriptor GetJobTypeDescriptor(JobType jobTypeId)
         {
             var jobTypeDescriptor = this.jobService.GetJobTypes().Single(x => x.Key == jobTypeId);
             return this.mapper.Map<JobTypeDescriptor>(jobTypeDescriptor);
         }
 
-        [HttpGet]
+        #endregion
+
+        #region Jobs
+
+        [HttpGet(ServicesConstants.ActionRoutes.Jobs)]
         public async Task<IEnumerable<JobInfo>> GetJobInfos()
         {
             return await this.repository.GetJobsAsync();
         }
 
-        [HttpGet("{jobId}")]
+        [HttpGet($"{ServicesConstants.ActionRoutes.Jobs}/{{jobId}}")]
         public async Task<Job> GetJob(Guid jobId)
         {
             return await this.repository.GetJobAsync(jobId);
         }
 
-        [HttpPost]
+        [HttpPost(ServicesConstants.ActionRoutes.Jobs)]
         public async Task<IActionResult> CreateJobRequest(JobRequest jobRequest)
         {
             await this.repository.AddJobRequestAsync(jobRequest);
             return Ok();
         }
 
-        [HttpDelete("{jobId}")]
+        [HttpDelete($"{ServicesConstants.ActionRoutes.Jobs}/{{jobId}}")]
         public async Task<ActionResult<long>> DeleteJob(Guid jobId)
         {
             // Removes a job from datastore with associated files.
             return await this.jobService.DeleteJobAsync(jobId);
         }
 
-        [HttpPut("{jobId}/SetStatus/{status}")]
+        [HttpPut($"{ServicesConstants.ActionRoutes.Jobs}/{{jobId}}/SetStatus/{{status}}")]
         public async Task<ActionResult<long>> SetStatus(Guid jobId, JobStatus status)
         {
             return await this.repository.SetStatusAsync(jobId, status);
         }
 
-        [HttpPut("{jobId}/SetResult")]
+        [HttpPut($"{ServicesConstants.ActionRoutes.Jobs}/{{jobId}}/SetResult")]
         public async Task<ActionResult<long>> SetResult(Guid jobId, [FromBody] JobPayload result)
         {
             return await this.repository.SetResultAsync(jobId, result);
         }
 
-        [HttpPut("{jobId}/SetErrorResult")]
+        [HttpPut($"{ServicesConstants.ActionRoutes.Jobs}/{{jobId}}/SetErrorResult")]
         public async Task<ActionResult<long>> SetErrorResult(Guid jobId, [FromBody] ErrorPayload errorPayload)
         {
             return await this.repository.SetErrorResultAsync(jobId, errorPayload.ErrorMessage);
         }
+
+        #endregion
     }
 }

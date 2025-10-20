@@ -9,7 +9,7 @@ namespace JobRepositoryService.Controllers
     [Authorize]
     [ApiExplorerSettings(GroupName = ServicesConstants.JobsAttachments)]
     [ApiController]
-    [Route(ServicesConstants.ServiceResources.AttachmentsApiResource)]
+    [Route(ServicesConstants.ControllerRoutes.AttachmentsApiResource)]
     public class JobsAttachmentsController : ControllerBase
     {
         private readonly ILogger<JobsAttachmentsController> logger;
@@ -31,7 +31,7 @@ namespace JobRepositoryService.Controllers
         // We want to allow large file uploads, so we disable the request size limit.
         // Kestrel cuts it off at 30MB by default. May need to configure that during Startup too.
         [DisableRequestSizeLimit]
-        [HttpPost("stream/{tag}/{blobName}")]
+        [HttpPost($"{ServicesConstants.ActionRoutes.Stream}/{{tag}}/{{blobName}}")]
         public async Task<IActionResult> UploadAttachmentStreamAsync(string tag, string blobName)
         {
             this.logger.LogTrace("Uploading attachment with tag: {Tag}, blobName: {BlobName}", tag, blobName);
@@ -50,7 +50,7 @@ namespace JobRepositoryService.Controllers
             return Ok(id);
         }
 
-        [HttpGet("stream/{id}")]
+        [HttpGet($"{ServicesConstants.ActionRoutes.Stream}/{{id}}")]
         public async Task<IActionResult> DownloadAttachmentStreamAsync(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -69,7 +69,7 @@ namespace JobRepositoryService.Controllers
 
         // This endpoint allows anonymous access via the temp link.
         [AllowAnonymous]
-        [HttpGet("stream/temp/{tempId}", Name = "DownloadTempFileEndpoint")]
+        [HttpGet($"{ServicesConstants.ActionRoutes.Stream}/temp/{{tempId}}", Name = "DownloadTempFileEndpoint")]
         public async Task<IActionResult> DownloadAttachmentViaTempLinkAsync(string tempId)
         {
             if (string.IsNullOrWhiteSpace(tempId))
@@ -84,7 +84,7 @@ namespace JobRepositoryService.Controllers
             return await DownloadAttachmentStreamAsync(fileId!);
         }
 
-        [HttpGet("stream/generate-temp-link/{id}")]
+        [HttpGet($"{ServicesConstants.ActionRoutes.Stream}/generate-temp-link/{{id}}")]
         public async Task<IActionResult> GenerateTempDownloadLinkAsync(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
