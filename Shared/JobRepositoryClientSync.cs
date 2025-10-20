@@ -13,7 +13,7 @@ namespace Shared
 
         public IEnumerable<JobTypeDescriptor> GetJobTypes()
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
                 return client.Get<IEnumerable<JobTypeDescriptor>>($"{JobApiResource}/{ServicesConstants.ActionRoutes.JobTypes}");
             }
@@ -21,7 +21,7 @@ namespace Shared
 
         public JobTypeDescriptor GetJobTypeDescriptor(JobType jobType)
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
                 return client.Get<JobTypeDescriptor>($"{JobApiResource}/{ServicesConstants.ActionRoutes.JobTypes}/{jobType}");
             }
@@ -29,7 +29,7 @@ namespace Shared
 
         public Job GetJob(Guid jobId)
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
                 return client.Get<Job>($"{JobApiResource}/{ServicesConstants.ActionRoutes.Jobs}/{jobId}");
             }
@@ -37,7 +37,7 @@ namespace Shared
 
         public IEnumerable<JobInfo> GetJobs()
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
                 return client.Get<IEnumerable<JobInfo>>($"{JobApiResource}/{ServicesConstants.ActionRoutes.Jobs}");
             }
@@ -45,7 +45,7 @@ namespace Shared
 
         public void AddJobRequest(JobRequest jobRequest)
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
                 var request = new RestRequest($"{JobApiResource}/{ServicesConstants.ActionRoutes.Jobs}", Method.Post)
                     .AddJsonBody(jobRequest);
@@ -55,7 +55,7 @@ namespace Shared
 
         public long RemoveJob(Guid jobId)
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
                 var request = new RestRequest($"{JobApiResource}/{ServicesConstants.ActionRoutes.Jobs}/{jobId}", Method.Delete);
                 return client.Delete<long>(request);
@@ -64,7 +64,7 @@ namespace Shared
 
         public long SetStatus(Guid jobId, JobStatus status)
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
                 var request = new RestRequest($"{JobApiResource}/{ServicesConstants.ActionRoutes.Jobs}/{jobId}/SetStatus/{status}", Method.Put);
                 
@@ -74,7 +74,7 @@ namespace Shared
 
         public long SetResult(Guid jobId, JobPayload result)
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
                 var request = new RestRequest($"{JobApiResource}/{ServicesConstants.ActionRoutes.Jobs}/{jobId}/SetResult", Method.Put);
                 request.AddStringBody(JsonSerializer.Serialize(result), ContentType.Json);
@@ -84,9 +84,9 @@ namespace Shared
 
         public long SetErrorResult(Guid jobId, string errorMessage)
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
-                var request = new RestRequest($"{JobApiResource}/{jobId}/SetErrorResult", Method.Put);
+                var request = new RestRequest($"{JobApiResource}/{ServicesConstants.ActionRoutes.Jobs}/{jobId}/SetErrorResult", Method.Put);
                 request.AddJsonBody(new ErrorPayload { ErrorMessage = errorMessage });
                 return client.Put<long>(request);
             }

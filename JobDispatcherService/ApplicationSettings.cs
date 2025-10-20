@@ -4,7 +4,7 @@ namespace JobDispatcherService
 {
     public class ApplicationSettings 
     {
-        public JobRepositoryClientConfig JobRepositoryConfig { get; set; }
+        public JobRepositoryClientConfig JobRepositoryClientConfig { get; set; }
 
         public RabbitConfig RabbitConfig { get; set; }
     }

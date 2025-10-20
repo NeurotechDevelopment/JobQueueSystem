@@ -10,7 +10,7 @@ namespace Shared
 
         public IEnumerable<Job> QueryJobs(JobOdataQueryBuilder? queryBuilder = null)
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
                 var odataFilterParams = queryBuilder?.ToRequestParams();
                 var request = new RestRequest(OdataJobApiResource);
@@ -30,7 +30,7 @@ namespace Shared
 
         public int CountJobs(JobOdataQueryBuilder? queryBuilder = null)
         {
-            using (var client = new RestClient(jobServiceUrl))
+            using (var client = new RestClient(Options(JobServiceUrl)))
             {
                 var odataFilterParams = queryBuilder?.ToRequestParams();
                 var request = new RestRequest($"{OdataJobApiResource}/$count");

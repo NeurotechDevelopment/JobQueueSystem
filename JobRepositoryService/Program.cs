@@ -59,7 +59,7 @@ namespace JobRepositoryService
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.Authority = appSettings.AuthOptions.Authority;
+                    options.Authority = appSettings.AuthOptions.RealmAuthority;
                     options.RequireHttpsMetadata = appSettings.AuthOptions.RequireHttpsMetadata;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {

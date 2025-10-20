@@ -18,7 +18,16 @@ namespace JobRepoClientTester
         {
             Logger<JobRepositoryClient> logger = new Logger<JobRepositoryClient>(new LoggerFactory());
             JobRepositoryClient client = new JobRepositoryClient(logger,
-                Options.Create(new JobRepositoryClientConfig { BaseUrl = Settings.Default.JobRepositoryServiceUrl }));
+                Options.Create(new JobRepositoryClientConfig
+                {
+                    BaseUrl = Settings.Default.JobRepositoryServiceUrl,
+                    AuthClientCredentials = new AuthClientCredentials
+                    {
+                        ClientId = Settings.Default.ClientId,
+                        ClientSecret = Settings.Default.ClientSecret,
+                        Realm = Settings.Default.Realm
+                    }
+                }));
 
             // Find all private static methods with Description attribute - these are our test actions
             // Construct invokable actions from them
