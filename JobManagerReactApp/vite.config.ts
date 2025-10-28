@@ -7,8 +7,8 @@ export default defineConfig({
     server: {
         port: 53994,
         proxy: {
-            '/api': 'http://localhost:5178',
-            '/JobPublisher': 'http://localhost:5289'
+            '/api': 'http://localhost:8001',
+            '/JobPublisher': 'http://localhost:8002'
         }
     }
 })

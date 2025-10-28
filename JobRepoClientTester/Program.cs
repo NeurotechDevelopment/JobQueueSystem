@@ -25,7 +25,8 @@ namespace JobRepoClientTester
                     {
                         ClientId = Settings.Default.ClientId,
                         ClientSecret = Settings.Default.ClientSecret,
-                        Realm = Settings.Default.Realm
+                        Realm = Settings.Default.Realm,
+                        Authority = Settings.Default.Authority
                     }
                 }));
 

@@ -63,8 +63,12 @@ namespace JobRepositoryService
                     options.RequireHttpsMetadata = appSettings.AuthOptions.RequireHttpsMetadata;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
+                        ValidAudiences = appSettings.AuthOptions.Audiences,
+                        // Below is what set by default. List here for clarity on what is validated.
                         ValidateAudience = true,
-                        ValidAudiences = appSettings.AuthOptions.Audiences
+                        ValidateIssuer = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true
                     };
                 });
 

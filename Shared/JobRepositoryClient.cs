@@ -24,7 +24,9 @@ namespace Shared
         private DateTime authTokenExpiry = DateTime.MinValue;
 
         private string JobServiceUrl => this.config.BaseUrl.TrimEnd('/');
+        
         private bool IsAuthEnabled => this.config.AuthClientCredentials != null;
+        
         // Add extra 5 seconds before token expires.
         private bool TokenExpired =>
             authTokenExpiry <= DateTime.Now.AddSeconds(5) || string.IsNullOrWhiteSpace(authToken);
@@ -51,10 +53,14 @@ namespace Shared
 
         private string GetAuthToken()
         {
+            this.logger.LogTrace($"Auth enabled: {IsAuthEnabled}");
+
             if (!IsAuthEnabled)
             {
                 return string.Empty;
             }
+
+            this.logger.LogTrace($"Token expired: {TokenExpired}");
 
             if (!TokenExpired)
             {
@@ -68,6 +74,8 @@ namespace Shared
                     return authToken;
                 }
 
+                this.logger.LogTrace($"Fetching new auth token from auth server. TokenEndpoint:{this.config.AuthClientCredentials.TokenEndpoint}");
+
                 using (var client = new RestClient())
                 {
                     var request = new RestRequest(this.config.AuthClientCredentials.TokenEndpoint)
@@ -76,7 +84,12 @@ namespace Shared
                         .AddParameter("grant_type", "client_credentials");
                     var tokenResponse = client.Post<AccessTokenResponse>(request);
                     this.authTokenExpiry = DateTime.Now.AddSeconds(tokenResponse.expires_in);
+                    this.logger.LogTrace($"New token retrieved. Expires in {authTokenExpiry}");
+
                     this.authToken = tokenResponse.access_token;
+
+                    this.logger.LogTrace($"Auth token acquired: {this.authToken}");
+
                     return this.authToken;
                 }
             }

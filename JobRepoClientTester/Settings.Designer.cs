@@ -25,7 +25,7 @@ namespace JobRepoClientTester {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://localhost:7089")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:8001")]
         public string JobRepositoryServiceUrl {
             get {
                 return ((string)(this["JobRepositoryServiceUrl"]));
@@ -43,15 +43,6 @@ namespace JobRepoClientTester {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("[REPLACE-ME]")]
-        public string ClientSecret {
-            get {
-                return ((string)(this["ClientSecret"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("JobQueueSystemRealm")]
         public string Realm {
             get {
@@ -62,9 +53,18 @@ namespace JobRepoClientTester {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:8080")]
-        public string AuthBaseUrl {
+        public string Authority {
             get {
-                return ((string)(this["AuthBaseUrl"]));
+                return ((string)(this["Authority"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("[REPLACE-ME]")]
+        public string ClientSecret {
+            get {
+                return ((string)(this["ClientSecret"]));
             }
         }
     }
