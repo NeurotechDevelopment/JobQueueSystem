@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.116.1" />
     <PackageReference Include="Syncfusion.DocIO.Net.Core" Version="29.1.40" />
     <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="29.1.40" />
     <PackageReference Include="Syncfusion.HtmlToPdfConverter.Net.Windows" Version="29.1.40" />

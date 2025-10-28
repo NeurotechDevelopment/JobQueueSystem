@@ -5,7 +5,22 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
+# Required by Syncfusion under Linux
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libfontconfig1 \
+    libfreetype6 \
+    libpng16-16 \
+    libexpat1 \
+    libuuid1 \
+    libx11-6 \
+    libxcb1 \
+    libxext6 \
+    libxrender1 \
+    libxi6 \
+    libxrandr2 \
+    libgl1 \
+    libxfixes3 \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # Use the SDK image, which includes the compiler and build tools.
@@ -29,7 +44,7 @@ RUN dotnet build "./JobHandlers.csproj" -c $BUILD_CONFIGURATION -o /app/build
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./JobHandlers.csproj" -c %BUILD_CONFIGURATION% -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./JobHandlers.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false -r=linux-x64
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
