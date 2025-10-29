@@ -5,7 +5,7 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-# Required by Syncfusion under Linux
+# Required by Syncfusion Word to Pdf under Linux
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libfontconfig1 \
     libfreetype6 \
@@ -21,6 +21,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 \
     libxfixes3 \
     && rm -rf /var/lib/apt/lists/*
+
+# Required by Syncfusion Html to Pdf under Linux (using Blink rendering engine)
+RUN apt-get update && \
+     apt-get install -yq --no-install-recommends \ 
+     libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \ 
+     libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \ 
+     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \ 
+     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \ 
+     libnss3 libgbm1
+
 WORKDIR /app
 
 # Use the SDK image, which includes the compiler and build tools.
@@ -50,4 +60,8 @@ RUN dotnet publish "./JobHandlers.csproj" -c $BUILD_CONFIGURATION -o /app/publis
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+# Move Blink (Chromium) files into expected folder. Needed for Syncfusion Html to Pdf under Linux
+RUN mkdir -p BlinkBinaries/locales && \
+    mv chrome* icudtl.dat locales resources.pak v8_context_snapshot.bin BlinkBinaries/ || true
+RUN mv en-US.pak en-US.pak.info BlinkBinaries/locales/
 ENTRYPOINT ["dotnet", "JobHandlers.dll"]

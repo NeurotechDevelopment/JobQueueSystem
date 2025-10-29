@@ -28,6 +28,20 @@ namespace JobHandlers.Handlers
             HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
             //Create blink converter settings
             BlinkConverterSettings blinkConverterSettings = new BlinkConverterSettings();
+
+            // Docker support
+            var isLinux = System.Runtime.InteropServices.RuntimeInformation
+                .IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux);
+            if (isLinux)
+            {
+                blinkConverterSettings.BlinkPath = Path.Combine(AppContext.BaseDirectory, "BlinkBinaries");
+                blinkConverterSettings.CommandLineArguments.Add("--no-sandbox");
+                blinkConverterSettings.CommandLineArguments.Add("--disable-setuid-sandbox");
+                blinkConverterSettings.CommandLineArguments.Add("--disable-gpu");
+                blinkConverterSettings.CommandLineArguments.Add("--disable-dev-shm-usage");
+                blinkConverterSettings.CommandLineArguments.Add("--headless");
+            }
+
             //Assign Blink converter settings to HTML converter.
             htmlConverter.ConverterSettings = blinkConverterSettings;
             
