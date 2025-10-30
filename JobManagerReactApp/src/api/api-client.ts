@@ -21,6 +21,14 @@ export default function useApiClient() {
         });
     }
 
+    const removeJob = async (jobId: string) => {
+        return axios.delete<number>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/jobs/${jobId}`, {
+            headers: {
+                Authorization: `Bearer ${keycloak.token}`
+            }
+        });
+    }
+
     const getJobTypeDescriptor = async (jobType: JobType) => {
         return axios.get<JobTypeDescriptor>(`${import.meta.env.VITE_API_BASE_URL}/JobsRepository/job-types/${jobType}`, {
             headers: {
@@ -65,5 +73,5 @@ export default function useApiClient() {
         });
     }
 
-    return { getJobList, getJob, getJobTypeDescriptor, getJobTypeDescriptors, postJobRequest, genTempFileLink }
+    return { getJobList, getJob, removeJob, getJobTypeDescriptor, getJobTypeDescriptors, postJobRequest, genTempFileLink }
 }

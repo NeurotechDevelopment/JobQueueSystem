@@ -5,12 +5,16 @@ import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
 import Stack  from 'react-bootstrap/Stack';
 import Accordion from 'react-bootstrap/Accordion';
+import Button from 'react-bootstrap/Button'
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
+import RemoveJobModal from './RemoveJobModal';
 import RjfsForm from "@rjsf/core";
 import validator from "@rjsf/validator-ajv8"
 import { payloadHasProperties } from '../api/JobContracts';
 import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job, JobType } from '../api/JobContracts';
 import useApiClient from '../api/api-client';
 import * as jobUtils from '../utils/jobdetails.ts'
+import JobDeletedConfirmation from './JobDeletedConfirmation';
 
 // Takes jobId as a route parameter and displays job details.
 function JobDetailsView() {
@@ -21,6 +25,8 @@ function JobDetailsView() {
     const [jobTypeDescriptor, setJobTypeDescriptor] = useState<JobTypeDescriptor>();
     const [requestAttachmentDownloadUrl, setRequestAttachmentDownloadUrl] = useState<string | null>(null);
     const [resultAttachmentDownloadUrl, setResultAttachmentDownloadUrl] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+    const [deletedShow, setDeletedShow] = useState<boolean>(false)
 
     useEffect(() => {
             (async () => fetchData(jobId))();
@@ -74,6 +80,11 @@ function JobDetailsView() {
             setError('Error fetching job details: ' + err.message);
             return null;
         }
+    }
+
+    function onCloseRemoveConfirm() {
+        setShowDeleteModal(false);
+        setDeletedShow(true);
     }
 
     function renderGenericErrorCard() : JSX.Element {
@@ -161,28 +172,49 @@ function JobDetailsView() {
         );
     }
 
-    return (
-        <div>
-          {error && <Alert variant="danger">Error loading task with id {jobId}. {error}</Alert>}
-          <h2>Task Details</h2>
-          <i className="bi bi-arrow-clockwise"
-             title="Refresh"
-             style={{ fontSize: '1.5rem', cursor: 'pointer' }}
-             onClick={() => fetchData(jobId)}
-           ></i>
-           {error && renderGenericErrorCard()}
-           <Stack gap={3}>
-            {job && 
-                <div className="p-2">{renderJobDetails(job)}</div>}
-            {job && jobTypeDescriptor &&
-                <div className="p-2">{renderJobRequestPayload(job, jobTypeDescriptor)}</div>}
-            {job && jobTypeDescriptor && jobUtils.hasResultPayload(job) && payloadHasProperties(jobUtils.getResultSchema(jobTypeDescriptor)) && 
-                <div className="p-2">{renderJobResultPayload(job, jobTypeDescriptor)}</div>}
-            {job && jobUtils.hasResultAttachment(job) && 
-                <div className="p-2">{renderJobResultAttachment(job)}</div>}
-           </Stack>
-        </div>
-    );
+    function renderNoJob(): JSX.Element {
+        return (<Card>
+            <p>Could not find a task with id <strong>{jobId}</strong>. It could have not yet been registered with the system or has been removed.</p>
+            <p>Please try again later.</p>
+        </Card>);
+    }
+    function renderJobDetailsView(): JSX.Element {
+        return (
+            <div>
+                {error && <Alert variant="danger">Error loading task with id {jobId}. {error}</Alert>}
+                <h2>Task Details</h2>
+                <ButtonGroup aria-label="Basic example">
+                    <Button variant="light"> <i className="bi bi-arrow-clockwise"
+                        title="Refresh"
+                        style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+                        onClick={() => fetchData(jobId)}
+                    ></i></Button>
+                    {job && <Button variant="light" onClick={() => setShowDeleteModal(true)}><a><i className="bi bi-trash text-danger"></i></a></Button>}
+                </ButtonGroup>
+                <RemoveJobModal show={showDeleteModal} jobId={jobId!} onCancel={() => setShowDeleteModal(false)} onDelete={onCloseRemoveConfirm} />
+                {error && renderGenericErrorCard()}
+                {!job && renderNoJob() }
+                <Stack gap={3}>
+                    {job &&
+                        <div className="p-2">{renderJobDetails(job)}</div>}
+                    {job && jobTypeDescriptor &&
+                        <div className="p-2">{renderJobRequestPayload(job, jobTypeDescriptor)}</div>}
+                    {job && jobTypeDescriptor && jobUtils.hasResultPayload(job) && payloadHasProperties(jobUtils.getResultSchema(jobTypeDescriptor)) &&
+                        <div className="p-2">{renderJobResultPayload(job, jobTypeDescriptor)}</div>}
+                    {job && jobUtils.hasResultAttachment(job) &&
+                        <div className="p-2">{renderJobResultAttachment(job)}</div>}
+                </Stack>
+            </div>
+        );
+    }
+
+    if (deletedShow) {
+        return <JobDeletedConfirmation jobId={jobId!} />
+    } else {
+        return (
+            renderJobDetailsView()
+        );
+    }
 }
 
 export default JobDetailsView;

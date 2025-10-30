@@ -48,6 +48,12 @@ namespace JobRepositoryService
                 return 0;
             }
 
+            if (job.Status == JobStatus.Enqueued || job.Status == JobStatus.InProgress)
+            {
+                this.logger.LogWarning("Job {jobId} is in status {status} and cannot be deleted.", jobId, job.Status);
+                throw new InvalidOperationException($"Job {jobId} is in status {job.Status} and cannot be deleted.");
+            }
+
             async void DeleteAttachment(Attachment? attachment)
             {
                 if (!string.IsNullOrWhiteSpace(attachment?.Id))
