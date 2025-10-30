@@ -8,6 +8,8 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import RemoveJobModal from './RemoveJobModal'
 import useApiClient from '../api/api-client'
 import './RegisteredJobsView.css'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 type AlertType = 'success' | 'danger';
 type AlertState = {
@@ -67,7 +69,7 @@ function RegisteredJobsView() {
             style={{ fontSize: '1.5rem', cursor: 'pointer' }}
             onClick={fetchJobs}
         ></i>
-            {selectedJob && <RemoveJobModal show={showDeleteModal} jobId={selectedJob.jobId!} onDelete={() => handleDeleteJob(selectedJob.jobId!)} onCancel={() => setShowDeleteModal(false)} />}
+        {selectedJob && <RemoveJobModal show={showDeleteModal} jobId={selectedJob.jobId!} onDelete={() => handleDeleteJob(selectedJob.jobId!)} onCancel={() => setShowDeleteModal(false)} />}
         <Table bordered striped hover responsive="xs">
             <colgroup>
               <col style={{ width: "32%" }} />
@@ -92,12 +94,22 @@ function RegisteredJobsView() {
             <tr key={i}>
                 <td><Link to={`/jobs/${j.jobId}`}>{j.jobId}</Link></td>
                 <td>{j.type}</td>
-                <td>{j.description }</td>
+                <td className='text-truncate'>
+                    <OverlayTrigger
+                        placement="auto"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={<Tooltip id="description-tooltip">
+                            {j.description}
+                        </Tooltip>}
+                    >
+                        <span>{j.description}</span>
+                    </OverlayTrigger>
+                </td>
                 <td>{j.status}</td>
                 <td>{j.isSuccess ? "true" : (j.isSuccess == null ? "N/A" : "false")}</td>
                 <td>
                     <ButtonGroup aria-label="Basic example">
-                        <Button variant="light"><Link to={`/jobs/${j.jobId}`}><i className="bi bi-eye text-success"></i></Link></Button>
+                        <Button as={Link} to={`/jobs/${j.jobId}`} variant="light"><i className="bi bi-eye text-success"></i></Button>
                         <Button variant="light" onClick={() => confirmJobRemoval(j.jobId!)}><a><i className="bi bi-trash text-danger"></i></a></Button>
                     </ButtonGroup>
                 </td>
