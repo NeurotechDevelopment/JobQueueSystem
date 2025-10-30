@@ -28,6 +28,7 @@ function JobDetailsView() {
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
     const [deletedShow, setDeletedShow] = useState<boolean>(false)
 
+    const date = jobUtils.toDate;
     useEffect(() => {
             (async () => fetchData(jobId))();
         }, [jobId]);
@@ -103,11 +104,16 @@ function JobDetailsView() {
                 <p><strong>Type:</strong> {job.type}</p>
                 <p><strong>Description:</strong> {job.description}</p>
                 <p><strong>Status:</strong> {job.status}</p>
+                <p><strong>Registered at:</strong> {date(job.receivedAt)}</p>
+                <p><strong>Last status change:</strong> {date(job.lastStatusChanged)}</p>
+                <p><strong>Finished on:</strong> {date(job.finishedAt)}</p>
                 {jobUtils.isErrorResult(job) && 
-                 <Card border='danger'>
-                    <Card.Title>Error</Card.Title>  
-                    <Card.Body>{job.resultPayload!.errorMessage}</Card.Body>
-                 </Card>
+                <Accordion defaultActiveKey="0">
+                     <Accordion.Item eventKey="0">
+                         <Accordion.Header>Task Error</Accordion.Header>  
+                         <Accordion.Body>{job.resultPayload!.errorMessage}</Accordion.Body>
+                     </Accordion.Item>
+                 </Accordion>
                 }
             </div>
         );

@@ -68,3 +68,12 @@ export function parseJson(value: string | null | undefined)  {
         return {};
     }
 }
+
+// TypeScript Date to locale datetime
+export function toDate(value: Date | null | undefined) {
+    if (!value) {
+        return '';
+    }
+
+    return new Date(value).toLocaleString();
+}
