@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import type { JSX } from 'react'
 import Dropdown from 'react-bootstrap/Dropdown';
 import RjfsForm from "@rjsf/core";
 import Form from 'react-bootstrap/Form';
@@ -13,6 +14,7 @@ import { payloadHasProperties } from '../api/JobContracts';
 import useApiClient from '../api/api-client';
 import './NewJobSelector.css'
 import type { JSONSchema7 } from "json-schema";
+import JobCreatedConfirmation from './JobCreatedConfirmation';
 
 type AlertType = 'success' | 'danger';
 type AlertState = {
@@ -22,7 +24,7 @@ type AlertState = {
 };
 
 // Function component.
-function NewJobSelector() {
+function NewJobSelector() : JSX.Element {
     const { getJobTypeDescriptors, postJobRequest } = useApiClient();
 
     // Initially fetch all job type descriptors
@@ -45,6 +47,9 @@ function NewJobSelector() {
 
     // To display notification bar at the top: info or error
     const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'success', message: '' });
+
+    // Used to determine whether to show create page or confirmation page.
+    const [jobRequestCreated, setJobRequestCreated] = useState<JobRequest | null>(null);
 
     useEffect(() => {
         (async () => {
@@ -98,6 +103,7 @@ function NewJobSelector() {
             const result = await postJobRequest(jobRequest, file);
             console.log('Task created successfully.', result.data);
             setAlertState({ show: true, type: 'success', message: 'Task created successfully.' });
+            setJobRequestCreated(jobRequest);
 
         } catch (err) {
             setAlertState({ show: true, type: 'danger', message: 'Error creating job: ' + err.message });
@@ -106,76 +112,82 @@ function NewJobSelector() {
         }
     }
 
-    return (
-        <div>
-            <Alert show={alertState.show} variant={alertState.type} dismissible>{alertState.message}</Alert>
-            <h3>Create new task</h3>
-            <Dropdown className="mt-5" onSelect={handleSelect}>
-                <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                    Select task type
-                </Dropdown.Toggle>
+    if (jobRequestCreated == null) {
+        return (
+            <div>
+                <Alert show={alertState.show} variant={alertState.type} dismissible>{alertState.message}</Alert>
+                <h3>Create new task</h3>
+                <Dropdown className="mt-5" onSelect={handleSelect}>
+                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                        Select task type
+                    </Dropdown.Toggle>
 
-                <Dropdown.Menu>
-                    {jobTypeDescriptors.map(jd => (
-                        <Dropdown.Item key={jd.jobType} eventKey={jd.jobType}>{jd.jobType}</Dropdown.Item>
-                    ))}
-                </Dropdown.Menu>
-            </Dropdown>
+                    <Dropdown.Menu>
+                        {jobTypeDescriptors.map(jd => (
+                            <Dropdown.Item key={jd.jobType} eventKey={jd.jobType}>{jd.jobType}</Dropdown.Item>
+                        ))}
+                    </Dropdown.Menu>
+                </Dropdown>
                 <div>
                     <Card className="mt-4 shadow-sm">
-                    <Card.Title>Selected task type</Card.Title>
-                    {jobTypeDescriptor && <Card.Body>
-                        <Card.Title>{jobTypeDescriptor.jobType}</Card.Title>
-                        <Card.Text className="text-muted">{jobTypeDescriptor.description}</Card.Text>
-                    </Card.Body>}
-                    {!jobTypeDescriptor && <Card.Body>
-                        <Card.Title>No task type selected.</Card.Title>
-                        <Card.Text className="text-muted">Select task type in dropdown above to start creating new task.</Card.Text>
-                    </Card.Body>}
+                        <Card.Title>Selected task type</Card.Title>
+                        {jobTypeDescriptor && <Card.Body>
+                            <Card.Title>{jobTypeDescriptor.jobType}</Card.Title>
+                            <Card.Text className="text-muted">{jobTypeDescriptor.description}</Card.Text>
+                        </Card.Body>}
+                        {!jobTypeDescriptor && <Card.Body>
+                            <Card.Title>No task type selected.</Card.Title>
+                            <Card.Text className="text-muted">Select task type in dropdown above to start creating new task.</Card.Text>
+                        </Card.Body>}
                     </Card>
-                {jobTypeDescriptor &&
-                    <Form className="mt-5" onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3" controlId="description">
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control as="textarea" rows={2} onChange={e => setDescription(e.target.value)} value={description} />
-                        </Form.Group>
-                        {(jobTypeDescriptor.allowedAttachments.length > 0) &&
-                            <Form.Group controlId="formFile" className="mb-3">
-                                <Form.Label>Attachment</Form.Label>
-                                <Form.Control
-                                    key={jobTypeDescriptor.jobType}
-                                    type="file"
-                                    accept={jobTypeDescriptor.allowedAttachments.map(x => `.${x}`).join(',')}
-                                    onChange={handleFileChange}
-                                />
+                    {jobTypeDescriptor &&
+                        <Form className="mt-5" onSubmit={handleSubmit}>
+                            <Form.Group className="mb-3" controlId="description">
+                                <Form.Label>Description</Form.Label>
+                                <Form.Control as="textarea" rows={2} onChange={e => setDescription(e.target.value)} value={description} />
                             </Form.Group>
-                        }
-                        {payloadHasProperties(jobTypeDescriptor.payloadJsonSchema)
-                            &&
-                            (<div>
-                                <h4>Parameters:</h4>
-                                <RjfsForm
-                                    validator={validator}
-                                    schema={jobTypeDescriptor.payloadJsonSchema}
-                                    tagName="div" // render as div for prevent default form behaviour
-                                    onChange={(e) => setPayload(e.formData)} //
-                                >
-                                    {/* Empty fragment will prevent RjfsForm from displaying the Submit button */}
-                                    <></>
-                                </RjfsForm>
-                            </div>)}
-                        <Button
-                            className="mb-5"
-                            variant="primary"
-                            type="submit"
-                            disabled={isSubmitting}
-                        >Create</Button>
-                    </Form>
-                    
-                }
-                </div>            
-        </div>
+                            {(jobTypeDescriptor.allowedAttachments.length > 0) &&
+                                <Form.Group controlId="formFile" className="mb-3">
+                                    <Form.Label>Attachment</Form.Label>
+                                    <Form.Control
+                                        key={jobTypeDescriptor.jobType}
+                                        type="file"
+                                        accept={jobTypeDescriptor.allowedAttachments.map(x => `.${x}`).join(',')}
+                                        onChange={handleFileChange}
+                                    />
+                                </Form.Group>
+                            }
+                            {payloadHasProperties(jobTypeDescriptor.payloadJsonSchema)
+                                &&
+                                (<div>
+                                    <h4>Parameters:</h4>
+                                    <RjfsForm
+                                        validator={validator}
+                                        schema={jobTypeDescriptor.payloadJsonSchema}
+                                        tagName="div" // render as div for prevent default form behaviour
+                                        onChange={(e) => setPayload(e.formData)} //
+                                    >
+                                        {/* Empty fragment will prevent RjfsForm from displaying the Submit button */}
+                                        <></>
+                                    </RjfsForm>
+                                </div>)}
+                            <Button
+                                className="mb-5"
+                                variant="primary"
+                                type="submit"
+                                disabled={isSubmitting}
+                            >Create</Button>
+                        </Form>
+
+                    }
+                </div>
+            </div>
         );
+    } else {
+        return (
+            <JobCreatedConfirmation jobId={jobRequestCreated.jobId} type={jobRequestCreated.type} payload={jobRequestCreated.payload} />
+        );
+    }
 }
 
 export default NewJobSelector;
