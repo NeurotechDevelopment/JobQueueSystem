@@ -19,7 +19,7 @@ namespace JobDispatcherService
             builder.Services.Configure<JobRepositoryClientConfig>(
                 builder.Configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(JobRepositoryClientConfig)}"));
 
-
+            // Polling worker. Might come in handy for stuck jobs.
             // builder.Services.AddHostedService<JobDispatcherWorker>();
             builder.Services.AddSingleton<IJobRepositoryClient, JobRepositoryClient>();
             builder.Services.AddSingleton<IJobDispatcher, JobDispatcher>();

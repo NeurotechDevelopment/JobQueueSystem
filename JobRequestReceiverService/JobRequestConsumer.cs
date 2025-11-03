@@ -1,7 +1,5 @@
 ﻿using Contracts;
 using MassTransit;
-using MassTransit.Configuration;
-using Microsoft.Extensions.Options;
 using Shared;
 
 namespace JobRequestReceiverService
