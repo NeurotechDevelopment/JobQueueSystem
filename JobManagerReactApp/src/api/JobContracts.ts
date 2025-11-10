@@ -5,7 +5,8 @@ export enum JobType {
     ConvertWordToPdf,
     ConvertHtmlToPdf,
     ConvertExcelToPdf,
-    ConvertScanToSearchablePdf
+    ConvertScanToSearchablePdf,
+    ConvertWordToImages
 }
 
 export enum JobStatus {

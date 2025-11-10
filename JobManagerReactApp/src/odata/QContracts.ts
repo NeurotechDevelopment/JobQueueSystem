@@ -14,6 +14,7 @@ export class QJob extends QueryObject {
     public readonly LastStatusChanged = new QDateTimeOffsetPath(this.withPrefix("LastStatusChanged"));
     public readonly ReceivedAt = new QDateTimeOffsetPath(this.withPrefix("ReceivedAt"));
     public readonly FinishedAt = new QDateTimeOffsetPath(this.withPrefix("FinishedAt"));
+    public readonly Description = new QStringPath(this.withPrefix("Description"));
 }
 
 export const qJob = new QJob();

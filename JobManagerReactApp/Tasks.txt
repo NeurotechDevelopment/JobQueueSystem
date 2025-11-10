@@ -22,3 +22,9 @@ Spent few hours.
 Installed keycloak server on local machine using docker: https://www.keycloak.org/getting-started/getting-started-docker
 Played with keycloak server, created realm, client, user. About 3 hours.
 Would be good adapting keycloack login page adapting to JobManagerReact style.
+
+# Install dependencies for ODATA client usage with axios http client.
+npm install --save @odata2ts/odata-service @odata2ts/http-client-axios axios
+
+# Install ODATA query builder for easier query construction.
+npm install --save @odata2ts/odata-query-builder

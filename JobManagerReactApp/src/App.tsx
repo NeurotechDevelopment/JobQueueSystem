@@ -1,9 +1,10 @@
 import { Navbar, Nav, Container } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import RegisteredJobsView from './components/RegisteredJobsView'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
+import RegisteredJobsView from './components/RegisteredJobsView'
+import SearchJobsView from './components/SearchJobsView'
 import NewJobSelector from './components/NewJobSelector'
 import JobDetailsView from './components/JobDetailsView'
 import {  useKeycloak } from '@react-keycloak/web';
@@ -22,6 +23,9 @@ function App() {
                             <Nav className="me-auto">
                                 <LinkContainer to="/">
                                     <Nav.Link>All Tasks</Nav.Link>
+                                </LinkContainer>
+                                <LinkContainer to="/search">
+                                    <Nav.Link>Search</Nav.Link>
                                 </LinkContainer>
                                 <LinkContainer to="/new">
                                     <Nav.Link>Create New Task</Nav.Link>
@@ -44,6 +48,7 @@ function App() {
                     {initialized && keycloak.authenticated &&
                     <Routes>
                         <Route path="/" element={<RegisteredJobsView />} />
+                        <Route path="/search" element={<SearchJobsView />} />
                         <Route path="/new" element={<NewJobSelector />} />
                         <Route path="/jobs/:jobId" element={<JobDetailsView />} />
                     </Routes>}

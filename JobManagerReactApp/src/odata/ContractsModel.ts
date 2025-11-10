@@ -5,7 +5,8 @@ export enum JobType {
     ConvertWordToPdf = "ConvertWordToPdf",
     ConvertHtmlToPdf = "ConvertHtmlToPdf",
     ConvertExcelToPdf = "ConvertExcelToPdf",
-    ConvertScanToSearchablePdf = "ConvertScanToSearchablePdf"
+    ConvertScanToSearchablePdf = "ConvertScanToSearchablePdf",
+    ConvertWordToImages = "ConvertWordToImages"
 }
 
 export enum JobStatus {
@@ -28,6 +29,7 @@ export interface Job {
      * | Nullable | `false` |
      */
     JobId: string;
+    Description: string | null;
     /**
      *
      * OData Attributes:
