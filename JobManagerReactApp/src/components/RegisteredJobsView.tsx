@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react'
-import Table from 'react-bootstrap/Table'
 import Alert from 'react-bootstrap/Alert'
-import { Link } from 'react-router-dom'
 import type { IJobInfo as JobInfo } from '../api/JobContracts'
-import Button from 'react-bootstrap/Button'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import RemoveJobModal from './RemoveJobModal'
 import useApiClient from '../api/api-client'
-import './RegisteredJobsView.css'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import SimpleTableJobsResult from './SimpleTableJobsResult'
 
 type AlertType = 'success' | 'danger';
 type AlertState = {
@@ -70,53 +64,7 @@ function RegisteredJobsView() {
             onClick={fetchJobs}
         ></i>
         {selectedJob && <RemoveJobModal show={showDeleteModal} jobId={selectedJob.jobId!} onDelete={() => handleDeleteJob(selectedJob.jobId!)} onCancel={() => setShowDeleteModal(false)} />}
-        <Table bordered striped hover responsive="xs">
-            <colgroup>
-              <col style={{ width: "32%" }} />
-              <col style={{ width: "10%" }} />
-              <col style={{ width: "36%" }} />
-              <col style={{ width: "7%" }} />
-              <col style={{ width: "7%" }} />
-              <col style={{ width: "8%" }} />
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>JobId</th>
-                    <th>Type</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                    <th>Success</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-        {jobs.map((j,i) => (
-            <tr key={i}>
-                <td><Link to={`/jobs/${j.jobId}`}>{j.jobId}</Link></td>
-                <td>{j.type}</td>
-                <td className='text-truncate'>
-                    <OverlayTrigger
-                        placement="auto"
-                        delay={{ show: 250, hide: 400 }}
-                        overlay={<Tooltip id="description-tooltip">
-                            {j.description}
-                        </Tooltip>}
-                    >
-                        <span>{j.description}</span>
-                    </OverlayTrigger>
-                </td>
-                <td>{j.status}</td>
-                <td>{j.isSuccess ? "true" : (j.isSuccess == null ? "N/A" : "false")}</td>
-                <td>
-                    <ButtonGroup aria-label="Basic example">
-                        <Button as={Link} to={`/jobs/${j.jobId}`} variant="light"><i className="bi bi-eye text-success"></i></Button>
-                        <Button variant="light" onClick={() => confirmJobRemoval(j.jobId!)}><a><i className="bi bi-trash text-danger"></i></a></Button>
-                    </ButtonGroup>
-                </td>
-            </tr>
-        ))}
-            </tbody>
-        </Table>
+        <SimpleTableJobsResult jobsResult={jobs} onDeleteJob={confirmJobRemoval} />
       </div>);
 }
 
