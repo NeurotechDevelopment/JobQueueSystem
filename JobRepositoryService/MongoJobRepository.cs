@@ -38,6 +38,7 @@ namespace JobRepositoryService
                 .Select(x => new Job
                 {
                     FinishedAt = x.FinishedAt,
+                    Description = x.Description,
                     JobId = x.JobId,
                     LastStatusChanged = x.LastStatusChanged,
                     ReceivedAt = x.ReceivedAt,
