@@ -26,6 +26,7 @@ function RegisteredJobsView() {
         try {
             const response = await getJobList();
             setJobs(response.data);
+            setTopNotification({ show: false, type: 'success', message: '' });
         } catch (err) {
             setTopNotification({ show: true, type: 'danger', message: 'Error fetching jobs.' + err.message });
         }
