@@ -85,6 +85,13 @@ function NewJobSelector() : JSX.Element {
         setFile(e.target.files?.[0] ?? null);
     }
 
+    function resetPage() {
+
+        setJobTypeDescriptor(undefined);
+        setJobRequestCreated(null); 
+        setAlertState({ show: false , type: 'success', message: '' }); // hide any previous alerts        
+    }
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!jobTypeDescriptor) return;
@@ -185,7 +192,7 @@ function NewJobSelector() : JSX.Element {
         );
     } else {
         return (
-            <JobCreatedConfirmation jobId={jobRequestCreated.jobId} type={jobRequestCreated.type} payload={jobRequestCreated.payload} />
+            <JobCreatedConfirmation JobRequest={jobRequestCreated} onCreateNewJob={resetPage} />
         );
     }
 }
