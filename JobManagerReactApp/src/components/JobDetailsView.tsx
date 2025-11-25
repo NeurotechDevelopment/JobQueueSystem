@@ -3,7 +3,7 @@ import type { JSX } from 'react'
 import { useParams } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
-import Stack  from 'react-bootstrap/Stack';
+import Stack from 'react-bootstrap/Stack';
 import Accordion from 'react-bootstrap/Accordion';
 import Button from 'react-bootstrap/Button'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
@@ -30,8 +30,8 @@ function JobDetailsView() {
 
     const date = jobUtils.toDate;
     useEffect(() => {
-            (async () => fetchData(jobId))();
-        }, [jobId]);
+        (async () => fetchData(jobId))();
+    }, [jobId]);
 
     async function fetchData(jobId: string | undefined) {
         if (!jobId) return;
@@ -63,7 +63,7 @@ function JobDetailsView() {
             setError(null);
             return response.data;
         }
-        catch(err) {
+        catch (err) {
             console.error('Error fetching job type details', err);
             setError('Error fetching job type details:' + err.message);
             return null;
@@ -71,12 +71,12 @@ function JobDetailsView() {
     }
 
     // Reads job details from JobRepository service.
-    async function fetchJob(jobId: string) : Promise<Job | null> {
+    async function fetchJob(jobId: string): Promise<Job | null> {
         try {
             const response = await getJob(jobId);
             setError(null);
             return response.data;
-        } catch(err) {
+        } catch (err) {
             console.error('Error fetching job details', err);
             setError('Error fetching job details: ' + err.message);
             return null;
@@ -88,16 +88,16 @@ function JobDetailsView() {
         setDeletedShow(true);
     }
 
-    function renderGenericErrorCard() : JSX.Element {
+    function renderGenericErrorCard(): JSX.Element {
         return (
-            <Card border='danger'>                
+            <Card border='danger'>
                 <Card.Title><i className="bi bi-bug text-danger">&nbsp;</i>General Error</Card.Title>
                 <Card.Body>We could not retrieve task details due to internal error. Please try again later.</Card.Body>
             </Card>
         );
     }
 
-    function renderJobDetails(job: Job) : JSX.Element {
+    function renderJobDetails(job: Job): JSX.Element {
         return (
             <div>
                 <p><strong>ID:</strong> {job.jobId}</p>
@@ -107,60 +107,70 @@ function JobDetailsView() {
                 <p><strong>Registered at:</strong> {date(job.receivedAt)}</p>
                 <p><strong>Last status change:</strong> {date(job.lastStatusChanged)}</p>
                 <p><strong>Finished on:</strong> {date(job.finishedAt)}</p>
-                {jobUtils.isErrorResult(job) && 
-                <Accordion defaultActiveKey="0">
-                     <Accordion.Item eventKey="0">
-                         <Accordion.Header>Task Error</Accordion.Header>  
-                         <Accordion.Body>{job.resultPayload!.errorMessage}</Accordion.Body>
-                     </Accordion.Item>
-                 </Accordion>
+                {jobUtils.isErrorResult(job) &&
+                    <Accordion defaultActiveKey="0">
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>Task Error</Accordion.Header>
+                            <Accordion.Body>{job.resultPayload!.errorMessage}</Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
                 }
             </div>
         );
     }
 
-    function renderJobRequestPayload(job: Job, jobTypeDescriptor: JobTypeDescriptor) : JSX.Element {
+    function renderAttachmentLink(labelText: string, downloadUrl: string, fileName: string): JSX.Element {
+        return (
+            <div className="mt-4">
+                <span className="fw-semibold text-secondary me-2">
+                    <i className="bi bi-paperclip me-1"></i>
+                    {labelText}:
+                </span>
+                <a target='_blank' href={downloadUrl}>{fileName}</a>
+            </div>
+        );
+    }
+
+    function renderJobRequestPayload(job: Job, jobTypeDescriptor: JobTypeDescriptor): JSX.Element {
         return (
             <Accordion>
-            {(jobUtils.hasRequestPayload(job) || jobUtils.hasRequestAttachment(job)) && 
-            <Accordion.Item eventKey="0">
-                <Accordion.Header>Request parameters</Accordion.Header>
-                <Accordion.Body>
-                {jobUtils.hasRequestPayload(job) && payloadHasProperties(jobUtils.getRequestSchema(jobTypeDescriptor)) &&
-                 <RjfsForm
-                   schema={jobUtils.getRequestSchema(jobTypeDescriptor)}
-                   formData={jobUtils.parseJson(job.requestPayload!.data)}
-                   disabled={true}
-                   showErrorList={false}
-                   liveValidate={true}
-                   validator={validator}
-                 >
-                   <></>
-                 </RjfsForm>}
-                 {jobUtils.hasRequestAttachment(job) && requestAttachmentDownloadUrl &&
-                    <div>Uploaded attachment:  
-                      <a target='_blank' href={requestAttachmentDownloadUrl}>{job.requestPayload!.attachment!.fileName}</a>
-                    </div>
-                }
-                </Accordion.Body>
-            </Accordion.Item>}
+                {(jobUtils.hasRequestPayload(job) || jobUtils.hasRequestAttachment(job)) &&
+                    <Accordion.Item eventKey="0">
+                        <Accordion.Header>Request parameters</Accordion.Header>
+                        <Accordion.Body>
+                            {jobUtils.hasRequestPayload(job) && payloadHasProperties(jobUtils.getRequestSchema(jobTypeDescriptor)) &&
+                                <RjfsForm
+                                    schema={jobUtils.getRequestSchema(jobTypeDescriptor)}
+                                    formData={jobUtils.parseJson(job.requestPayload!.data)}
+                                    disabled={true}
+                                    showErrorList={false}
+                                    liveValidate={true}
+                                    validator={validator}
+                                >
+                                    <></>
+                                </RjfsForm>}
+                            {jobUtils.hasRequestAttachment(job) && requestAttachmentDownloadUrl &&
+                                renderAttachmentLink("Uploaded attachment", requestAttachmentDownloadUrl, job.requestPayload!.attachment!.fileName!)
+                            }
+                        </Accordion.Body>
+                    </Accordion.Item>}
             </Accordion>
         );
     }
 
-    function renderJobResultPayload(job: Job, jobTypeDescriptor: JobTypeDescriptor) : JSX.Element {
+    function renderJobResultPayload(job: Job, jobTypeDescriptor: JobTypeDescriptor): JSX.Element {
         return (
             <div>
                 <h3>Result</h3>
                 <RjfsForm
-                   schema={jobUtils.getResultSchema(jobTypeDescriptor)}
-                   formData={jobUtils.parseJson(job.resultPayload!.payload!.data)}
-                   disabled={true}
-                   showErrorList={false}
-                   liveValidate={true}
-                   validator={validator}
+                    schema={jobUtils.getResultSchema(jobTypeDescriptor)}
+                    formData={jobUtils.parseJson(job.resultPayload!.payload!.data)}
+                    disabled={true}
+                    showErrorList={false}
+                    liveValidate={true}
+                    validator={validator}
                 >
-                   <></>
+                    <></>
                 </RjfsForm>
             </div>
         );
@@ -168,34 +178,28 @@ function JobDetailsView() {
 
     function renderJobResultAttachment(job: Job): JSX.Element {
         if (!resultAttachmentDownloadUrl) return <div></div>;
-        
-        return (
-                <div>File result:  
-                 <a target='_blank' href={resultAttachmentDownloadUrl}>
-                     {job.resultPayload!.payload!.attachment!.fileName}
-                 </a>
-                </div>
-        );
+
+        return renderAttachmentLink("Result file", resultAttachmentDownloadUrl, job.resultPayload!.payload!.attachment!.fileName!);
     }
 
     function renderNoJob(): JSX.Element {
         return (<Card className="p-3">
-                    <Card.Body>
+            <Card.Body>
 
-                        <div className="d-flex align-items-center mb-2">
-                        <i className="bi bi-search text-secondary me-3" style={{ fontSize: "2rem" }}></i>
-                        <h5 className="mb-0">Task Not Found</h5>
-                        </div>
+                <div className="d-flex align-items-center mb-2">
+                    <i className="bi bi-search text-secondary me-3" style={{ fontSize: "2rem" }}></i>
+                    <h5 className="mb-0">Task Not Found</h5>
+                </div>
 
-                        <p className="mt-2">
-                        Could not find a task with id <strong>{jobId}</strong>.
-                        It may not yet be registered or may have been removed.
-                        </p>
+                <p className="mt-2">
+                    Could not find a task with id <strong>{jobId}</strong>.
+                    It may not yet be registered or may have been removed.
+                </p>
 
-                        <p className="text-muted">Please try again later.</p>
+                <p className="text-muted">Please try again later.</p>
 
-                    </Card.Body>
-                </Card>);
+            </Card.Body>
+        </Card>);
     }
     function renderJobDetailsView(): JSX.Element {
         return (
@@ -212,7 +216,7 @@ function JobDetailsView() {
                 </ButtonGroup>
                 <RemoveJobModal show={showDeleteModal} jobId={jobId!} onCancel={() => setShowDeleteModal(false)} onDelete={onCloseRemoveConfirm} />
                 {error && renderGenericErrorCard()}
-                {!job && renderNoJob() }
+                {!job && renderNoJob()}
                 <Stack gap={3}>
                     {job &&
                         <div className="p-2">{renderJobDetails(job)}</div>}
