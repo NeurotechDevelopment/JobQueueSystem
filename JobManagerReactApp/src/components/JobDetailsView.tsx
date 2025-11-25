@@ -179,10 +179,23 @@ function JobDetailsView() {
     }
 
     function renderNoJob(): JSX.Element {
-        return (<Card>
-            <p>Could not find a task with id <strong>{jobId}</strong>. It could have not yet been registered with the system or has been removed.</p>
-            <p>Please try again later.</p>
-        </Card>);
+        return (<Card className="p-3">
+                    <Card.Body>
+
+                        <div className="d-flex align-items-center mb-2">
+                        <i className="bi bi-search text-secondary me-3" style={{ fontSize: "2rem" }}></i>
+                        <h5 className="mb-0">Task Not Found</h5>
+                        </div>
+
+                        <p className="mt-2">
+                        Could not find a task with id <strong>{jobId}</strong>.
+                        It may not yet be registered or may have been removed.
+                        </p>
+
+                        <p className="text-muted">Please try again later.</p>
+
+                    </Card.Body>
+                </Card>);
     }
     function renderJobDetailsView(): JSX.Element {
         return (
