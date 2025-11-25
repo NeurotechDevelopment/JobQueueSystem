@@ -2,7 +2,7 @@ import { Navbar, Nav, Container } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Button from 'react-bootstrap/Button'
-import Card from 'react-bootstrap/Card'
+import Alert from 'react-bootstrap/Alert'
 import RegisteredJobsView from './components/RegisteredJobsView'
 import SearchJobsView from './components/SearchJobsView'
 import NewJobSelector from './components/NewJobSelector'
@@ -53,9 +53,10 @@ function App() {
                         <Route path="/jobs/:jobId" element={<JobDetailsView />} />
                     </Routes>}
                     {!keycloak.authenticated &&
-                    <Card border='warning' className='fs-4  text-center'>
-                        <Card.Body>Currently you are not logged in. Please use Login button at the top right menu.</Card.Body>
-                    </Card>}
+                    <Alert variant="info" className="mt-4">
+                        <i className="bi bi-info-circle"></i> You are not logged in.
+                        Please click the Login button at the top right.
+                    </Alert>}
                 </Container>
         </BrowserRouter>
   )
