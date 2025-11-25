@@ -4,7 +4,7 @@ x-LoggingSettings: &loggingSettings
   Logging__LogLevel__Default: Trace
   Logging__LogLevel__Microsoft: Information
   Logging__LogLevel__Microsoft_Hosting_Lifetime: Information
-
+ 
 x-AuthOptionsConfig: &authOptionsConfig
   ApplicationSettings__AuthOptions__Authority: ${KEYCLOAK_HOSTNAME}
   # ClientId for a frontend application
@@ -80,6 +80,8 @@ services:
 
   mongodb:
     image: mongo:noble
+    volumes:
+        - mongo_db://data/db
     ports:
       - "27017:27017"
 
@@ -174,11 +176,13 @@ services:
       - job-repository-service
       - rabbitmq
       - keycloak
-# Volume for PostgreSQL data persistence
 volumes:
   # Volume for PostgreSQL data persistence
   postgres_data:
     driver: local
   # Volume for Elasticsearch data persistence
   esdata:
+    driver: local
+  # Volume for MongoDB data persistence
+  mongo_db:
     driver: local
