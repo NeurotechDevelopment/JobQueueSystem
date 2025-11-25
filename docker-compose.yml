@@ -27,6 +27,26 @@ x-JobRepositoryServiceClient: &jobRepositoryServiceClient
   ApplicationSettings__JobRepositoryClientConfig__AuthClientCredentials__Realm: ${AUTH_REALM}
       
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.14.1
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
   postgres:
     image: postgres:16.10-alpine3.21
     volumes:
@@ -82,7 +102,11 @@ services:
       Logging__LogLevel__Microsoft.IdentityModel: Debug
       ApplicationSettings__ConnectionString: mongodb://mongodb:27017
       ApplicationSettings__Database: JobQueueSystem
-      <<: *authOptionsConfig
+      <<: [*authOptionsConfig,*loggingSettings]
+      Serilog__MinimumLevel__Default: Debug
+      Serilog__MinimumLevel__Override__Microsoft: Warning
+      Serilog__WriteTo__1__Args__nodeUris: http://elasticsearch:9200
+      Serilog__WriteTo__1__Args__indexFormat: job-queue-system-notification-{0:yyyy.MM.dd}
     restart: always
     extra_hosts:
     # To allow services to reach Keycloak on host machine during development
@@ -152,5 +176,9 @@ services:
       - keycloak
 # Volume for PostgreSQL data persistence
 volumes:
+  # Volume for PostgreSQL data persistence
   postgres_data:
+    driver: local
+  # Volume for Elasticsearch data persistence
+  esdata:
     driver: local

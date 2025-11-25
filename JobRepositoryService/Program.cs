@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Serilog;
 
 namespace JobRepositoryService
 {
@@ -17,7 +18,12 @@ namespace JobRepositoryService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                .CreateLogger();
 
+            builder.Host.UseSerilog();
             // Add services to the container.
 
             builder.Services.AddControllers().AddJsonOptions(options =>
