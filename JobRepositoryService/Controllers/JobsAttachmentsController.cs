@@ -26,6 +26,8 @@ namespace JobRepositoryService.Controllers
             this.storage = storage;
             this.appSettings = appSettings;
             this.cache = cache;
+
+            logger.LogTrace($"Created {nameof(JobsAttachmentsController)} instance.");
         }
 
         // We want to allow large file uploads, so we disable the request size limit.
@@ -34,7 +36,8 @@ namespace JobRepositoryService.Controllers
         [HttpPost($"{ServicesConstants.ActionRoutes.Stream}/{{tag}}/{{blobName}}")]
         public async Task<IActionResult> UploadAttachmentStreamAsync(string tag, string blobName)
         {
-            this.logger.LogTrace("Uploading attachment with tag: {Tag}, blobName: {BlobName}", tag, blobName);
+            this.logger.LogDebug("Uploading attachment with tag: {Tag}, blobName: {BlobName}", tag, blobName);
+
             if (string.IsNullOrWhiteSpace(tag) || string.IsNullOrWhiteSpace(blobName))
             {
                 return BadRequest("Tag and blobName must be provided.");
@@ -53,6 +56,8 @@ namespace JobRepositoryService.Controllers
         [HttpGet($"{ServicesConstants.ActionRoutes.Stream}/{{id}}")]
         public async Task<IActionResult> DownloadAttachmentStreamAsync(string id)
         {
+            this.logger.LogDebug("Downloading attachment with Id: {Id}", id);
+
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Id must be provided.");
@@ -72,6 +77,8 @@ namespace JobRepositoryService.Controllers
         [HttpGet($"{ServicesConstants.ActionRoutes.Stream}/temp/{{tempId}}", Name = "DownloadTempFileEndpoint")]
         public async Task<IActionResult> DownloadAttachmentViaTempLinkAsync(string tempId)
         {
+            this.logger.LogDebug("Stream-downloading attachment via temp link with TempId: {TempId}", tempId);
+
             if (string.IsNullOrWhiteSpace(tempId))
             {
                 return BadRequest("TempId must be provided.");
@@ -87,6 +94,8 @@ namespace JobRepositoryService.Controllers
         [HttpGet($"{ServicesConstants.ActionRoutes.Stream}/generate-temp-link/{{id}}")]
         public async Task<IActionResult> GenerateTempDownloadLinkAsync(string id)
         {
+            this.logger.LogDebug("Generating temp download link for attachment with Id: {Id}", id);
+
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Id must be provided.");
@@ -99,7 +108,11 @@ namespace JobRepositoryService.Controllers
             }
 
             var tempId = Guid.NewGuid().ToString();
-            this.cache.Set(tempId, id, TimeSpan.FromSeconds(this.appSettings.Value.TempFileLinkExpirationInSeconds));
+            var seconds = this.appSettings.Value.TempFileLinkExpirationInSeconds;
+            this.cache.Set(tempId, id, TimeSpan.FromSeconds(seconds));
+            
+            this.logger.LogDebug("Generated temp download link with TempId: {TempId} for attachment Id: {Id}. Valid for {seconds} seconds.", tempId, id, seconds);
+            
             var downloadLink = Url.Link("DownloadTempFileEndpoint", new { tempId = tempId });
             return Ok(downloadLink);
         }
@@ -110,6 +123,8 @@ namespace JobRepositoryService.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> DownloadAttachmentAsync(string id)
         {
+            this.logger.LogDebug("Buffered downloading attachment with Id: {Id}", id);
+
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Id must be provided.");
@@ -123,6 +138,8 @@ namespace JobRepositoryService.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAttachmentAsync(string id)
         {
+            this.logger.LogDebug("Deleting attachment with Id: {Id}", id);
+
             if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest("Id must be provided.");

@@ -11,13 +11,17 @@ namespace JobRepositoryService
         private const string Job = "JobCollection";
         private readonly IMapper mapper;
         private readonly IOptions<ApplicationSettings> optionSettings;
+        private readonly ILogger<MongoJobRepository> logger;
         private readonly IMongoClient mongoClient = null;
 
-        public MongoJobRepository(IMongoClient client, IMapper mapper, IOptions<ApplicationSettings> optionSettings)
+        public MongoJobRepository(IMongoClient client, IMapper mapper, IOptions<ApplicationSettings> optionSettings, ILogger<MongoJobRepository> logger)
         {
             this.mapper = mapper;
             this.optionSettings = optionSettings;
+            this.logger = logger;
             this.mongoClient = client;
+
+            this.logger.LogTrace($"Created {nameof(MongoJobRepository)} instance.");
         }
 
         public async Task<IEnumerable<JobInfo>> GetJobsAsync()
@@ -26,6 +30,8 @@ namespace JobRepositoryService
             var items = await db.GetCollection<JobDocument>(Job)
                 .FindAsync(_ => true);
             
+            this.logger.LogTrace("Fetching all jobs from database order descending by a receivedAt field");
+
             return items.ToList().OrderByDescending(x => x.ReceivedAt).Select(mapper.Map<JobInfo>);
         }
 
