@@ -29,7 +29,7 @@ const SearchJobsView = (): JSX.Element => {
     const [jobType, setJobType] = useState<JobType | null>(null);
     const [receivedAtAfter, setReceivedAtAfter] = useState<Date | null>(null);
     const [description, setDescription] = useState<string>('');
-    const [notificationBar, setNotificationBar] = useState<AlertState>( { show: false, type: 'success', message: '' } );
+    const [notificationBar, setNotificationBar] = useState<AlertState>({ show: false, type: 'success', message: '' });
 
     const clearFilter = (): void => {
         setJobId('');
@@ -41,7 +41,7 @@ const SearchJobsView = (): JSX.Element => {
     }
 
     // Show modal for deleting a job with id jobId.
-    const confirmJobRemoval = (jobId: string) : void => {
+    const confirmJobRemoval = (jobId: string): void => {
         if (!jobsResult) {
             return;
         }
@@ -51,10 +51,10 @@ const SearchJobsView = (): JSX.Element => {
             return;
         }
         setShowDeleteModal(true);
-        setSelectedJob(job);             
+        setSelectedJob(job);
     }
 
-    const handleDeleteError = (errorMessage: string) : void => {
+    const handleDeleteError = (errorMessage: string): void => {
         setShowDeleteModal(false);
         setNotificationBar({ show: true, type: 'danger', message: 'Error deleting job. ' + errorMessage });
     }

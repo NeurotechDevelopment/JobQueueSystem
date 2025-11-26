@@ -16,7 +16,7 @@ function RegisteredJobsView() {
 
     useEffect(() => {
         (async () => fetchJobs())();
-        }, []);
+    }, []);
 
     async function fetchJobs() {
         try {
@@ -35,7 +35,7 @@ function RegisteredJobsView() {
             return;
         }
         setShowDeleteModal(true);
-        setSelectedJob(job);             
+        setSelectedJob(job);
     }
 
     function handleDeleteError(errorMessage: string) {
@@ -56,18 +56,18 @@ function RegisteredJobsView() {
     }
 
     return (
-      <div>
-        {notificationBar.show && <Alert variant={notificationBar.type}><i className={getNotificationIcon(notificationBar.type)}></i>{notificationBar.message}</Alert>}
-        <h3>Registered tasks</h3>
-        <i
-            className="bi bi-arrow-clockwise"
-            title="Refresh"
-            style={{ fontSize: '1.5rem', cursor: 'pointer' }}
-            onClick={fetchJobs}
-        ></i>
-        {selectedJob && <RemoveJobModal show={showDeleteModal} jobId={selectedJob.jobId!} onDelete={() => handleDeleteJob(selectedJob.jobId!)} onCancel={() => setShowDeleteModal(false)} onDeleteError={handleDeleteError} />}
-        <SimpleTableJobsResult jobsResult={jobs} onDeleteJob={confirmJobRemoval} />
-      </div>);
+        <div>
+            {notificationBar.show && <Alert variant={notificationBar.type}><i className={getNotificationIcon(notificationBar.type)}></i>{notificationBar.message}</Alert>}
+            <h3>Registered tasks</h3>
+            <i
+                className="bi bi-arrow-clockwise"
+                title="Refresh"
+                style={{ fontSize: '1.5rem', cursor: 'pointer' }}
+                onClick={fetchJobs}
+            ></i>
+            {selectedJob && <RemoveJobModal show={showDeleteModal} jobId={selectedJob.jobId!} onDelete={() => handleDeleteJob(selectedJob.jobId!)} onCancel={() => setShowDeleteModal(false)} onDeleteError={handleDeleteError} />}
+            <SimpleTableJobsResult jobsResult={jobs} onDeleteJob={confirmJobRemoval} />
+        </div>);
 }
 
 export default RegisteredJobsView;

@@ -7,9 +7,11 @@ import validator from "@rjsf/validator-ajv8"
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-import type { JobType, 
-              IJobTypeDescriptor as JobTypeDescriptor, 
-              IJobRequest as JobRequest } from '../api/JobContracts';
+import type {
+    JobType,
+    IJobTypeDescriptor as JobTypeDescriptor,
+    IJobRequest as JobRequest
+} from '../api/JobContracts';
 import { payloadHasProperties } from '../api/JobContracts';
 import useApiClient from '../api/api-client';
 import type { JSONSchema7 } from "json-schema";
@@ -18,7 +20,7 @@ import type { AlertState } from '../utils/notification'
 import { getNotificationIcon } from '../utils/notification';
 
 // Function component.
-function NewJobSelector() : JSX.Element {
+function NewJobSelector(): JSX.Element {
     const { getJobTypeDescriptors, postJobRequest } = useApiClient();
 
     // Initially fetch all job type descriptors
@@ -82,8 +84,8 @@ function NewJobSelector() : JSX.Element {
     function resetPage() {
 
         setJobTypeDescriptor(undefined);
-        setJobRequestCreated(null); 
-        setAlertState({ show: false , type: 'success', message: '' }); // hide any previous alerts        
+        setJobRequestCreated(null);
+        setAlertState({ show: false, type: 'success', message: '' }); // hide any previous alerts        
     }
 
     async function handleSubmit(e: React.FormEvent) {

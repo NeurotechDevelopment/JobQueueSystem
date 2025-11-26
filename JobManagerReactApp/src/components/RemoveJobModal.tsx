@@ -6,19 +6,19 @@ import useApiClient from '../api/api-client';
 export interface RemoveJobModalProps {
     show: boolean,
     jobId: string,
-    onCancel: React.MouseEventHandler<HTMLButtonElement | undefined | null> 
+    onCancel: React.MouseEventHandler<HTMLButtonElement | undefined | null>
     onDelete: React.MouseEventHandler<HTMLButtonElement | undefined | null>
     onDeleteError: (errorMessage: string) => void
 }
 
-export default function RemoveJobModal(props: RemoveJobModalProps) : JSX.Element {
+export default function RemoveJobModal(props: RemoveJobModalProps): JSX.Element {
     const { removeJob } = useApiClient();
 
     async function confirmRemoveJob(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         try {
             await removeJob(props.jobId);
             props.onDelete(e);
-        } catch(error) { 
+        } catch (error) {
             props.onDeleteError(error.message);
         }
     }
