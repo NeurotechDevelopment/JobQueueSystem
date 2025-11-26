@@ -8,19 +8,23 @@ export interface RemoveJobModalProps {
     jobId: string,
     onCancel: React.MouseEventHandler<HTMLButtonElement | undefined | null> 
     onDelete: React.MouseEventHandler<HTMLButtonElement | undefined | null>
+    onDeleteError: (errorMessage: string) => void
 }
 
 export default function RemoveJobModal(props: RemoveJobModalProps) : JSX.Element {
     const { removeJob } = useApiClient();
 
     async function confirmRemoveJob(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        await removeJob(props.jobId);
-
-        props.onDelete(e);
+        try {
+            await removeJob(props.jobId);
+            props.onDelete(e);
+        } catch(error) { 
+            props.onDeleteError(error.message);
+        }
     }
 
     return (
-        <Modal show={props.show} onHide={() => props.onCancel(null)}>
+        <Modal show={props.show} onHide={() => props.onCancel}>
             <Modal.Header closeButton>
                 <Modal.Title>Confirm Deletion.</Modal.Title>
             </Modal.Header>

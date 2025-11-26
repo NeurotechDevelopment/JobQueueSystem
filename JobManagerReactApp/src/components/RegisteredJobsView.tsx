@@ -4,19 +4,15 @@ import type { IJobInfo as JobInfo } from '../api/JobContracts'
 import RemoveJobModal from './RemoveJobModal'
 import useApiClient from '../api/api-client'
 import SimpleTableJobsResult from './SimpleTableJobsResult'
+import type { AlertState } from '../utils/notification'
+import { getNotificationIcon } from '../utils/notification'
 
-type AlertType = 'success' | 'danger';
-type AlertState = {
-    show: boolean;
-    type: AlertType;
-    message: string;
-};
 function RegisteredJobsView() {
     const { getJobList } = useApiClient();
     const [jobs, setJobs] = useState<JobInfo[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
     const [selectedJob, setSelectedJob] = useState<JobInfo | undefined>();
-    const [topNotification, setTopNotification] = useState<AlertState>({ show: false, type: 'success', message: '' });
+    const [notificationBar, setNotificationBar] = useState<AlertState>({ show: false, type: 'success', message: '' });
 
     useEffect(() => {
         (async () => fetchJobs())();
@@ -26,9 +22,9 @@ function RegisteredJobsView() {
         try {
             const response = await getJobList();
             setJobs(response.data);
-            setTopNotification({ show: false, type: 'success', message: '' });
+            setNotificationBar({ show: false, type: 'success', message: '' });
         } catch (err) {
-            setTopNotification({ show: true, type: 'danger', message: 'Error fetching jobs.' + err.message });
+            setNotificationBar({ show: true, type: 'danger', message: 'Error fetching jobs.' + err.message });
         }
     }
 
@@ -38,25 +34,30 @@ function RegisteredJobsView() {
         if (!job) {
             return;
         }
-        setSelectedJob(job);
-        setShowDeleteModal(true);        
+        setShowDeleteModal(true);
+        setSelectedJob(job);             
+    }
+
+    function handleDeleteError(errorMessage: string) {
+        setShowDeleteModal(false);
+        setNotificationBar({ show: true, type: 'danger', message: 'Error deleting job. ' + errorMessage });
     }
 
     // Invoked by RemoveJobModal upon deletion and close.
     async function handleDeleteJob(jobId: string) {
         setShowDeleteModal(false);
-        setTopNotification({ show: true, type: 'success', message: `Successfully deleted task with id ${jobId}` });
+        setNotificationBar({ show: true, type: 'success', message: `Successfully deleted task with id ${jobId}` });
 
         try {
             await fetchJobs();
         } catch (err) {
-            setTopNotification({ show: true, type: 'danger', message: 'Error deleting job.' + err.message });
+            setNotificationBar({ show: true, type: 'danger', message: 'Error deleting job.' + err.message });
         }
     }
 
     return (
       <div>
-        {topNotification.show && <Alert dismissible variant={topNotification.type}>{topNotification.message}</Alert>}
+        {notificationBar.show && <Alert variant={notificationBar.type}><i className={getNotificationIcon(notificationBar.type)}></i>{notificationBar.message}</Alert>}
         <h3>Registered tasks</h3>
         <i
             className="bi bi-arrow-clockwise"
@@ -64,7 +65,7 @@ function RegisteredJobsView() {
             style={{ fontSize: '1.5rem', cursor: 'pointer' }}
             onClick={fetchJobs}
         ></i>
-        {selectedJob && <RemoveJobModal show={showDeleteModal} jobId={selectedJob.jobId!} onDelete={() => handleDeleteJob(selectedJob.jobId!)} onCancel={() => setShowDeleteModal(false)} />}
+        {selectedJob && <RemoveJobModal show={showDeleteModal} jobId={selectedJob.jobId!} onDelete={() => handleDeleteJob(selectedJob.jobId!)} onCancel={() => setShowDeleteModal(false)} onDeleteError={handleDeleteError} />}
         <SimpleTableJobsResult jobsResult={jobs} onDeleteJob={confirmJobRemoval} />
       </div>);
 }

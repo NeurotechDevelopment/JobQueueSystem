@@ -15,6 +15,7 @@ import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job, JobType } fr
 import useApiClient from '../api/api-client';
 import * as jobUtils from '../utils/jobdetails.ts'
 import JobDeletedConfirmation from './JobDeletedConfirmation';
+import { getNotificationIcon } from '../utils/notification'
 
 // Takes jobId as a route parameter and displays job details.
 function JobDetailsView() {
@@ -78,9 +79,14 @@ function JobDetailsView() {
             return response.data;
         } catch (err) {
             console.error('Error fetching job details', err);
-            setError('Error fetching job details: ' + err.message);
+            setError(`Error loading task with id ${jobId}. ${err.message}`);
             return null;
         }
+    }
+
+    function onDeleteError(errorMessage: string) {
+        setError(`Error deleting task with id ${jobId}. ${errorMessage}`);
+        setShowDeleteModal(false);
     }
 
     function onCloseRemoveConfirm() {
@@ -91,7 +97,7 @@ function JobDetailsView() {
     function renderGenericErrorCard(): JSX.Element {
         return (
             <Card border='danger'>
-                <Card.Title><i className="bi bi-bug text-danger">&nbsp;</i>General Error</Card.Title>
+                <Card.Title><i className="bi bi-bug text-danger me-2"></i>General Error</Card.Title>
                 <Card.Body>We could not retrieve task details due to internal error. Please try again later.</Card.Body>
             </Card>
         );
@@ -204,7 +210,7 @@ function JobDetailsView() {
     function renderJobDetailsView(): JSX.Element {
         return (
             <div>
-                {error && <Alert variant="danger">Error loading task with id {jobId}. {error}</Alert>}
+                <Alert show={!!error} variant="danger"><i className={getNotificationIcon('danger')}></i>{error}</Alert>
                 <h2>Task Details</h2>
                 <ButtonGroup aria-label="Basic example">
                     <Button variant="light"> <i className="bi bi-arrow-clockwise"
@@ -214,10 +220,10 @@ function JobDetailsView() {
                     ></i></Button>
                     {job && <Button variant="light" onClick={() => setShowDeleteModal(true)}><a><i className="bi bi-trash text-danger"></i></a></Button>}
                 </ButtonGroup>
-                <RemoveJobModal show={showDeleteModal} jobId={jobId!} onCancel={() => setShowDeleteModal(false)} onDelete={onCloseRemoveConfirm} />
+                <RemoveJobModal show={showDeleteModal} jobId={jobId!} onCancel={() => setShowDeleteModal(false)} onDelete={onCloseRemoveConfirm} onDeleteError={onDeleteError} />
                 {error && renderGenericErrorCard()}
-                {!job && renderNoJob()}
-                <Stack gap={3}>
+                {!job && !error && renderNoJob()}
+                {!error && <Stack gap={3}>
                     {job &&
                         <div className="p-2">{renderJobDetails(job)}</div>}
                     {job && jobTypeDescriptor &&
@@ -226,7 +232,7 @@ function JobDetailsView() {
                         <div className="p-2">{renderJobResultPayload(job, jobTypeDescriptor)}</div>}
                     {job && jobUtils.hasResultAttachment(job) &&
                         <div className="p-2">{renderJobResultAttachment(job)}</div>}
-                </Stack>
+                </Stack>}
             </div>
         );
     }

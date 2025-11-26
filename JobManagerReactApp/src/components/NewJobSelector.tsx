@@ -12,16 +12,10 @@ import type { JobType,
               IJobRequest as JobRequest } from '../api/JobContracts';
 import { payloadHasProperties } from '../api/JobContracts';
 import useApiClient from '../api/api-client';
-import './NewJobSelector.css'
 import type { JSONSchema7 } from "json-schema";
 import JobCreatedConfirmation from './JobCreatedConfirmation';
-
-type AlertType = 'success' | 'danger';
-type AlertState = {
-    show: boolean;
-    type: AlertType;
-    message: string;
-};
+import type { AlertState } from '../utils/notification'
+import { getNotificationIcon } from '../utils/notification';
 
 // Function component.
 function NewJobSelector() : JSX.Element {
@@ -74,7 +68,7 @@ function NewJobSelector() : JSX.Element {
     // When user selects a job type from dropdown, set it as current job type descriptor
     function handleSelect(eventKey: string | null) {
         const jobType: JobType = eventKey as unknown as JobType;
-        let currentJobType = jobTypeDescriptors.find(j => j.jobType === jobType)!;
+        const currentJobType = jobTypeDescriptors.find(j => j.jobType === jobType)!;
         currentJobType.payloadJsonSchema = stripRedundantSchemaProps(currentJobType.payloadJsonSchema);
         setJobTypeDescriptor(currentJobType);
         setDescription('');
@@ -122,7 +116,7 @@ function NewJobSelector() : JSX.Element {
     if (jobRequestCreated == null) {
         return (
             <div>
-                <Alert show={alertState.show} variant={alertState.type} dismissible>{alertState.message}</Alert>
+                <Alert show={alertState.show} variant={alertState.type}><i className={getNotificationIcon(alertState.type)}></i>{alertState.message}</Alert>
                 <h3>Create new task</h3>
                 <Dropdown className="mt-5" onSelect={handleSelect}>
                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
