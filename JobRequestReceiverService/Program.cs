@@ -1,4 +1,5 @@
 using MassTransit;
+using Serilog;
 using Shared;
 using Shared.Configuration;
 
@@ -8,7 +9,19 @@ namespace JobRequestReceiverService
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(
+                    new ConfigurationBuilder()
+                        .AddJsonFile("appsettings.json", optional: false)
+                        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
+                        .AddEnvironmentVariables()
+                        .Build()
+                )
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
             IHost host = Host.CreateDefaultBuilder(args)
+                .UseSerilog()
                 .ConfigureServices((context, services) =>
                 {
                     var config = context.Configuration;
@@ -19,8 +32,6 @@ namespace JobRequestReceiverService
                     // Explicitly bind this subsection for the JobRepositoryClient
                     var jobReposClientSection = appSettingsSection.GetSection(nameof(JobRepositoryClientConfig));
                     services.Configure<JobRepositoryClientConfig>(jobReposClientSection);
-
-                    services.AddLogging();
 
                     // Register client to communicate with JobRepository service.
                     services.AddSingleton<IJobRepositoryClient, JobRepositoryClient>();

@@ -4,6 +4,12 @@ x-LoggingSettings: &loggingSettings
   Logging__LogLevel__Default: Trace
   Logging__LogLevel__Microsoft: Information
   Logging__LogLevel__Microsoft_Hosting_Lifetime: Information
+
+x-LogSerilogSettings: &logCommonSerilogSettings
+  Serilog__MinimumLevel__Default: Debug
+  Serilog__MinimumLevel__Override__Microsoft: Information
+  Serilog__WriteTo__1__Args__nodeUris: http://elasticsearch:9200
+  Serilog__WriteTo__1__Args__indexFormat: job-queue-system-{0:yyyy.MM.dd}
  
 x-AuthOptionsConfig: &authOptionsConfig
   ApplicationSettings__AuthOptions__Authority: ${KEYCLOAK_HOSTNAME}
@@ -104,11 +110,7 @@ services:
       Logging__LogLevel__Microsoft.IdentityModel: Debug
       ApplicationSettings__ConnectionString: mongodb://mongodb:27017
       ApplicationSettings__Database: JobQueueSystem
-      <<: [*authOptionsConfig,*loggingSettings]
-      Serilog__MinimumLevel__Default: Debug
-      Serilog__MinimumLevel__Override__Microsoft: Warning
-      Serilog__WriteTo__1__Args__nodeUris: http://elasticsearch:9200
-      Serilog__WriteTo__1__Args__indexFormat: job-queue-system-notification-{0:yyyy.MM.dd}
+      <<: [*authOptionsConfig,*loggingSettings,*logCommonSerilogSettings]
     restart: always
     extra_hosts:
     # To allow services to reach Keycloak on host machine during development
@@ -127,7 +129,7 @@ services:
     environment:
       ASPNETCORE_URLS: http://+:8000
       ApplicationSettings__RabbitConfig__QueueName: job-request-queue
-      <<: [*rabbitMQConfig, *authOptionsConfig, *jobRepositoryServiceClient]
+      <<: [*rabbitMQConfig, *authOptionsConfig, *jobRepositoryServiceClient, *logCommonSerilogSettings]
     restart: always
     extra_hosts:
     # To allow services to reach Keycloak on host machine during development
@@ -144,7 +146,7 @@ services:
       dockerfile: JobRequestReceiverService/Dockerfile
     environment:
       ApplicationSettings__RabbitConfig__QueueName: job-request-queue
-      <<: [*rabbitMQConfig,*jobRepositoryServiceClient]
+      <<: [*rabbitMQConfig,*jobRepositoryServiceClient,*logCommonSerilogSettings]
     restart: always
     depends_on:
       - job-repository-service
@@ -157,7 +159,7 @@ services:
       context: .
       dockerfile: JobDispatcherService/Dockerfile
     environment:
-      <<: [*rabbitMQConfig, *jobRepositoryServiceClient]
+      <<: [*rabbitMQConfig, *jobRepositoryServiceClient, *logCommonSerilogSettings]
     restart: always
     depends_on:
       - job-repository-service
@@ -170,7 +172,7 @@ services:
       context: .
       dockerfile: JobHandlers/Dockerfile
     environment:
-      << : [*loggingSettings, *rabbitMQConfig, *jobRepositoryServiceClient]
+      << : [*loggingSettings, *logCommonSerilogSettings, *rabbitMQConfig, *jobRepositoryServiceClient]
     restart: always
     depends_on:
       - job-repository-service

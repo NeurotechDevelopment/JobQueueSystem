@@ -17,6 +17,8 @@ namespace JobDispatcherService
             this.logger = logger;
             this.client = client;
             this.jobDispatcher = jobDispatcher;
+
+            this.logger.LogTrace($"{nameof(JobRequestConsumer)} initialized.");
         }
 
         public async Task Consume(ConsumeContext<JobRequest> context)

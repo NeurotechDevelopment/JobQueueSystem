@@ -1,4 +1,5 @@
 using MassTransit;
+using Serilog;
 using Shared;
 using Shared.Configuration;
 
@@ -9,6 +10,14 @@ namespace JobDispatcherService
         public static void Main(string[] args)
         {
             var builder = Host.CreateApplicationBuilder(args);
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog();
 
             // Bind ApplicationSettings. Cryptic code, but what it does is allows DI to know with what to instantiate AddSingleton below.
             var appSettingsSection = builder.Configuration.GetSection(nameof(ApplicationSettings));

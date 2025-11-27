@@ -4,6 +4,7 @@ using MassTransit;
 using Shared;
 using Shared.Configuration;
 using System.Reflection;
+using Serilog;
 
 namespace JobHandlers
 {
@@ -12,8 +13,14 @@ namespace JobHandlers
         public static void Main(string[] args)
         {
             var builder = Host.CreateApplicationBuilder(args);
-            builder.Services.AddLogging();
-            
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog();
+
             builder.Services.Configure<JobRepositoryClientConfig>(
                 builder.Configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(JobRepositoryClientConfig)}"));
             builder.Services.AddSingleton<IJobRepositoryClient, JobRepositoryClient>();

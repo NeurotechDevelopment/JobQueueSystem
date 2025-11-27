@@ -69,7 +69,7 @@ namespace JobProducerService.Controllers
                 return Unauthorized("Authorization token is required.");
             }
 
-            this.logger.LogTrace($"Uploading attachment for jobId: {request.JobId}, fileName: {file.FileName}, contentType: {file.ContentType}, size: {file.Length}");
+            this.logger.LogDebug($"Uploading attachment for jobId: {request.JobId}, fileName: {file.FileName}, contentType: {file.ContentType}, size: {file.Length}");
 
             await using (var stream = file.OpenReadStream())
             {
@@ -99,7 +99,11 @@ namespace JobProducerService.Controllers
 
             var endpoint = await sendEndpointProvider.GetSendEndpoint(new Uri(uri));
 
+            this.logger.LogDebug("Sending job request with id: {id}", jobRequest.JobId);
+
             await endpoint.Send(jobRequest);
+
+            this.logger.LogDebug("Sent job request with id: {id} successfully.", jobRequest.JobId);
         }
     }
 }

@@ -20,6 +20,8 @@ namespace JobDispatcherService
             this.logger = logger;
             this.client = client;
             this.jobDispatcher = jobDispatcher;
+
+            this.logger.LogTrace($"{nameof(JobDispatcherWorker)} initialized.");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -42,9 +44,9 @@ namespace JobDispatcherService
                         await this.jobDispatcher.DispatchJobAsync(job, ct);
 
                         // Mark job as enqueued. We don't want to pick it up again.
-                        logger.LogTrace($"Changing job {job.JobId} to status {JobStatus.Enqueued}");
+                        logger.LogDebug($"Changing job {job.JobId} to status {JobStatus.Enqueued}");
                         await this.client.SetStatusAsync(job.JobId, JobStatus.Enqueued);
-                        logger.LogTrace($"Changed job {job.JobId} to status {JobStatus.Enqueued}");
+                        logger.LogDebug($"Changed job {job.JobId} to status {JobStatus.Enqueued}");
                     }
                     catch (Exception e)
                     {
@@ -52,6 +54,7 @@ namespace JobDispatcherService
                     }
                 });
 
+                logger.LogTrace("JobDispatcherWorker pausing for {time} seconds.", PollInterval);
                 await Task.Delay(PollInterval, stoppingToken);
             }
         }

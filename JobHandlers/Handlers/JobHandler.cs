@@ -34,12 +34,12 @@ namespace JobHandlers.Handlers
             {
                 await this.client.SetStatusAsync(jobId, JobStatus.InProgress);
 
-                this.logger.LogTrace($"Executing {nameof(PerformWorkAsync)}.");
+                this.logger.LogDebug($"Executing {nameof(PerformWorkAsync)}.");
 
                 TRequestPayload? item = jobRequest.Payload != null && jobRequest.Payload.Data != null ? JsonSerializer.Deserialize<TRequestPayload>(jobRequest.Payload.Data) : default(TRequestPayload);
                 var result = await this.PerformWorkAsync(jobId, item, jobRequest.Payload?.Attachment);
                 
-                this.logger.LogTrace($"Executed {nameof(PerformWorkAsync)} OK.");
+                this.logger.LogDebug($"Executed {nameof(PerformWorkAsync)} OK.");
 
                 // SetResult also sets status to Finished
                 await this.client.SetResultAsync(jobId, new JobPayload(JsonSerializer.Serialize(result.Result), result.ResultFile));

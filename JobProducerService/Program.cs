@@ -2,6 +2,7 @@ using JobProducerService.Configuration;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using Shared;
 using Shared.Configuration;
 using System.Text.Json.Serialization;
@@ -13,7 +14,13 @@ namespace JobProducerService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddLogging();
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
 
             // Add services to the container.
             builder.Services.AddControllers().AddJsonOptions(options =>

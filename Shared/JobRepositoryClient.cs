@@ -74,7 +74,7 @@ namespace Shared
                     return authToken;
                 }
 
-                this.logger.LogTrace($"Fetching new auth token from auth server. TokenEndpoint:{this.config.AuthClientCredentials.TokenEndpoint}");
+                this.logger.LogDebug($"Fetching new auth token from auth server. TokenEndpoint:{this.config.AuthClientCredentials.TokenEndpoint}");
 
                 using (var client = new RestClient())
                 {
@@ -88,7 +88,7 @@ namespace Shared
 
                     this.authToken = tokenResponse.access_token;
 
-                    this.logger.LogTrace($"Auth token acquired: {this.authToken}");
+                    this.logger.LogDebug($"Auth token acquired: {this.authToken}");
 
                     return this.authToken;
                 }
@@ -102,7 +102,7 @@ namespace Shared
             {
                 options.Authenticator = new JwtAuthenticator(GetAuthToken());
             }
-
+            
             return options;
         }
 
