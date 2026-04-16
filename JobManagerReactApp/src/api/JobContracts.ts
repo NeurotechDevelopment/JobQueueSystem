@@ -1,21 +1,26 @@
 import type { JSONSchema7 } from "json-schema";
 
-export enum JobType {
-    Dummy,
-    ConvertWordToPdf,
-    ConvertHtmlToPdf,
-    ConvertExcelToPdf,
-    ConvertScanToSearchablePdf,
-    ConvertWordToImages
-}
+export const JobType = {
+    Dummy:"Dummy",
+    ConvertWordToPdf:"ConvertWordToPdf",
+    ConvertHtmlToPdf:"ConvertHtmlToPdf",
+    ConvertExcelToPdf:"ConvertExcelToPdf",
+    ConvertScanToSearchablePdf:"ConvertScanToSearchablePdf",
+    ConvertWordToImages:"ConvertWordToImages"
 
-export enum JobStatus {
-    NotStarted,
-    Enqueued,
-    InProgress,
-    Failed,
-    Finished
-}
+} as const;
+
+export type JobType = typeof JobType[keyof typeof JobType];
+
+export const JobStatus = {
+    NotStarted: "NotStarted",
+    Enqueued: "Enqueued",
+    InProgress: "InProgress",
+    Failed: "Failed",
+    Finished: "Finished"
+} as const;
+
+export type JobStatus = typeof JobStatus[keyof typeof JobStatus];
 
 export interface IJobInfo {
     /** Format: uuid */
