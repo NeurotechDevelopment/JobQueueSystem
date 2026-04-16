@@ -9,7 +9,6 @@ import { type IJobInfo, JobType as IJobType, JobStatus as IJobStatus } from '../
 import { AxiosClient, type AxiosRequestConfig } from '@odata2ts/http-client-axios'
 import { ContractsService } from '../odata/ContractsService'
 import { type Job, JobStatus, JobType } from '../odata/ContractsModel'
-import { QFilterExpression } from "@odata2ts/odata-query-objects";
 import { useKeycloak } from '@react-keycloak/web';
 import SimpleTableJobsResult from './SimpleTableJobsResult'
 import Alert from 'react-bootstrap/Alert'
@@ -83,29 +82,31 @@ const SearchJobsView = (): JSX.Element => {
         const contractsService = new ContractsService(httpClient, odataUrl);
         try {
             const result = await contractsService.Jobs().query((builder, qJob) => {
-                let filterExpression: QFilterExpression = new QFilterExpression();
+                let queryBuilder = builder;
+                const toBuilderFilter = <T,>(expression: T): Parameters<typeof builder.filter>[0] =>
+                    expression as unknown as Parameters<typeof builder.filter>[0];
 
                 if (jobId && jobId.trim() !== '') {
-                    filterExpression = filterExpression.and(qJob.JobId.eq(jobId));
+                    queryBuilder = queryBuilder.filter(toBuilderFilter(qJob.JobId.eq(jobId)));
                 }
 
                 if (jobStatus) {
-                    filterExpression = filterExpression.and(qJob.Status.eq(jobStatus));
+                    queryBuilder = queryBuilder.filter(toBuilderFilter(qJob.Status.eq(jobStatus)));
                 }
 
                 if (jobType) {
-                    filterExpression = filterExpression.and(qJob.Type.eq(jobType));
+                    queryBuilder = queryBuilder.filter(toBuilderFilter(qJob.Type.eq(jobType)));
                 }
 
                 if (receivedAtAfter) {
-                    filterExpression = filterExpression.and(qJob.ReceivedAt.ge(receivedAtAfter.toISOString()));
+                    queryBuilder = queryBuilder.filter(toBuilderFilter(qJob.ReceivedAt.ge(receivedAtAfter.toISOString())));
                 }
 
                 if (description) {
-                    filterExpression = filterExpression.and(qJob.Description.contains(description))
+                    queryBuilder = queryBuilder.filter(toBuilderFilter(qJob.Description.contains(description)));
                 }
 
-                return builder.filter(filterExpression)
+                return queryBuilder;
             });
 
             setJobsResult(result.data.value)
