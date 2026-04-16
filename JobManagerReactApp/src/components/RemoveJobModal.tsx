@@ -2,6 +2,7 @@ import type { JSX } from 'react'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import useApiClient from '../api/api-client';
+import { parseErrorMessage } from '../utils/error';
 
 export interface RemoveJobModalProps {
     show: boolean,
@@ -19,7 +20,7 @@ export default function RemoveJobModal(props: RemoveJobModalProps): JSX.Element 
             await removeJob(props.jobId);
             props.onDelete(e);
         } catch (error) {
-            props.onDeleteError(error.message);
+            props.onDeleteError(parseErrorMessage(error));
         }
     }
 

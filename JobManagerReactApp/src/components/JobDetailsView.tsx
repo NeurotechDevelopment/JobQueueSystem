@@ -16,6 +16,7 @@ import useApiClient from '../api/api-client';
 import * as jobUtils from '../utils/jobdetails.ts'
 import JobDeletedConfirmation from './JobDeletedConfirmation';
 import { getNotificationIcon } from '../utils/notification'
+import { parseErrorMessage } from '../utils/error';
 
 // Takes jobId as a route parameter and displays job details.
 function JobDetailsView() {
@@ -66,7 +67,7 @@ function JobDetailsView() {
         }
         catch (err) {
             console.error('Error fetching job type details', err);
-            setError('Error fetching job type details:' + err.message);
+            setError(`Error fetching job type details: ${parseErrorMessage(err)}`);
             return null;
         }
     }
@@ -79,7 +80,7 @@ function JobDetailsView() {
             return response.data;
         } catch (err) {
             console.error('Error fetching job details', err);
-            setError(`Error loading task with id ${jobId}. ${err.message}`);
+            setError(`Error loading task with id ${jobId}. ${parseErrorMessage(err)}`);
             return null;
         }
     }

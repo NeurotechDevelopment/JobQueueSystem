@@ -6,6 +6,7 @@ import useApiClient from '../api/api-client'
 import SimpleTableJobsResult from './SimpleTableJobsResult'
 import type { AlertState } from '../utils/notification'
 import { getNotificationIcon } from '../utils/notification'
+import { parseErrorMessage } from '../utils/error';
 
 function RegisteredJobsView() {
     const { getJobList } = useApiClient();
@@ -24,7 +25,7 @@ function RegisteredJobsView() {
             setJobs(response.data);
             setNotificationBar({ show: false, type: 'success', message: '' });
         } catch (err) {
-            setNotificationBar({ show: true, type: 'danger', message: 'Error fetching jobs.' + err.message });
+            setNotificationBar({ show: true, type: 'danger', message: `Error fetching jobs. ${parseErrorMessage(err)}` });
         }
     }
 
@@ -51,7 +52,7 @@ function RegisteredJobsView() {
         try {
             await fetchJobs();
         } catch (err) {
-            setNotificationBar({ show: true, type: 'danger', message: 'Error deleting job.' + err.message });
+            setNotificationBar({ show: true, type: 'danger', message: `Error deleting job. ${parseErrorMessage(err)}` });
         }
     }
 

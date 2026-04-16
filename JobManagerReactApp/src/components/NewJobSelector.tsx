@@ -18,6 +18,7 @@ import type { JSONSchema7 } from "json-schema";
 import JobCreatedConfirmation from './JobCreatedConfirmation';
 import type { AlertState } from '../utils/notification'
 import { getNotificationIcon } from '../utils/notification';
+import { parseErrorMessage } from '../utils/error';
 
 // Function component.
 function NewJobSelector(): JSX.Element {
@@ -55,7 +56,7 @@ function NewJobSelector(): JSX.Element {
                 setJobTypeDescriptors(response.data);
             } catch (err) {
                 console.error('Error fetching job type descriptor', err);
-                setAlertState({ show: true, type: 'danger', message: 'Error fetching job type descriptor.' + err.message });
+                setAlertState({ show: true, type: 'danger', message: `Error fetching job type descriptor. ${parseErrorMessage(err)}` });
             }
         })();
     }, []);
@@ -109,7 +110,7 @@ function NewJobSelector(): JSX.Element {
             setJobRequestCreated(jobRequest);
 
         } catch (err) {
-            setAlertState({ show: true, type: 'danger', message: 'Error creating job: ' + err.message });
+            setAlertState({ show: true, type: 'danger', message: `Error creating job: ${parseErrorMessage(err)}` });
         } finally {
             setIsSubmitting(false);
         }

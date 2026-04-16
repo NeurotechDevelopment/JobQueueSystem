@@ -16,6 +16,7 @@ import Alert from 'react-bootstrap/Alert'
 import type { AlertState } from '../utils/notification'
 import { getNotificationIcon } from '../utils/notification'
 import RemoveJobModal from './RemoveJobModal'
+import { parseErrorMessage } from '../utils/error';
 
 const SearchJobsView = (): JSX.Element => {
     const { keycloak } = useKeycloak();
@@ -67,7 +68,7 @@ const SearchJobsView = (): JSX.Element => {
         try {
             await performSearch();
         } catch (err) {
-            setNotificationBar({ show: true, type: 'danger', message: 'Error deleting job.' + err.message });
+            setNotificationBar({ show: true, type: 'danger', message: `Error deleting job. ${parseErrorMessage(err)}` });
         }
     }
 
@@ -110,7 +111,7 @@ const SearchJobsView = (): JSX.Element => {
             setJobsResult(result.data.value)
             setNotificationBar({ show: false, type: 'success', message: '' });
         } catch (error) {
-            setNotificationBar({ show: true, type: 'danger', message: 'Error searching jobs. ' + (error as Error).message });
+            setNotificationBar({ show: true, type: 'danger', message: `Error searching jobs. ${parseErrorMessage(error)}` });
         }
     }
 
