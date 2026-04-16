@@ -57,7 +57,7 @@ const SimpleTableJobsResult = ({ jobsResult, onDeleteJob }: SimpleTableJobsResul
                     <td>{j.isSuccess ? "true" : (j.isSuccess == null ? "N/A" : "false")}</td>
                     <td>
                         <ButtonGroup aria-label="Basic example">
-                            <Button as={Link} to={`/jobs/${j.jobId}`} variant="light"><i className="bi bi-eye text-success"></i></Button>
+                            <Link to={`/jobs/${j.jobId}`} className="btn btn-light"><i className="bi bi-eye text-success"></i></Link>
                             <Button variant="light" onClick={() => onDeleteJob(j.jobId!)}><a><i className="bi bi-trash text-danger"></i></a></Button>
                         </ButtonGroup>
                     </td>
