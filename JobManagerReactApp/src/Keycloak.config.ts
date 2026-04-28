@@ -1,9 +1,10 @@
 import Keycloak from 'keycloak-js'
+import { appSettings } from './app-config';
 
 export const keycloak = new Keycloak({
-    url: import.meta.env.VITE_KEYCLOAK_ENDPOINT,
-    realm: import.meta.env.VITE_KEYCLOAK_REALM,
-    clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID
+    url: appSettings.keycloakEndpoint,
+    realm: appSettings.keycloakRealm,
+    clientId: appSettings.keycloakClientId
 });
 
 export const keycloakInitOptions = {

@@ -16,6 +16,7 @@ import type { AlertState } from '../utils/notification'
 import { getNotificationIcon } from '../utils/notification'
 import RemoveJobModal from './RemoveJobModal'
 import { parseErrorMessage } from '../utils/error';
+import { appSettings } from '../app-config';
 
 const SearchJobsView = (): JSX.Element => {
     const { keycloak } = useKeycloak();
@@ -78,7 +79,7 @@ const SearchJobsView = (): JSX.Element => {
             }
         }
         const httpClient = new AxiosClient(config);
-        const odataUrl = `${import.meta.env.VITE_ODATA_URL}`
+        const odataUrl = appSettings.odataUrl;
         const contractsService = new ContractsService(httpClient, odataUrl);
         try {
             const result = await contractsService.Jobs().query((builder, qJob) => {

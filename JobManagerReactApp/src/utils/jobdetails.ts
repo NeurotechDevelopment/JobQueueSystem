@@ -1,9 +1,10 @@
 import type { JSONSchema7 } from "json-schema";
 import type { IJobTypeDescriptor as JobTypeDescriptor, IJob as Job } from '../api/JobContracts.ts';
+import { appSettings } from '../app-config';
 
 // Forms file download link to JobRepository service with the given fileId.
 export function getFileLink(fileId: string | null | undefined): string {
-    return !!fileId ? `${import.meta.env.VITE_API_BASE_URL}/JobsAttachments/${fileId}` : '';
+    return !!fileId ? `${appSettings.apiBaseUrl}/JobsAttachments/${fileId}` : '';
 }
 
 // Accesses Job Request payload schema. Stips away title and description for RJFS not to render those.
