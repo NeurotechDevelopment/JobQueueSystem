@@ -105,9 +105,9 @@ services:
     ports:
      - "8000:80"
     environment:
-      VITE_API_BASE_URL: http://job-repository-service:8001/api
-      VITE_JOB_PRODUCER_API: http://job-producer-service:8002
-      VITE_ODATA_URL: http://job-repository-service:8001/odata
+      VITE_API_BASE_URL: http://localhost:8001/api
+      VITE_JOB_PRODUCER_API: http://localhost:8002
+      VITE_ODATA_URL: http://localhost:8001/odata
       VITE_KEYCLOAK_ENDPOINT: ${KEYCLOAK_HOSTNAME}
       VITE_KEYCLOAK_REALM: ${AUTH_REALM}
       VITE_KEYCLOAK_CLIENT_ID: ${AUTH_FRONTEND_CLIENT_ID}
