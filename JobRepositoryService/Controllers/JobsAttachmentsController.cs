@@ -74,7 +74,7 @@ namespace JobRepositoryService.Controllers
 
         // This endpoint allows anonymous access via the temp link.
         [AllowAnonymous]
-        [HttpGet($"{ServicesConstants.ActionRoutes.Stream}/temp/{{tempId}}", Name = "DownloadTempFileEndpoint")]
+        [HttpGet($"{ServicesConstants.ActionRoutes.Stream}/temp/{{tempId}}", Name = ServicesConstants.ActionRoutes.DownloadTempFileRoute)]
         public async Task<IActionResult> DownloadAttachmentViaTempLinkAsync(string tempId)
         {
             this.logger.LogDebug("Stream-downloading attachment via temp link with TempId: {TempId}", tempId);
@@ -112,8 +112,9 @@ namespace JobRepositoryService.Controllers
             this.cache.Set(tempId, id, TimeSpan.FromSeconds(seconds));
             
             this.logger.LogDebug("Generated temp download link with TempId: {TempId} for attachment Id: {Id}. Valid for {seconds} seconds.", tempId, id, seconds);
-            
-            var downloadLink = Url.Link("DownloadTempFileEndpoint", new { tempId = tempId });
+
+            // Generate relative url to the DownloadAttachmentViaTempLinkAsync endpoint.
+            var downloadLink = Url.RouteUrl(ServicesConstants.ActionRoutes.DownloadTempFileRoute, new { tempId = tempId });
             return Ok(downloadLink);
         }
 

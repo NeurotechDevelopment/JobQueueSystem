@@ -26,6 +26,7 @@
             public const string Jobs = "jobs";
             public const string JobTypes = "job-types";
             public const string Stream = "stream";
+            public const string DownloadTempFileRoute = "download-temp-file";
         }
     }
 }
