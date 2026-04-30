@@ -1,0 +1,20 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="120" rx="16" fill="#1e293b"></rect>
+  
+  <!-- Clipboard -->
+  <rect x="30" y="25" width="60" height="70" rx="8" fill="#334155"></rect>
+  <rect x="45" y="15" width="30" height="15" rx="4" fill="#64748b"></rect>
+  
+  <!-- Checklist lines -->
+  <line x1="40" y1="45" x2="80" y2="45" stroke="#cbd5f5" stroke-width="2"></line>
+  <line x1="40" y1="60" x2="80" y2="60" stroke="#cbd5f5" stroke-width="2"></line>
+  <line x1="40" y1="75" x2="70" y2="75" stroke="#cbd5f5" stroke-width="2"></line>
+  
+  <!-- Checkmarks -->
+  <polyline points="38,43 42,47 48,39" fill="none" stroke="#22c55e" stroke-width="2"></polyline>
+  <polyline points="38,58 42,62 48,54" fill="none" stroke="#22c55e" stroke-width="2"></polyline>
+  
+  <!-- Gear (job processing hint) -->
+  <circle cx="85" cy="85" r="10" fill="#38bdf8"></circle>
+  <circle cx="85" cy="85" r="4" fill="#1e293b"></circle>
+</svg>
