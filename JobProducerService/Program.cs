@@ -6,6 +6,7 @@ using Serilog;
 using Shared;
 using Shared.Configuration;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace JobProducerService
 {
@@ -56,6 +57,21 @@ namespace JobProducerService
             // Explicitly bind this subsection for the JobRepositoryClient
             var jobReposClientSection = appSettingsSection.GetSection(nameof(JobRepositoryClientConfig));
             builder.Services.Configure<JobRepositoryClientConfig>(jobReposClientSection);
+
+            // Set file size upload limit from config.
+            if (appSettings.MaxAttachmentSizeInBytes.HasValue)
+            {
+                builder.WebHost.ConfigureKestrel(options =>
+                {
+                    options.Limits.MaxRequestBodySize = appSettings.MaxAttachmentSizeInBytes.Value;
+                });
+
+                builder.Services.Configure<FormOptions>(options =>
+                {
+                    options.MultipartBodyLengthLimit = appSettings.MaxAttachmentSizeInBytes.Value;
+                });
+            }
+
             // Register client to communicate with JobRepository service.
             builder.Services.AddSingleton<IJobRepositoryClient, JobRepositoryClient>();
             

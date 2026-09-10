@@ -13,4 +13,15 @@ window.__APP_CONFIG__ = {
     keycloakClientId: "${VITE_KEYCLOAK_CLIENT_ID}"
 }
 EOF
+
+# In case max upload size is defined, generate nginx config with the setting
+# set :- after variable name to not throw 'unbound variable' due to set -eu instruction and set it to empty as default
+if [ -n "${MAX_FILE_SIZE_UPLOAD_IN_BYTES:-}" ]
+then
+SIZE_IN_MB=$((${MAX_FILE_SIZE_UPLOAD_IN_BYTES} / 1024 / 1024))
+cat > /etc/nginx/conf.d/additional-settings.conf <<EOF
+client_max_body_size ${SIZE_IN_MB}M;
+EOF
+
+fi
 exec "$@"

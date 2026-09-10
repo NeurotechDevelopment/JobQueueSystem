@@ -111,6 +111,7 @@ services:
       VITE_KEYCLOAK_ENDPOINT: ${KEYCLOAK_HOSTNAME}
       VITE_KEYCLOAK_REALM: ${AUTH_REALM}
       VITE_KEYCLOAK_CLIENT_ID: ${AUTH_FRONTEND_CLIENT_ID}
+      MAX_FILE_SIZE_UPLOAD_IN_BYTES: ${MAX_FILE_SIZE_UPLOAD_IN_BYTES}
     restart: always
     extra_hosts:
     # To allow services to reach Keycloak on host machine during development
@@ -151,6 +152,7 @@ services:
      - "8002:8000"
     environment:
       ASPNETCORE_URLS: http://+:8000
+      ApplicationSettings__MaxAttachmentSizeInBytes: ${MAX_FILE_SIZE_UPLOAD_IN_BYTES}
       ApplicationSettings__RabbitConfig__QueueName: job-request-queue
       <<: [*rabbitMQConfig, *authOptionsConfig, *jobRepositoryServiceClient, *logCommonSerilogSettings]
     restart: always
