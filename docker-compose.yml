@@ -197,6 +197,7 @@ services:
       context: .
       dockerfile: JobHandlers/Dockerfile
     environment:
+      SYNCFUSION_LICENSE_KEY: ${SYNCFUSION_LICENSE_KEY}
       << : [*loggingSettings, *logCommonSerilogSettings, *rabbitMQConfig, *jobRepositoryServiceClient]
     restart: always
     depends_on:
