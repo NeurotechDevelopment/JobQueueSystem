@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Contracts.Payloads;
 using Contracts.Payloads.Requests;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shared;
@@ -16,17 +17,28 @@ namespace JobRepoClientTester
     {
         static void Main(string[] args)
         {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile("appsettings.Development.json", optional: true)
+                .Build();
+
+            var clientConfig = configuration
+                .GetSection("ApplicationSettings:JobRepositoryClientConfig")
+                .Get<JobRepositoryClientConfig>()
+                ?? throw new InvalidOperationException("Missing JobRepositoryClientConfig section.");
+
             Logger<JobRepositoryClient> logger = new Logger<JobRepositoryClient>(new LoggerFactory());
             JobRepositoryClient client = new JobRepositoryClient(logger,
                 Options.Create(new JobRepositoryClientConfig
                 {
-                    BaseUrl = Settings.Default.JobRepositoryServiceUrl,
+                    BaseUrl = clientConfig.BaseUrl,
                     AuthClientCredentials = new AuthClientCredentials
                     {
-                        ClientId = Settings.Default.ClientId,
-                        ClientSecret = Settings.Default.ClientSecret,
-                        Realm = Settings.Default.Realm,
-                        Authority = Settings.Default.Authority
+                        ClientId = clientConfig.AuthClientCredentials.ClientId,
+                        ClientSecret = clientConfig.AuthClientCredentials.ClientSecret,
+                        Realm = clientConfig.AuthClientCredentials.Realm,
+                        Authority = clientConfig.AuthClientCredentials.Authority
                     }
                 }));
 
